@@ -1,0 +1,62 @@
+[
+  {
+    "id": "u01",
+    "name": "Mira Shah",
+    "email": "mira@northline.local",
+    "password": "mira123",
+    "role": "admin",
+    "title": "Studio director",
+    "department": "Operations",
+    "status": "active"
+  },
+  {
+    "id": "u02",
+    "name": "Jonah Hale",
+    "email": "jonah@northline.local",
+    "password": "jonah123",
+    "role": "lead",
+    "title": "Product lead",
+    "department": "Product",
+    "status": "active"
+  },
+  {
+    "id": "u03",
+    "name": "Leela Iyer",
+    "email": "leela@northline.local",
+    "password": "leela123",
+    "role": "member",
+    "title": "Product designer",
+    "department": "Design",
+    "status": "active"
+  },
+  {
+    "id": "u04",
+    "name": "Omar Farouk",
+    "email": "omar@northline.local",
+    "password": "omar123",
+    "role": "member",
+    "title": "Engineer",
+    "department": "Engineering",
+    "status": "active"
+  },
+  {
+    "id": "u05",
+    "name": "Priya Nair",
+    "email": "priya@northline.local",
+    "password": "priya123",
+    "role": "member",
+    "title": "Researcher",
+    "department": "Research",
+    "status": "away"
+  },
+  {
+    "id": "u06",
+    "name": "Evan Cho",
+    "email": "evan@northline.local",
+    "password": "evan123",
+    "role": "lead",
+    "title": "Delivery lead",
+    "department": "Delivery",
+    "status": "active"
+  }
+]

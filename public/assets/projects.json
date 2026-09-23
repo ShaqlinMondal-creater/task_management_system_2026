@@ -1,0 +1,50 @@
+[
+  {
+    "id": "p01",
+    "name": "Harbor Site",
+    "code": "HRB",
+    "description": "Rebuild the studio site so the work, the people, and the enquiry path are easy to find.",
+    "status": "active",
+    "priority": "high",
+    "startDate": "2026-09-01",
+    "dueDate": "2026-10-24",
+    "ownerId": "u01",
+    "color": "#1e6b45"
+  },
+  {
+    "id": "p02",
+    "name": "Field Kit",
+    "code": "FLD",
+    "description": "A visit checklist crews can fill when the signal drops, then sync when they are back in range.",
+    "status": "active",
+    "priority": "medium",
+    "startDate": "2026-08-18",
+    "dueDate": "2026-10-31",
+    "ownerId": "u02",
+    "color": "#2a5f8a"
+  },
+  {
+    "id": "p03",
+    "name": "Archive Index",
+    "code": "ARC",
+    "description": "Label the internal archive so old decisions can be found without asking the person who was there.",
+    "status": "planned",
+    "priority": "low",
+    "startDate": "2026-10-06",
+    "dueDate": "2026-11-20",
+    "ownerId": "u06",
+    "color": "#8a5a2a"
+  },
+  {
+    "id": "p04",
+    "name": "Launch Week",
+    "code": "LCH",
+    "description": "Run the autumn launch afternoon: room, speakers, guests, and the people on the door.",
+    "status": "active",
+    "priority": "urgent",
+    "startDate": "2026-09-08",
+    "dueDate": "2026-10-03",
+    "ownerId": "u01",
+    "color": "#c24e2a"
+  }
+]
