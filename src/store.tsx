@@ -1,9 +1,11 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
+import { holdsTask } from "./access";
+import { checkpointsForProject } from "./checkpointWork";
 import { nextId, todayISO } from "./lib";
-import type { Assignment, FileName, Project, StoreData, Task, User } from "./types";
+import type { Assignment, Checkpoint, FileName, Project, StoreData, Task, User } from "./types";
 
-const STORAGE_KEY = "northline.store.v1";
+const STORAGE_KEY = "northline.store.v7";
 const SESSION_KEY = "northline.session";
 
 interface StoreApi {
@@ -39,7 +41,8 @@ function isStore(value: unknown): value is StoreData {
     Array.isArray(record.users) &&
     Array.isArray(record.projects) &&
     Array.isArray(record.tasks) &&
-    Array.isArray(record.assignments)
+    Array.isArray(record.assignments) &&
+    Array.isArray(record.checkpoints)
   );
 }
 
@@ -68,13 +71,14 @@ async function readList<T>(name: FileName): Promise<T[]> {
 }
 
 async function fetchSeed(): Promise<StoreData> {
-  const [users, projects, tasks, assignments] = await Promise.all([
+  const [users, projects, tasks, assignments, checkpoints] = await Promise.all([
     readList<User>("users"),
     readList<Project>("projects"),
     readList<Task>("tasks"),
     readList<Assignment>("assignments"),
+    readList<Checkpoint>("checkpoints"),
   ]);
-  return { users, projects, tasks, assignments };
+  return { users, projects, tasks, assignments, checkpoints };
 }
 
 function download(name: string, value: unknown) {
@@ -200,7 +204,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       download(name, data[name]);
     },
     addUser: (input) => {
-      if (!data) return "Ledger is not ready.";
+      if (!data || sessionUser?.role !== "admin") return "Only an admin can add people.";
       const email = input.email.trim().toLowerCase();
       if (data.users.some((user) => user.email.toLowerCase() === email)) {
         return "That email is already on the ledger.";
@@ -212,19 +216,21 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       return null;
     },
     updateUser: (id, patch) => {
-      if (!data) return "Ledger is not ready.";
-      const email = patch.email?.trim().toLowerCase();
+      if (!data || !sessionUser) return "Ledger is not ready.";
+      if (sessionUser.role !== "admin" && id !== sessionUser.id) return "You can only edit your own account.";
+      const safe = sessionUser.role === "admin" ? patch : { ...patch, role: sessionUser.role };
+      const email = safe.email?.trim().toLowerCase();
       if (email && data.users.some((user) => user.id !== id && user.email.toLowerCase() === email)) {
         return "That email is already on the ledger.";
       }
       commit({
         ...data,
-        users: data.users.map((user) => (user.id === id ? { ...user, ...patch, email: email ?? user.email } : user)),
+        users: data.users.map((user) => (user.id === id ? { ...user, ...safe, email: email ?? user.email } : user)),
       });
       return null;
     },
     deleteUser: (id) => {
-      if (!data || !sessionUser || id === sessionUser.id) return;
+      if (!data || !sessionUser || sessionUser.role !== "admin" || id === sessionUser.id) return;
       commit({
         ...data,
         users: data.users.filter((user) => user.id !== id),
@@ -235,7 +241,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       });
     },
     addProject: (input) => {
-      if (!data) return;
+      if (!data || sessionUser?.role !== "admin") return;
       const id = nextId("p", data.projects.map((project) => project.id));
       const assignments = withMembership(
         [
@@ -253,10 +259,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         id,
         input.ownerId,
       );
-      commit({ ...data, projects: [...data.projects, { ...input, id }], assignments });
+      const checkpoints = [
+        ...data.checkpoints,
+        ...checkpointsForProject(id, data.checkpoints.map((item) => item.id)),
+      ];
+      commit({ ...data, projects: [...data.projects, { ...input, id }], assignments, checkpoints });
     },
     updateProject: (id, patch) => {
-      if (!data) return;
+      if (!data || sessionUser?.role !== "admin") return;
       const assignments =
         patch.ownerId !== undefined ? withMembership(data.assignments, id, patch.ownerId) : data.assignments;
       commit({
@@ -266,19 +276,21 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       });
     },
     deleteProject: (id) => {
-      if (!data) return;
+      if (!data || sessionUser?.role !== "admin") return;
       commit({
         ...data,
         projects: data.projects.filter((project) => project.id !== id),
         tasks: data.tasks.filter((task) => task.projectId !== id),
         assignments: data.assignments.filter((item) => item.projectId !== id),
+        checkpoints: data.checkpoints.filter((item) => item.projectId !== id),
       });
     },
     addTask: (input, assigneeIds) => {
-      if (!data || !sessionUser) return;
+      if (!data || !sessionUser || sessionUser.role === "reviewer") return;
+      const allowedIds = sessionUser.role === "admin" ? assigneeIds : [sessionUser.id];
       const id = nextId("t", data.tasks.map((task) => task.id));
       let assignments = data.assignments;
-      for (const userId of assigneeIds) {
+      for (const userId of allowedIds) {
         assignments = withMembership(assignments, input.projectId, userId);
         assignments = [
           ...assignments,
@@ -293,27 +305,36 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           },
         ];
       }
+      const checkpointIds = sessionUser.role === "admin" ? input.checkpointIds : [];
+      const chosen = new Set(checkpointIds);
       commit({
         ...data,
         assignments,
         tasks: [
-          ...data.tasks,
-          { ...input, id, createdBy: sessionUser.id, createdAt: todayISO() },
+          ...data.tasks.map((task) =>
+            chosen.size === 0 ? task : { ...task, checkpointIds: task.checkpointIds.filter((item) => !chosen.has(item)) },
+          ),
+          { ...input, checkpointIds, id, createdBy: sessionUser.id, createdAt: todayISO() },
         ],
       });
     },
     updateTask: (id, patch, assigneeIds) => {
-      if (!data) return;
+      if (!data || !sessionUser) return;
       const current = data.tasks.find((task) => task.id === id);
       if (!current) return;
-      const projectId = patch.projectId ?? current.projectId;
+      if (sessionUser.role !== "admin" && !holdsTask(data.assignments, id, sessionUser.id)) return;
+      const memberPatch = { ...patch };
+      delete memberPatch.checkpointIds;
+      const nextPatch = sessionUser.role === "reviewer" ? { status: patch.status ?? current.status } : sessionUser.role === "admin" ? patch : memberPatch;
+      const nextAssignees = sessionUser.role === "member" ? [sessionUser.id] : assigneeIds;
+      const projectId = nextPatch.projectId ?? current.projectId;
       let assignments = data.assignments.map((item) => (item.taskId === id ? { ...item, projectId } : item));
-      if (assigneeIds) {
+      if (nextAssignees) {
         const previous = assignments.filter((item) => item.kind === "task" && item.taskId === id);
         assignments = assignments.filter((item) => !(item.kind === "task" && item.taskId === id));
         const ordered = [
-          ...assigneeIds.filter((userId) => previous.some((item) => item.userId === userId)),
-          ...assigneeIds.filter((userId) => !previous.some((item) => item.userId === userId)),
+          ...nextAssignees.filter((userId) => previous.some((item) => item.userId === userId)),
+          ...nextAssignees.filter((userId) => !previous.some((item) => item.userId === userId)),
         ];
         for (const userId of ordered) {
           assignments = withMembership(assignments, projectId, userId);
@@ -332,14 +353,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           ];
         }
       }
+      const chosen = new Set(sessionUser.role === "admin" ? (patch.checkpointIds ?? []) : []);
       commit({
         ...data,
         assignments,
-        tasks: data.tasks.map((task) => (task.id === id ? { ...task, ...patch } : task)),
+        tasks: data.tasks.map((task) => {
+          if (task.id === id) return { ...task, ...nextPatch };
+          if (chosen.size === 0) return task;
+          return { ...task, checkpointIds: task.checkpointIds.filter((item) => !chosen.has(item)) };
+        }),
       });
     },
     deleteTask: (id) => {
-      if (!data) return;
+      if (!data || sessionUser?.role !== "admin") return;
       commit({
         ...data,
         tasks: data.tasks.filter((task) => task.id !== id),
@@ -347,7 +373,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       });
     },
     addAssignment: (input) => {
-      if (!data) return "Ledger is not ready.";
+      if (!data || sessionUser?.role !== "admin") return "Only an admin can change assignments.";
       const duplicate = data.assignments.some(
         (item) =>
           item.kind === input.kind &&
@@ -379,14 +405,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       return null;
     },
     updateAssignment: (id, role) => {
-      if (!data) return;
+      if (!data || sessionUser?.role !== "admin") return;
       commit({
         ...data,
         assignments: data.assignments.map((item) => (item.id === id ? { ...item, role } : item)),
       });
     },
     removeAssignment: (id) => {
-      if (!data) return;
+      if (!data || sessionUser?.role !== "admin") return;
       const target = data.assignments.find((item) => item.id === id);
       if (!target) return;
       let assignments = data.assignments.filter((item) => item.id !== id);

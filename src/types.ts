@@ -1,4 +1,4 @@
-export type Role = "admin" | "lead" | "member";
+export type Role = "admin" | "member" | "reviewer";
 export type UserStatus = "active" | "away";
 export type ProjectStatus = "planned" | "active" | "paused" | "done";
 export type TaskStatus = "backlog" | "todo" | "doing" | "review" | "done";
@@ -29,6 +29,17 @@ export interface Project {
   color: string;
 }
 
+export interface Checkpoint {
+  id: string;
+  projectId: string;
+  area: "Frontend" | "Backend";
+  phase: string;
+  group: string;
+  label: string;
+  state: "done" | "partial" | "open";
+  role: Role;
+}
+
 export interface Task {
   id: string;
   title: string;
@@ -39,6 +50,7 @@ export interface Task {
   dueDate: string;
   createdBy: string;
   createdAt: string;
+  checkpointIds: string[];
 }
 
 export interface Assignment {
@@ -56,6 +68,7 @@ export interface StoreData {
   projects: Project[];
   tasks: Task[];
   assignments: Assignment[];
+  checkpoints: Checkpoint[];
 }
 
-export type FileName = "users" | "projects" | "tasks" | "assignments";
+export type FileName = "users" | "projects" | "tasks" | "assignments" | "checkpoints";

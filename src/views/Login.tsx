@@ -5,7 +5,7 @@ import { useStore } from "../store";
 
 export function Login() {
   const { data, login } = useStore();
-  const [email, setEmail] = useState("mira@northline.local");
+  const [email, setEmail] = useState("shaqlin@northline.local");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
 

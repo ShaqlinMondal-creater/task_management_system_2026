@@ -305,7 +305,7 @@ body {
   line-height: 1;
 }
 
-.metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
 .metric { padding: 16px 18px; box-shadow: var(--shadow); }
 .metric span { color: var(--muted); font-size: 13px; display: flex; align-items: center; gap: 6px; font-weight: 600; }
 .metric .icon { width: 16px; height: 16px; color: var(--accent); }
@@ -494,6 +494,34 @@ textarea.control { resize: vertical; }
   .search { width: 100%; }
   .form-grid, .checks, .demo-grid, .member-list li { grid-template-columns: 1fr; }
 }
+
+.check-metrics { grid-template-columns: repeat(4, 1fr); }
+.check-note { margin: -4px 0 12px; }
+.check-group { margin-top: 12px; }
+.check-group h3 { font-size: 13px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.check-list { display: flex; flex-direction: column; }
+.check-item {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr) auto auto;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 0;
+  border-top: 1px solid var(--line);
+  font-size: 14px;
+}
+.check-item em { font-style: normal; font-size: 12px; font-weight: 700; color: var(--muted); }
+.check-task { font-size: 12px; color: var(--muted); }
+.task-points { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.task-points li { font-size: 12px; color: var(--muted); }
+.point-pick { display: flex; flex-direction: column; gap: 8px; max-height: 280px; overflow: auto; }
+.point-pick details { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; }
+.point-pick summary { cursor: pointer; font-weight: 700; }
+.check-mark { width: 10px; height: 10px; border-radius: 99px; background: #cbd5e1; }
+.state-done .check-mark { background: #16a34a; }
+.state-partial .check-mark { background: #d97706; }
+.state-done em { color: #15803d; }
+.state-partial em { color: #b45309; }
+.panel-head h2 { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
 
 @media (prefers-reduced-motion: reduce) {
   .loader-ring, .content { animation: none; }

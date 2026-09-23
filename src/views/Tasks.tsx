@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { DragEvent, FormEvent } from "react";
+import { scopeFor } from "../access";
 import { Avatar, Field, Icon, IdChip, Pill } from "../components/Bits";
 import { Confirm, Modal } from "../components/Modal";
 import { PRIORITIES, TASK_STATUSES, formatDate, isOverdue, label, matches, personName, taskLinks } from "../lib";
@@ -14,11 +15,12 @@ type Draft = {
   priority: Priority;
   dueDate: string;
   assigneeIds: string[];
+  checkpointIds: string[];
 };
 
 export function Tasks({ query }: { query: string }) {
   const store = useStore();
-  const { data } = store;
+  const { data, sessionUser } = store;
   const [projectFilter, setProjectFilter] = useState("all");
   const [personFilter, setPersonFilter] = useState("all");
   const [dragging, setDragging] = useState<string | null>(null);
@@ -27,12 +29,17 @@ export function Tasks({ query }: { query: string }) {
   const [draft, setDraft] = useState<Draft | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  if (!data) return null;
+  if (!data || !sessionUser) return null;
 
-  const visible = data.tasks.filter((task) => {
-    const project = data.projects.find((item) => item.id === task.projectId);
-    const people = taskLinks(data.assignments, task.id)
-      .map((link) => data.users.find((user) => user.id === link.userId))
+  const admin = sessionUser.role === "admin";
+  const reviewer = sessionUser.role === "reviewer";
+  const scoped = scopeFor(data, sessionUser);
+  const columns = reviewer ? (["review", "done"] as const) : TASK_STATUSES;
+
+  const visible = scoped.tasks.filter((task) => {
+    const project = scoped.projects.find((item) => item.id === task.projectId);
+    const people = taskLinks(scoped.assignments, task.id)
+      .map((link) => scoped.users.find((user) => user.id === link.userId))
       .filter((user) => user !== undefined);
     if (projectFilter !== "all" && task.projectId !== projectFilter) return false;
     if (personFilter === "open" && people.length > 0) return false;
@@ -44,11 +51,12 @@ export function Tasks({ query }: { query: string }) {
     setDraft({
       title: "",
       description: "",
-      projectId: projectFilter !== "all" ? projectFilter : (data.projects[0]?.id ?? ""),
+      projectId: projectFilter !== "all" ? projectFilter : (scoped.projects[0]?.id ?? ""),
       status,
       priority: "medium",
       dueDate: "",
       assigneeIds: [],
+      checkpointIds: [],
     });
     setError(null);
     setDialog({ mode: "create", status });
@@ -62,7 +70,8 @@ export function Tasks({ query }: { query: string }) {
       status: task.status,
       priority: task.priority,
       dueDate: task.dueDate,
-      assigneeIds: taskLinks(data.assignments, task.id).map((link) => link.userId),
+      assigneeIds: taskLinks(scoped.assignments, task.id).map((link) => link.userId),
+      checkpointIds: task.checkpointIds,
     });
     setError(null);
     setDialog({ mode: "edit", task });
@@ -82,9 +91,11 @@ export function Tasks({ query }: { query: string }) {
       status: draft.status,
       priority: draft.priority,
       dueDate: draft.dueDate,
+      checkpointIds: draft.checkpointIds,
     };
-    if (dialog?.mode === "edit") store.updateTask(dialog.task.id, payload, draft.assigneeIds);
-    else store.addTask(payload, draft.assigneeIds);
+    const assignees = admin ? draft.assigneeIds : [sessionUser.id];
+    if (dialog?.mode === "edit") store.updateTask(dialog.task.id, payload, assignees);
+    else store.addTask(payload, assignees);
     setDialog(null);
   };
 
@@ -99,40 +110,50 @@ export function Tasks({ query }: { query: string }) {
   return (
     <div className="stack">
       <div className="view-head">
-        <p>Drag a card to change its status. Assignees are assignment rows that point at the task id.</p>
-        <button type="button" className="btn primary" onClick={() => openCreate("todo")} disabled={data.projects.length === 0}>
-          <Icon name="plus" /> New task
-        </button>
+        <p>
+          {admin
+            ? "A task holds one checkpoint or several from the project list. Hand each task to a member or a reviewer."
+            : reviewer
+              ? "Your review tasks. Each one holds the checkpoints the admin gave you."
+              : "Your tasks only. Each one holds the checkpoints the admin gave you."}
+        </p>
+        {!reviewer && (
+          <button type="button" className="btn primary" onClick={() => openCreate("todo")} disabled={scoped.projects.length === 0}>
+            <Icon name="plus" /> New task
+          </button>
+        )}
       </div>
-      <div className="filters">
+      {!reviewer && <div className="filters">
         <label>
           Project
           <select className="control" value={projectFilter} onChange={(event) => setProjectFilter(event.target.value)}>
             <option value="all">All projects</option>
-            {data.projects.map((project) => (
+            {scoped.projects.map((project) => (
               <option key={project.id} value={project.id}>
                 {project.code} · {project.name}
               </option>
             ))}
           </select>
         </label>
-        <label>
-          Person
-          <select className="control" value={personFilter} onChange={(event) => setPersonFilter(event.target.value)}>
-            <option value="all">Anyone</option>
-            <option value="open">Unassigned</option>
-            {data.users.map((user) => (
-              <option key={user.id} value={user.id}>
-                {user.name}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
-      {data.projects.length === 0 && <p className="empty">Add a project before creating tasks.</p>}
+        {admin && (
+          <label>
+            Person
+            <select className="control" value={personFilter} onChange={(event) => setPersonFilter(event.target.value)}>
+              <option value="all">Anyone</option>
+              <option value="open">Unassigned</option>
+              {data.users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+      </div>}
+      {scoped.projects.length === 0 && <p className="empty">Add a project before creating tasks.</p>}
       <div className="board-wrap">
         <div className="board">
-          {TASK_STATUSES.map((status) => {
+          {columns.map((status) => {
             const column = visible.filter((task) => task.status === status);
             return (
               <section
@@ -148,13 +169,15 @@ export function Tasks({ query }: { query: string }) {
                 <header>
                   <h2>{label(status)}</h2>
                   <span>{column.length}</span>
-                  <button type="button" className="icon-btn" aria-label={`Add ${label(status)} task`} onClick={() => openCreate(status)}>
-                    +
-                  </button>
+                  {!reviewer && (
+                    <button type="button" className="icon-btn" aria-label={`Add ${label(status)} task`} onClick={() => openCreate(status)}>
+                      +
+                    </button>
+                  )}
                 </header>
                 {column.map((task) => {
-                  const project = data.projects.find((item) => item.id === task.projectId);
-                  const people = taskLinks(data.assignments, task.id);
+                  const project = scoped.projects.find((item) => item.id === task.projectId);
+                  const people = taskLinks(scoped.assignments, task.id);
                   const late = isOverdue(task.dueDate, task.status);
                   return (
                     <article
@@ -183,6 +206,12 @@ export function Tasks({ query }: { query: string }) {
                         <Pill value={task.priority} />
                       </div>
                       <h3>{task.title}</h3>
+                      <ul className="task-points">
+                        {task.checkpointIds.map((id) => {
+                          const point = data.checkpoints.find((item) => item.id === id);
+                          return <li key={id}>{point?.label ?? id}</li>;
+                        })}
+                      </ul>
                       <p className={late ? "muted overdue" : "muted"}>
                         {project?.code ?? task.projectId} · {formatDate(task.dueDate)}
                         {late ? " · overdue" : ""}
@@ -190,7 +219,7 @@ export function Tasks({ query }: { query: string }) {
                       <div className="avatar-row">
                         {people.length === 0 && <span className="muted">Unassigned</span>}
                         {people.map((link) => {
-                          const user = data.users.find((item) => item.id === link.userId);
+                          const user = scoped.users.find((item) => item.id === link.userId);
                           return user ? <Avatar key={link.id} id={user.id} name={user.name} /> : null;
                         })}
                       </div>
@@ -210,11 +239,11 @@ export function Tasks({ query }: { query: string }) {
         >
           <form className="form-grid" onSubmit={save}>
             <Field label="Title" wide>
-              <input className="control" value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} required />
+              <input className="control" value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} required disabled={reviewer} />
             </Field>
             <Field label="Project">
-              <select className="control" value={draft.projectId} onChange={(event) => setDraft({ ...draft, projectId: event.target.value })}>
-                {data.projects.map((project) => (
+              <select className="control" value={draft.projectId} onChange={(event) => setDraft({ ...draft, projectId: event.target.value })} disabled={reviewer}>
+                {scoped.projects.map((project) => (
                   <option key={project.id} value={project.id}>
                     {project.code} · {project.name} ({project.id})
                   </option>
@@ -223,7 +252,7 @@ export function Tasks({ query }: { query: string }) {
             </Field>
             <Field label="Status">
               <select className="control" value={draft.status} onChange={(event) => setDraft({ ...draft, status: event.target.value as TaskStatus })}>
-                {TASK_STATUSES.map((status) => (
+                {(reviewer ? (["review", "done"] as const) : TASK_STATUSES).map((status) => (
                   <option key={status} value={status}>
                     {label(status)}
                   </option>
@@ -231,7 +260,7 @@ export function Tasks({ query }: { query: string }) {
               </select>
             </Field>
             <Field label="Priority">
-              <select className="control" value={draft.priority} onChange={(event) => setDraft({ ...draft, priority: event.target.value as Priority })}>
+              <select className="control" value={draft.priority} onChange={(event) => setDraft({ ...draft, priority: event.target.value as Priority })} disabled={reviewer}>
                 {PRIORITIES.map((priority) => (
                   <option key={priority} value={priority}>
                     {label(priority)}
@@ -240,12 +269,55 @@ export function Tasks({ query }: { query: string }) {
               </select>
             </Field>
             <Field label="Due">
-              <input className="control" type="date" value={draft.dueDate} onChange={(event) => setDraft({ ...draft, dueDate: event.target.value })} required />
+              <input className="control" type="date" value={draft.dueDate} onChange={(event) => setDraft({ ...draft, dueDate: event.target.value })} required disabled={reviewer} />
             </Field>
             <Field label="Description" wide>
-              <textarea className="control" rows={3} value={draft.description} onChange={(event) => setDraft({ ...draft, description: event.target.value })} />
+              <textarea className="control" rows={3} value={draft.description} onChange={(event) => setDraft({ ...draft, description: event.target.value })} disabled={reviewer} />
             </Field>
-            <Field label="Assignees" wide>
+            <Field label="Checkpoints" wide>
+              {admin ? (
+                <div className="point-pick">
+                  {[...new Set(data.checkpoints.filter((item) => item.projectId === draft.projectId).map((item) => item.phase))].map((phase) => (
+                    <details key={phase} open={data.checkpoints.some((item) => item.phase === phase && draft.checkpointIds.includes(item.id))}>
+                      <summary>{phase}</summary>
+                      <div className="checks">
+                        {data.checkpoints
+                          .filter((item) => item.projectId === draft.projectId && item.phase === phase)
+                          .map((item) => {
+                            const checked = draft.checkpointIds.includes(item.id);
+                            const elsewhere = data.tasks.find((task) => (dialog.mode !== "edit" || task.id !== dialog.task.id) && task.checkpointIds.includes(item.id));
+                            return (
+                              <label key={item.id} className="check">
+                                <input
+                                  type="checkbox"
+                                  checked={checked}
+                                  onChange={() =>
+                                    setDraft({
+                                      ...draft,
+                                      checkpointIds: checked
+                                        ? draft.checkpointIds.filter((id) => id !== item.id)
+                                        : [...draft.checkpointIds, item.id],
+                                    })
+                                  }
+                                />
+                                {item.label}
+                                {elsewhere ? ` · on ${elsewhere.title}` : ""}
+                              </label>
+                            );
+                          })}
+                      </div>
+                    </details>
+                  ))}
+                </div>
+              ) : (
+                <ul className="task-points">
+                  {draft.checkpointIds.map((id) => (
+                    <li key={id}>{data.checkpoints.find((item) => item.id === id)?.label ?? id}</li>
+                  ))}
+                </ul>
+              )}
+            </Field>
+            {admin && <Field label="Assignees" wide>
               <div className="checks">
                 {data.users.map((user) => {
                   const checked = draft.assigneeIds.includes(user.id);
@@ -268,13 +340,13 @@ export function Tasks({ query }: { query: string }) {
                   );
                 })}
               </div>
-            </Field>
-            {dialog.mode === "edit" && (
+            </Field>}
+            {admin && dialog.mode === "edit" && (
               <p className="muted wide">Opened by {personName(data.users, dialog.task.createdBy)} on {formatDate(dialog.task.createdAt)}.</p>
             )}
             {error && <p className="form-error wide">{error}</p>}
             <div className="form-actions wide">
-              {dialog.mode === "edit" && (
+              {admin && dialog.mode === "edit" && (
                 <button
                   type="button"
                   className="btn danger"

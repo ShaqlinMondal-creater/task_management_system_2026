@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
+import { projectRole, scopeFor } from "../access";
 import { Field, Icon, IdChip, Pill } from "../components/Bits";
 import { Confirm, Modal } from "../components/Modal";
 import { COLORS, PROJECT_STATUSES, PRIORITIES, formatDate, label, matches, personName, projectLinks, suggestCode } from "../lib";
@@ -30,8 +31,10 @@ export function Projects({ query }: { query: string }) {
 
   if (!data || !sessionUser) return null;
 
-  const projects = data.projects.filter((project) =>
-    matches(query, [project.name, project.code, project.id, project.description, personName(data.users, project.ownerId)]),
+  const admin = sessionUser.role === "admin";
+  const scoped = scopeFor(data, sessionUser);
+  const projects = scoped.projects.filter((project) =>
+    matches(query, [project.name, project.code, project.id, project.description, admin ? personName(data.users, project.ownerId) : ""]),
   );
 
   const openCreate = () => {
@@ -65,16 +68,19 @@ export function Projects({ query }: { query: string }) {
   return (
     <div className="stack">
       <div className="view-head">
-        <p>Each project has an id, an owner, and a list of tasks that point back at it.</p>
-        <button type="button" className="btn primary" onClick={openCreate}>
-          <Icon name="plus" /> New project
-        </button>
+        <p>{admin ? "Each project has an id, an owner, and a list of tasks that point back at it." : "Your project. Other people stay hidden."}</p>
+        {admin && (
+          <button type="button" className="btn primary" onClick={openCreate}>
+            <Icon name="plus" /> New project
+          </button>
+        )}
       </div>
       {projects.length === 0 && <p className="empty">No projects yet. Add one and it will land in the working copy.</p>}
       <div className="project-grid">
         {projects.map((project) => {
-          const tasks = data.tasks.filter((task) => task.projectId === project.id);
-          const members = projectLinks(data.assignments, project.id);
+          const tasks = scoped.tasks.filter((task) => task.projectId === project.id);
+          const members = projectLinks(admin ? data.assignments : scoped.assignments, project.id);
+          const mine = projectRole(data.assignments, project, sessionUser.id);
           return (
             <article key={project.id} className="project-card">
               <span className="stripe" style={{ background: project.color }} />
@@ -88,20 +94,29 @@ export function Projects({ query }: { query: string }) {
                 <Pill value={project.status} />
               </div>
               <p className="clamp">{project.description}</p>
+              {admin && (
+                <p className="muted">
+                  Owner {personName(data.users, project.ownerId)} <IdChip id={project.ownerId} />
+                </p>
+              )}
               <p className="muted">
-                Owner {personName(data.users, project.ownerId)} <IdChip id={project.ownerId} />
-              </p>
-              <p className="muted">
-                {tasks.length} {tasks.length === 1 ? "task" : "tasks"} · {members.length} {members.length === 1 ? "person" : "people"} · {formatDate(project.startDate)} – {formatDate(project.dueDate)}
+                {tasks.length} {tasks.length === 1 ? "task" : "tasks"}
+                {admin ? ` · ${members.length} ${members.length === 1 ? "person" : "people"}` : mine ? ` · You are the ${label(mine)}` : ""}
+                {" · "}
+                {formatDate(project.startDate)} – {formatDate(project.dueDate)}
               </p>
               <div className="card-actions">
                 <Pill value={project.priority} />
-                <button type="button" className="btn ghost small" onClick={() => openEdit(project)}>
-                  Edit
-                </button>
-                <button type="button" className="btn danger small" onClick={() => setDialog({ mode: "delete", project })}>
-                  Remove
-                </button>
+                {admin && (
+                  <button type="button" className="btn ghost small" onClick={() => openEdit(project)}>
+                    Edit
+                  </button>
+                )}
+                {admin && (
+                  <button type="button" className="btn danger small" onClick={() => setDialog({ mode: "delete", project })}>
+                    Remove
+                  </button>
+                )}
               </div>
             </article>
           );

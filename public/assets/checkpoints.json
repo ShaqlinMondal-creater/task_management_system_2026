@@ -1,0 +1,2792 @@
+[
+  {
+    "id": "c01",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "1. Global layout",
+    "group": "Shell",
+    "label": "Responsive sidebar",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c02",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "1. Global layout",
+    "group": "Shell",
+    "label": "Mobile navigation / drawer",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c03",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "1. Global layout",
+    "group": "Shell",
+    "label": "Desktop navigation",
+    "state": "done",
+    "role": "admin"
+  },
+  {
+    "id": "c04",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "1. Global layout",
+    "group": "Shell",
+    "label": "Top navbar",
+    "state": "done",
+    "role": "admin"
+  },
+  {
+    "id": "c05",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "1. Global layout",
+    "group": "Shell",
+    "label": "Search",
+    "state": "done",
+    "role": "admin"
+  },
+  {
+    "id": "c06",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "1. Global layout",
+    "group": "Shell",
+    "label": "Consistent page container",
+    "state": "done",
+    "role": "admin"
+  },
+  {
+    "id": "c07",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "1. Global layout",
+    "group": "Shell",
+    "label": "Loading states",
+    "state": "done",
+    "role": "admin"
+  },
+  {
+    "id": "c08",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "1. Global layout",
+    "group": "Shell",
+    "label": "Empty states",
+    "state": "done",
+    "role": "admin"
+  },
+  {
+    "id": "c09",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "1. Global layout",
+    "group": "Shell",
+    "label": "Confirmation dialogs",
+    "state": "done",
+    "role": "admin"
+  },
+  {
+    "id": "c10",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "1. Global layout",
+    "group": "Shell",
+    "label": "User profile menu",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c11",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "1. Global layout",
+    "group": "Shell",
+    "label": "Error states",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c12",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "1. Global layout",
+    "group": "Shell",
+    "label": "Notification icon",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c13",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "1. Global layout",
+    "group": "Shell",
+    "label": "Breadcrumbs",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c14",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "1. Global layout",
+    "group": "Shell",
+    "label": "Toast notifications",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c15",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "1. Global layout",
+    "group": "Shell",
+    "label": "Skeleton loaders",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c16",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "2. Design system",
+    "group": "Reusable controls",
+    "label": "Button",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c17",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "2. Design system",
+    "group": "Reusable controls",
+    "label": "Input",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c18",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "2. Design system",
+    "group": "Reusable controls",
+    "label": "Select",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c19",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "2. Design system",
+    "group": "Reusable controls",
+    "label": "Modal",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c20",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "2. Design system",
+    "group": "Reusable controls",
+    "label": "Avatar",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c21",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "2. Design system",
+    "group": "Reusable controls",
+    "label": "Badge",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c22",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "2. Design system",
+    "group": "Reusable controls",
+    "label": "Card",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c23",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "2. Design system",
+    "group": "Reusable controls",
+    "label": "Status indicator",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c24",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "2. Design system",
+    "group": "Reusable controls",
+    "label": "Priority indicator",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c25",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "2. Design system",
+    "group": "Reusable controls",
+    "label": "Multi-select",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c26",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "2. Design system",
+    "group": "Reusable controls",
+    "label": "Date picker",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c27",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "2. Design system",
+    "group": "Reusable controls",
+    "label": "Drawer",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c28",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "2. Design system",
+    "group": "Reusable controls",
+    "label": "Dropdown",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c29",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "2. Design system",
+    "group": "Reusable controls",
+    "label": "Tabs",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c30",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "2. Design system",
+    "group": "Reusable controls",
+    "label": "Tooltip",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c31",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "2. Design system",
+    "group": "Reusable controls",
+    "label": "Pagination",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c32",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "2. Design system",
+    "group": "Reusable controls",
+    "label": "Table",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c33",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "3. Authentication",
+    "group": "Login",
+    "label": "Email / username",
+    "state": "done",
+    "role": "admin"
+  },
+  {
+    "id": "c34",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "3. Authentication",
+    "group": "Login",
+    "label": "Password",
+    "state": "done",
+    "role": "admin"
+  },
+  {
+    "id": "c35",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "3. Authentication",
+    "group": "Login",
+    "label": "Login validation",
+    "state": "done",
+    "role": "admin"
+  },
+  {
+    "id": "c36",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "3. Authentication",
+    "group": "Login",
+    "label": "Redirect after login",
+    "state": "done",
+    "role": "admin"
+  },
+  {
+    "id": "c37",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "3. Authentication",
+    "group": "Login",
+    "label": "Loading state",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c38",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "3. Authentication",
+    "group": "Login",
+    "label": "Show / hide password",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c39",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "3. Authentication",
+    "group": "Login",
+    "label": "Remember me",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c40",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "3. Authentication",
+    "group": "Login",
+    "label": "Forgot password",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c41",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "3. Authentication",
+    "group": "Login",
+    "label": "API error handling",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c42",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "3. Authentication",
+    "group": "Registration",
+    "label": "Name",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c43",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "3. Authentication",
+    "group": "Registration",
+    "label": "Email",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c44",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "3. Authentication",
+    "group": "Registration",
+    "label": "Mobile",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c45",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "3. Authentication",
+    "group": "Registration",
+    "label": "Password",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c46",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "3. Authentication",
+    "group": "Registration",
+    "label": "Confirm password",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c47",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "3. Authentication",
+    "group": "Registration",
+    "label": "Terms acceptance",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c48",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "3. Authentication",
+    "group": "Registration",
+    "label": "Validation",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c49",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "3. Authentication",
+    "group": "Registration",
+    "label": "Email verification",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c50",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "3. Authentication",
+    "group": "Password and session",
+    "label": "Forgot password",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c51",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "3. Authentication",
+    "group": "Password and session",
+    "label": "OTP / email verification",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c52",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "3. Authentication",
+    "group": "Password and session",
+    "label": "Reset password",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c53",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "3. Authentication",
+    "group": "Password and session",
+    "label": "Change password",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c54",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "3. Authentication",
+    "group": "Password and session",
+    "label": "Token handling",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c55",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "3. Authentication",
+    "group": "Password and session",
+    "label": "Automatic logout",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c56",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "3. Authentication",
+    "group": "Password and session",
+    "label": "Expired-session handling",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c57",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "3. Authentication",
+    "group": "Password and session",
+    "label": "Protected routes",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c58",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "4. Dashboard",
+    "group": "KPI cards",
+    "label": "Total projects",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c59",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "4. Dashboard",
+    "group": "KPI cards",
+    "label": "Total tasks",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c60",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "4. Dashboard",
+    "group": "KPI cards",
+    "label": "Pending tasks",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c61",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "4. Dashboard",
+    "group": "KPI cards",
+    "label": "In-progress tasks",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c62",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "4. Dashboard",
+    "group": "KPI cards",
+    "label": "Completed tasks",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c63",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "4. Dashboard",
+    "group": "KPI cards",
+    "label": "Overdue tasks",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c64",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "4. Dashboard",
+    "group": "KPI cards",
+    "label": "Tasks assigned to me",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c65",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "4. Dashboard",
+    "group": "Charts",
+    "label": "Tasks by status",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c66",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "4. Dashboard",
+    "group": "Charts",
+    "label": "Tasks by priority",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c67",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "4. Dashboard",
+    "group": "Charts",
+    "label": "Tasks completed over time",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c68",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "4. Dashboard",
+    "group": "Charts",
+    "label": "Project progress",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c69",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "4. Dashboard",
+    "group": "Charts",
+    "label": "Team workload",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c70",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "4. Dashboard",
+    "group": "Charts",
+    "label": "Overdue trends",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c71",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "4. Dashboard",
+    "group": "Quick actions and activity",
+    "label": "Create task",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c72",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "4. Dashboard",
+    "group": "Quick actions and activity",
+    "label": "Create project",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c73",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "4. Dashboard",
+    "group": "Quick actions and activity",
+    "label": "Invite member",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c74",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "4. Dashboard",
+    "group": "Quick actions and activity",
+    "label": "View my tasks",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c75",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "4. Dashboard",
+    "group": "Quick actions and activity",
+    "label": "Recent activity",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c76",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "4. Dashboard",
+    "group": "Quick actions and activity",
+    "label": "Recently completed",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c77",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "4. Dashboard",
+    "group": "Quick actions and activity",
+    "label": "Upcoming deadlines",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c78",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "5. Project management",
+    "group": "Project list",
+    "label": "Project cards",
+    "state": "done",
+    "role": "admin"
+  },
+  {
+    "id": "c79",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "5. Project management",
+    "group": "Project list",
+    "label": "Search",
+    "state": "done",
+    "role": "admin"
+  },
+  {
+    "id": "c80",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "5. Project management",
+    "group": "Project list",
+    "label": "Project status",
+    "state": "done",
+    "role": "admin"
+  },
+  {
+    "id": "c81",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "5. Project management",
+    "group": "Project list",
+    "label": "Owner",
+    "state": "done",
+    "role": "admin"
+  },
+  {
+    "id": "c82",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "5. Project management",
+    "group": "Project list",
+    "label": "Start date",
+    "state": "done",
+    "role": "admin"
+  },
+  {
+    "id": "c83",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "5. Project management",
+    "group": "Project list",
+    "label": "End date",
+    "state": "done",
+    "role": "admin"
+  },
+  {
+    "id": "c84",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "5. Project management",
+    "group": "Project list",
+    "label": "Progress",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c85",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "5. Project management",
+    "group": "Project list",
+    "label": "Table view",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c86",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "5. Project management",
+    "group": "Project list",
+    "label": "Filter",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c87",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "5. Project management",
+    "group": "Project list",
+    "label": "Sort",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c88",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "5. Project management",
+    "group": "Project list",
+    "label": "Pagination",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c89",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "5. Project management",
+    "group": "Create project",
+    "label": "Project name",
+    "state": "done",
+    "role": "admin"
+  },
+  {
+    "id": "c90",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "5. Project management",
+    "group": "Create project",
+    "label": "Description",
+    "state": "done",
+    "role": "admin"
+  },
+  {
+    "id": "c91",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "5. Project management",
+    "group": "Create project",
+    "label": "Project owner",
+    "state": "done",
+    "role": "admin"
+  },
+  {
+    "id": "c92",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "5. Project management",
+    "group": "Create project",
+    "label": "Start date",
+    "state": "done",
+    "role": "admin"
+  },
+  {
+    "id": "c93",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "5. Project management",
+    "group": "Create project",
+    "label": "End date",
+    "state": "done",
+    "role": "admin"
+  },
+  {
+    "id": "c94",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "5. Project management",
+    "group": "Create project",
+    "label": "Status",
+    "state": "done",
+    "role": "admin"
+  },
+  {
+    "id": "c95",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "5. Project management",
+    "group": "Create project",
+    "label": "Priority",
+    "state": "done",
+    "role": "admin"
+  },
+  {
+    "id": "c96",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "5. Project management",
+    "group": "Create project",
+    "label": "Project color",
+    "state": "done",
+    "role": "admin"
+  },
+  {
+    "id": "c97",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "5. Project management",
+    "group": "Create project",
+    "label": "Team members on the form",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c98",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "5. Project management",
+    "group": "Create project",
+    "label": "Project icon",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c99",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "5. Project management",
+    "group": "Project detail tabs",
+    "label": "Overview",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c100",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "5. Project management",
+    "group": "Project detail tabs",
+    "label": "Tasks",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c101",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "5. Project management",
+    "group": "Project detail tabs",
+    "label": "Board",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c102",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "5. Project management",
+    "group": "Project detail tabs",
+    "label": "Calendar",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c103",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "5. Project management",
+    "group": "Project detail tabs",
+    "label": "Members",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c104",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "5. Project management",
+    "group": "Project detail tabs",
+    "label": "Files",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c105",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "5. Project management",
+    "group": "Project detail tabs",
+    "label": "Activity",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c106",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "5. Project management",
+    "group": "Project detail tabs",
+    "label": "Settings",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c107",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "6. Task management",
+    "group": "Create task",
+    "label": "Task title",
+    "state": "done",
+    "role": "member"
+  },
+  {
+    "id": "c108",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "6. Task management",
+    "group": "Create task",
+    "label": "Description",
+    "state": "done",
+    "role": "member"
+  },
+  {
+    "id": "c109",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "6. Task management",
+    "group": "Create task",
+    "label": "Project",
+    "state": "done",
+    "role": "member"
+  },
+  {
+    "id": "c110",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "6. Task management",
+    "group": "Create task",
+    "label": "Assignee",
+    "state": "done",
+    "role": "member"
+  },
+  {
+    "id": "c111",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "6. Task management",
+    "group": "Create task",
+    "label": "Status",
+    "state": "done",
+    "role": "member"
+  },
+  {
+    "id": "c112",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "6. Task management",
+    "group": "Create task",
+    "label": "Priority",
+    "state": "done",
+    "role": "member"
+  },
+  {
+    "id": "c113",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "6. Task management",
+    "group": "Create task",
+    "label": "Due date",
+    "state": "done",
+    "role": "member"
+  },
+  {
+    "id": "c114",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "6. Task management",
+    "group": "Create task",
+    "label": "Creator",
+    "state": "partial",
+    "role": "member"
+  },
+  {
+    "id": "c115",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "6. Task management",
+    "group": "Create task",
+    "label": "Start date",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c116",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "6. Task management",
+    "group": "Create task",
+    "label": "Tags",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c117",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "6. Task management",
+    "group": "Create task",
+    "label": "Attachments",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c118",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "6. Task management",
+    "group": "Create task",
+    "label": "Estimated time",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c119",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "6. Task management",
+    "group": "Create task",
+    "label": "Actual time",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c120",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "6. Task management",
+    "group": "Create task",
+    "label": "Parent task",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c121",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "6. Task management",
+    "group": "Create task",
+    "label": "Checklist",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c122",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "6. Task management",
+    "group": "Statuses and priority",
+    "label": "TODO",
+    "state": "partial",
+    "role": "member"
+  },
+  {
+    "id": "c123",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "6. Task management",
+    "group": "Statuses and priority",
+    "label": "IN_PROGRESS",
+    "state": "partial",
+    "role": "member"
+  },
+  {
+    "id": "c124",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "6. Task management",
+    "group": "Statuses and priority",
+    "label": "DONE",
+    "state": "partial",
+    "role": "member"
+  },
+  {
+    "id": "c125",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "6. Task management",
+    "group": "Statuses and priority",
+    "label": "Custom statuses later",
+    "state": "partial",
+    "role": "member"
+  },
+  {
+    "id": "c126",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "6. Task management",
+    "group": "Statuses and priority",
+    "label": "IN_REVIEW",
+    "state": "partial",
+    "role": "reviewer"
+  },
+  {
+    "id": "c127",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "6. Task management",
+    "group": "Statuses and priority",
+    "label": "LOW",
+    "state": "done",
+    "role": "member"
+  },
+  {
+    "id": "c128",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "6. Task management",
+    "group": "Statuses and priority",
+    "label": "MEDIUM",
+    "state": "done",
+    "role": "member"
+  },
+  {
+    "id": "c129",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "6. Task management",
+    "group": "Statuses and priority",
+    "label": "HIGH",
+    "state": "done",
+    "role": "member"
+  },
+  {
+    "id": "c130",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "6. Task management",
+    "group": "Statuses and priority",
+    "label": "URGENT",
+    "state": "done",
+    "role": "member"
+  },
+  {
+    "id": "c131",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "6. Task management",
+    "group": "Task detail",
+    "label": "Detail drawer or page",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c132",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "6. Task management",
+    "group": "Task detail",
+    "label": "Checklist",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c133",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "6. Task management",
+    "group": "Task detail",
+    "label": "Attachments",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c134",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "6. Task management",
+    "group": "Task detail",
+    "label": "Comments",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c135",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "6. Task management",
+    "group": "Task detail",
+    "label": "Activity history",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c136",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "7. Subtasks and dependencies",
+    "group": "Subtasks",
+    "label": "Create subtask",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c137",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "7. Subtasks and dependencies",
+    "group": "Subtasks",
+    "label": "Assign subtask",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c138",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "7. Subtasks and dependencies",
+    "group": "Subtasks",
+    "label": "Due date",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c139",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "7. Subtasks and dependencies",
+    "group": "Subtasks",
+    "label": "Status",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c140",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "7. Subtasks and dependencies",
+    "group": "Subtasks",
+    "label": "Priority",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c141",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "7. Subtasks and dependencies",
+    "group": "Subtasks",
+    "label": "Progress",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c142",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "7. Subtasks and dependencies",
+    "group": "Subtasks",
+    "label": "Nested tree",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c143",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "7. Subtasks and dependencies",
+    "group": "Dependencies",
+    "label": "Blocked by",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c144",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "7. Subtasks and dependencies",
+    "group": "Dependencies",
+    "label": "Blocks",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c145",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "7. Subtasks and dependencies",
+    "group": "Dependencies",
+    "label": "Related task",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c146",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "8. Task views",
+    "group": "Required",
+    "label": "List view",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c147",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "8. Task views",
+    "group": "Required",
+    "label": "Calendar",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c148",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "8. Task views",
+    "group": "Required",
+    "label": "Kanban board",
+    "state": "done",
+    "role": "member"
+  },
+  {
+    "id": "c149",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "8. Task views",
+    "group": "Advanced",
+    "label": "Timeline",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c150",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "8. Task views",
+    "group": "Advanced",
+    "label": "Gantt",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c151",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "8. Task views",
+    "group": "Advanced",
+    "label": "Table",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c152",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "8. Task views",
+    "group": "Advanced",
+    "label": "Workload",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c153",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "9. Search and filters",
+    "group": "Search",
+    "label": "Global task search",
+    "state": "partial",
+    "role": "member"
+  },
+  {
+    "id": "c154",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "9. Search and filters",
+    "group": "Search",
+    "label": "Project search",
+    "state": "partial",
+    "role": "member"
+  },
+  {
+    "id": "c155",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "9. Search and filters",
+    "group": "Search",
+    "label": "User search",
+    "state": "partial",
+    "role": "member"
+  },
+  {
+    "id": "c156",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "9. Search and filters",
+    "group": "Search",
+    "label": "Search by title",
+    "state": "partial",
+    "role": "member"
+  },
+  {
+    "id": "c157",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "9. Search and filters",
+    "group": "Search",
+    "label": "Search by description",
+    "state": "partial",
+    "role": "member"
+  },
+  {
+    "id": "c158",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "9. Search and filters",
+    "group": "Filters and sort",
+    "label": "Assignee",
+    "state": "partial",
+    "role": "member"
+  },
+  {
+    "id": "c159",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "9. Search and filters",
+    "group": "Filters and sort",
+    "label": "Project",
+    "state": "partial",
+    "role": "member"
+  },
+  {
+    "id": "c160",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "9. Search and filters",
+    "group": "Filters and sort",
+    "label": "Status",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c161",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "9. Search and filters",
+    "group": "Filters and sort",
+    "label": "Priority",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c162",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "9. Search and filters",
+    "group": "Filters and sort",
+    "label": "Due date",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c163",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "9. Search and filters",
+    "group": "Filters and sort",
+    "label": "Created date",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c164",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "9. Search and filters",
+    "group": "Filters and sort",
+    "label": "Tags",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c165",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "9. Search and filters",
+    "group": "Filters and sort",
+    "label": "Creator",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c166",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "9. Search and filters",
+    "group": "Filters and sort",
+    "label": "Newest",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c167",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "9. Search and filters",
+    "group": "Filters and sort",
+    "label": "Oldest",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c168",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "9. Search and filters",
+    "group": "Filters and sort",
+    "label": "Due date sort",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c169",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "9. Search and filters",
+    "group": "Filters and sort",
+    "label": "Priority sort",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c170",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "9. Search and filters",
+    "group": "Filters and sort",
+    "label": "Updated",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c171",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "9. Search and filters",
+    "group": "Filters and sort",
+    "label": "Alphabetical",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c172",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "9. Search and filters",
+    "group": "Filters and sort",
+    "label": "Saved filters",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c173",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "9. Search and filters",
+    "group": "Filters and sort",
+    "label": "My overdue tasks",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c174",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "9. Search and filters",
+    "group": "Filters and sort",
+    "label": "High priority",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c175",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "9. Search and filters",
+    "group": "Filters and sort",
+    "label": "Due this week",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c176",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "9. Search and filters",
+    "group": "Filters and sort",
+    "label": "Unassigned",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c177",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "10. Team and collaboration",
+    "group": "Team",
+    "label": "Team list",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c178",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "10. Team and collaboration",
+    "group": "Team",
+    "label": "Assign role",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c179",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "10. Team and collaboration",
+    "group": "Team",
+    "label": "Member workload",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c180",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "10. Team and collaboration",
+    "group": "Team",
+    "label": "Invite member",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c181",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "10. Team and collaboration",
+    "group": "Team",
+    "label": "Remove member",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c182",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "10. Team and collaboration",
+    "group": "Team",
+    "label": "Member profile",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c183",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "10. Team and collaboration",
+    "group": "Comments and activity",
+    "label": "Add comment",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c184",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "10. Team and collaboration",
+    "group": "Comments and activity",
+    "label": "Edit comment",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c185",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "10. Team and collaboration",
+    "group": "Comments and activity",
+    "label": "Delete comment",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c186",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "10. Team and collaboration",
+    "group": "Comments and activity",
+    "label": "Reply",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c187",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "10. Team and collaboration",
+    "group": "Comments and activity",
+    "label": "@mention",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c188",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "10. Team and collaboration",
+    "group": "Comments and activity",
+    "label": "Comment timestamps",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c189",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "10. Team and collaboration",
+    "group": "Comments and activity",
+    "label": "Activity stream",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c190",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "11. Notifications",
+    "group": "In-app center",
+    "label": "Task assigned",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c191",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "11. Notifications",
+    "group": "In-app center",
+    "label": "Task mentioned",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c192",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "11. Notifications",
+    "group": "In-app center",
+    "label": "Comment",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c193",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "11. Notifications",
+    "group": "In-app center",
+    "label": "Due soon",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c194",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "11. Notifications",
+    "group": "In-app center",
+    "label": "Overdue",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c195",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "11. Notifications",
+    "group": "In-app center",
+    "label": "Project invitation",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c196",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "11. Notifications",
+    "group": "In-app center",
+    "label": "Task completed",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c197",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "11. Notifications",
+    "group": "In-app center",
+    "label": "Status changed",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c198",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "11. Notifications",
+    "group": "In-app center",
+    "label": "Email notifications",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c199",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "11. Notifications",
+    "group": "In-app center",
+    "label": "Push notifications",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c200",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "11. Notifications",
+    "group": "In-app center",
+    "label": "WhatsApp integration",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c201",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "12. Admin",
+    "group": "Sections",
+    "label": "Admin dashboard",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c202",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "12. Admin",
+    "group": "Sections",
+    "label": "Users",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c203",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "12. Admin",
+    "group": "Sections",
+    "label": "Roles",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c204",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "12. Admin",
+    "group": "Sections",
+    "label": "Projects",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c205",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "12. Admin",
+    "group": "Sections",
+    "label": "Tasks",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c206",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "12. Admin",
+    "group": "Sections",
+    "label": "Activity logs",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c207",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "12. Admin",
+    "group": "Sections",
+    "label": "Settings",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c208",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "12. Admin",
+    "group": "Sections",
+    "label": "System",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c209",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "12. Admin",
+    "group": "Users and roles",
+    "label": "User list",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c210",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "12. Admin",
+    "group": "Users and roles",
+    "label": "Search",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c211",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "12. Admin",
+    "group": "Users and roles",
+    "label": "Create",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c212",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "12. Admin",
+    "group": "Users and roles",
+    "label": "Edit",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c213",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "12. Admin",
+    "group": "Users and roles",
+    "label": "Delete",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c214",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "12. Admin",
+    "group": "Users and roles",
+    "label": "Assign role",
+    "state": "partial",
+    "role": "admin"
+  },
+  {
+    "id": "c215",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "12. Admin",
+    "group": "Users and roles",
+    "label": "Filter",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c216",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "12. Admin",
+    "group": "Users and roles",
+    "label": "Activate / deactivate",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c217",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "12. Admin",
+    "group": "Users and roles",
+    "label": "Admin",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c218",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "12. Admin",
+    "group": "Users and roles",
+    "label": "Manager",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c219",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "12. Admin",
+    "group": "Users and roles",
+    "label": "Member",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c220",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "12. Admin",
+    "group": "Users and roles",
+    "label": "Viewer",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c221",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "13. Profile and settings",
+    "group": "Profile",
+    "label": "Name",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c222",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "13. Profile and settings",
+    "group": "Profile",
+    "label": "Profile image",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c223",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "13. Profile and settings",
+    "group": "Profile",
+    "label": "Email",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c224",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "13. Profile and settings",
+    "group": "Profile",
+    "label": "Mobile",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c225",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "13. Profile and settings",
+    "group": "Profile",
+    "label": "Bio",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c226",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "13. Profile and settings",
+    "group": "Profile",
+    "label": "Password",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c227",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "13. Profile and settings",
+    "group": "Settings",
+    "label": "Account",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c228",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "13. Profile and settings",
+    "group": "Settings",
+    "label": "Notifications",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c229",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "13. Profile and settings",
+    "group": "Settings",
+    "label": "Appearance",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c230",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "13. Profile and settings",
+    "group": "Settings",
+    "label": "Language",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c231",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "13. Profile and settings",
+    "group": "Settings",
+    "label": "Timezone",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c232",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "13. Profile and settings",
+    "group": "Settings",
+    "label": "Security",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c233",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "13. Profile and settings",
+    "group": "Settings",
+    "label": "Dark / light mode",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c234",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "13. Profile and settings",
+    "group": "Settings",
+    "label": "Custom theme",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c235",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "13. Profile and settings",
+    "group": "Settings",
+    "label": "Two-factor authentication",
+    "state": "open",
+    "role": "member"
+  },
+  {
+    "id": "c236",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "14. Reporting",
+    "group": "Analytics",
+    "label": "Completion %",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c237",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "14. Reporting",
+    "group": "Analytics",
+    "label": "Total tasks",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c238",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "14. Reporting",
+    "group": "Analytics",
+    "label": "Completed",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c239",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "14. Reporting",
+    "group": "Analytics",
+    "label": "Pending",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c240",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "14. Reporting",
+    "group": "Analytics",
+    "label": "Overdue",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c241",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "14. Reporting",
+    "group": "Analytics",
+    "label": "Average completion time",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c242",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "14. Reporting",
+    "group": "Analytics",
+    "label": "Tasks per member",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c243",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "14. Reporting",
+    "group": "Analytics",
+    "label": "Completed per member",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c244",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "14. Reporting",
+    "group": "Analytics",
+    "label": "Overdue per member",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c245",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "14. Reporting",
+    "group": "Analytics",
+    "label": "Workload",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c246",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "14. Reporting",
+    "group": "Analytics",
+    "label": "Task completion chart",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c247",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "14. Reporting",
+    "group": "Analytics",
+    "label": "Task distribution",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c248",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "14. Reporting",
+    "group": "Analytics",
+    "label": "Project progress",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c249",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "14. Reporting",
+    "group": "Analytics",
+    "label": "Team workload chart",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c250",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "15. Quality checkpoint",
+    "group": "Responsive, UX, performance",
+    "label": "320px",
+    "state": "open",
+    "role": "reviewer"
+  },
+  {
+    "id": "c251",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "15. Quality checkpoint",
+    "group": "Responsive, UX, performance",
+    "label": "375px",
+    "state": "open",
+    "role": "reviewer"
+  },
+  {
+    "id": "c252",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "15. Quality checkpoint",
+    "group": "Responsive, UX, performance",
+    "label": "390px",
+    "state": "open",
+    "role": "reviewer"
+  },
+  {
+    "id": "c253",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "15. Quality checkpoint",
+    "group": "Responsive, UX, performance",
+    "label": "430px",
+    "state": "open",
+    "role": "reviewer"
+  },
+  {
+    "id": "c254",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "15. Quality checkpoint",
+    "group": "Responsive, UX, performance",
+    "label": "Tablet",
+    "state": "open",
+    "role": "reviewer"
+  },
+  {
+    "id": "c255",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "15. Quality checkpoint",
+    "group": "Responsive, UX, performance",
+    "label": "Laptop",
+    "state": "open",
+    "role": "reviewer"
+  },
+  {
+    "id": "c256",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "15. Quality checkpoint",
+    "group": "Responsive, UX, performance",
+    "label": "Desktop",
+    "state": "open",
+    "role": "reviewer"
+  },
+  {
+    "id": "c257",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "15. Quality checkpoint",
+    "group": "Responsive, UX, performance",
+    "label": "Large desktop",
+    "state": "open",
+    "role": "reviewer"
+  },
+  {
+    "id": "c258",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "15. Quality checkpoint",
+    "group": "Responsive, UX, performance",
+    "label": "No dead buttons",
+    "state": "open",
+    "role": "reviewer"
+  },
+  {
+    "id": "c259",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "15. Quality checkpoint",
+    "group": "Responsive, UX, performance",
+    "label": "No fake data",
+    "state": "open",
+    "role": "reviewer"
+  },
+  {
+    "id": "c260",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "15. Quality checkpoint",
+    "group": "Responsive, UX, performance",
+    "label": "No broken links",
+    "state": "open",
+    "role": "reviewer"
+  },
+  {
+    "id": "c261",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "15. Quality checkpoint",
+    "group": "Responsive, UX, performance",
+    "label": "Proper loading",
+    "state": "open",
+    "role": "reviewer"
+  },
+  {
+    "id": "c262",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "15. Quality checkpoint",
+    "group": "Responsive, UX, performance",
+    "label": "Proper errors",
+    "state": "open",
+    "role": "reviewer"
+  },
+  {
+    "id": "c263",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "15. Quality checkpoint",
+    "group": "Responsive, UX, performance",
+    "label": "Proper empty states",
+    "state": "open",
+    "role": "reviewer"
+  },
+  {
+    "id": "c264",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "15. Quality checkpoint",
+    "group": "Responsive, UX, performance",
+    "label": "Keyboard accessibility",
+    "state": "open",
+    "role": "reviewer"
+  },
+  {
+    "id": "c265",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "15. Quality checkpoint",
+    "group": "Responsive, UX, performance",
+    "label": "Focus states",
+    "state": "open",
+    "role": "reviewer"
+  },
+  {
+    "id": "c266",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "15. Quality checkpoint",
+    "group": "Responsive, UX, performance",
+    "label": "Confirmation before destructive actions",
+    "state": "open",
+    "role": "reviewer"
+  },
+  {
+    "id": "c267",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "15. Quality checkpoint",
+    "group": "Responsive, UX, performance",
+    "label": "Lazy loading",
+    "state": "open",
+    "role": "reviewer"
+  },
+  {
+    "id": "c268",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "15. Quality checkpoint",
+    "group": "Responsive, UX, performance",
+    "label": "Code splitting",
+    "state": "open",
+    "role": "reviewer"
+  },
+  {
+    "id": "c269",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "15. Quality checkpoint",
+    "group": "Responsive, UX, performance",
+    "label": "Image optimization",
+    "state": "open",
+    "role": "reviewer"
+  },
+  {
+    "id": "c270",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "15. Quality checkpoint",
+    "group": "Responsive, UX, performance",
+    "label": "API caching",
+    "state": "open",
+    "role": "reviewer"
+  },
+  {
+    "id": "c271",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "15. Quality checkpoint",
+    "group": "Responsive, UX, performance",
+    "label": "Debounced search",
+    "state": "open",
+    "role": "reviewer"
+  },
+  {
+    "id": "c272",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "15. Quality checkpoint",
+    "group": "Responsive, UX, performance",
+    "label": "Pagination / infinite scrolling",
+    "state": "open",
+    "role": "reviewer"
+  },
+  {
+    "id": "c273",
+    "projectId": "p01",
+    "area": "Frontend",
+    "phase": "15. Quality checkpoint",
+    "group": "Responsive, UX, performance",
+    "label": "Avoid unnecessary re-renders",
+    "state": "open",
+    "role": "reviewer"
+  },
+  {
+    "id": "c274",
+    "projectId": "p01",
+    "area": "Backend",
+    "phase": "Backend",
+    "group": "Not started",
+    "label": "API",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c275",
+    "projectId": "p01",
+    "area": "Backend",
+    "phase": "Backend",
+    "group": "Not started",
+    "label": "Database",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c276",
+    "projectId": "p01",
+    "area": "Backend",
+    "phase": "Backend",
+    "group": "Not started",
+    "label": "Auth tokens",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c277",
+    "projectId": "p01",
+    "area": "Backend",
+    "phase": "Backend",
+    "group": "Not started",
+    "label": "Roles on the server",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c278",
+    "projectId": "p01",
+    "area": "Backend",
+    "phase": "Backend",
+    "group": "Not started",
+    "label": "File storage",
+    "state": "open",
+    "role": "admin"
+  },
+  {
+    "id": "c279",
+    "projectId": "p01",
+    "area": "Backend",
+    "phase": "Backend",
+    "group": "Not started",
+    "label": "Notification delivery",
+    "state": "open",
+    "role": "admin"
+  }
+]

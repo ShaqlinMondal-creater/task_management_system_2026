@@ -1,28 +1,30 @@
 import { useState } from "react";
 import { Avatar, Icon, Loader, Mark } from "./components/Bits";
 import type { IconName } from "./components/Bits";
-import { greeting, openTasks } from "./lib";
+import { scopeFor, viewsFor } from "./access";
+import type { ViewId } from "./access";
+import { greeting, label, openTasks } from "./lib";
 import { StoreProvider, useStore } from "./store";
 import { Assignments } from "./views/Assignments";
+import { Checkpoints } from "./views/Checkpoints";
 import { Desk } from "./views/Desk";
 import { Login } from "./views/Login";
 import { People } from "./views/People";
 import { Projects } from "./views/Projects";
 import { Tasks } from "./views/Tasks";
 
-type View = "desk" | "projects" | "tasks" | "people" | "assign";
-
-const NAV: { id: View; label: string; icon: IconName }[] = [
+const NAV: { id: ViewId; label: string; icon: IconName }[] = [
   { id: "desk", label: "Desk", icon: "desk" },
   { id: "projects", label: "Projects", icon: "projects" },
   { id: "tasks", label: "Tasks", icon: "tasks" },
   { id: "people", label: "People", icon: "people" },
   { id: "assign", label: "Assignments", icon: "assign" },
+  { id: "checks", label: "Checkpoints", icon: "check" },
 ];
 
 function Shell() {
   const store = useStore();
-  const [view, setView] = useState<View>("desk");
+  const [view, setView] = useState<ViewId>("desk");
   const [query, setQuery] = useState("");
 
   if (store.loading) return <Loader label="Opening the desk" />;
@@ -38,14 +40,19 @@ function Shell() {
   if (!store.sessionUser) return <Login />;
 
   const user = store.sessionUser;
-  const counts: Record<View, number> = {
-    desk: openTasks(store.data.tasks).length,
-    projects: store.data.projects.length,
-    tasks: store.data.tasks.length,
-    people: store.data.users.length,
-    assign: store.data.assignments.length,
+  const allowed = viewsFor(user.role);
+  const nav = NAV.filter((item) => allowed.includes(item.id));
+  const active = allowed.includes(view) ? view : "desk";
+  const scoped = scopeFor(store.data, user);
+  const counts: Record<ViewId, number> = {
+    desk: openTasks(scoped.tasks).length,
+    projects: scoped.projects.length,
+    tasks: scoped.tasks.length,
+    people: scoped.users.length,
+    assign: scoped.assignments.length,
+    checks: store.data.checkpoints.length,
   };
-  const heading = view === "desk" ? `${greeting()}, ${user.name.split(" ")[0]}` : NAV.find((item) => item.id === view)?.label;
+  const heading = active === "desk" ? `${greeting()}, ${user.name.split(" ")[0]}` : nav.find((item) => item.id === active)?.label;
 
   return (
     <div className="app">
@@ -58,8 +65,8 @@ function Shell() {
           </div>
         </div>
         <nav className="nav">
-          {NAV.map((item) => (
-            <button key={item.id} type="button" className="nav-btn" aria-current={view === item.id ? "page" : undefined} onClick={() => setView(item.id)}>
+          {nav.map((item) => (
+            <button key={item.id} type="button" className="nav-btn" aria-current={active === item.id ? "page" : undefined} onClick={() => setView(item.id)}>
               <Icon name={item.icon} />
               <span className="nav-label">{item.label}</span>
               <span className="nav-count">{counts[item.id]}</span>
@@ -70,14 +77,14 @@ function Shell() {
           <Avatar name={user.name} id={user.id} />
           <div>
             <strong>{user.name}</strong>
-            <span>{user.title}</span>
+            <span>{label(user.role)}</span>
           </div>
         </div>
       </aside>
       <div className="main">
         <header className="topbar">
           <div>
-            <p className="eyebrow">{NAV.find((item) => item.id === view)?.label}</p>
+            <p className="eyebrow">{nav.find((item) => item.id === active)?.label}</p>
             <h1>{heading}</h1>
           </div>
           <div className="top-actions">
@@ -87,11 +94,11 @@ function Shell() {
                 className="search"
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search names, titles, ids"
+                placeholder={user.role === "admin" ? "Search names, titles, ids" : "Search your tasks"}
                 aria-label="Search the ledger"
               />
             </label>
-            <details className="filemenu">
+            {user.role === "admin" && <details className="filemenu">
               <summary>
                 <Icon name="download" />
                 {store.usingLocal ? "Working copy" : "JSON files"}
@@ -110,11 +117,14 @@ function Shell() {
                 <button type="button" onClick={() => store.exportFile("assignments")}>
                   <Icon name="download" /> assignments.json
                 </button>
+                <button type="button" onClick={() => store.exportFile("checkpoints")}>
+                  <Icon name="download" /> checkpoints.json
+                </button>
                 <button type="button" onClick={() => void store.resetSeed()}>
                   <Icon name="refresh" /> Reload seed
                 </button>
               </div>
-            </details>
+            </details>}
             <button type="button" className="btn ghost" onClick={store.logout}>
               <Icon name="logout" />
               Sign out
@@ -122,15 +132,16 @@ function Shell() {
           </div>
         </header>
         {store.error && <p className="banner">{store.error}</p>}
-        {store.usingLocal && (
+        {user.role === "admin" && store.usingLocal && (
           <p className="banner">This browser is using your working copy. The files in public/assets are still the original seed.</p>
         )}
         <div className="content">
-          {view === "desk" && <Desk query={query} />}
-          {view === "projects" && <Projects query={query} />}
-          {view === "tasks" && <Tasks query={query} />}
-          {view === "people" && <People query={query} />}
-          {view === "assign" && <Assignments query={query} />}
+          {active === "desk" && <Desk query={query} />}
+          {active === "projects" && <Projects query={query} />}
+          {active === "tasks" && <Tasks query={query} />}
+          {active === "people" && <People query={query} />}
+          {active === "assign" && <Assignments query={query} />}
+          {active === "checks" && <Checkpoints query={query} />}
         </div>
       </div>
     </div>

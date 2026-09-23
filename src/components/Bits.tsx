@@ -14,6 +14,7 @@ export type IconName =
   | "logout"
   | "enter"
   | "close"
+  | "check"
   | "alert";
 
 const ICONS: Record<IconName, ReactNode> = {
@@ -87,6 +88,16 @@ const ICONS: Record<IconName, ReactNode> = {
       <circle cx="12" cy="12" r="8" />
       <path d="M12 8v4.5" />
       <path d="M12 16h.01" />
+    </>
+  ),
+  check: (
+    <>
+      <path d="M9 6h11" />
+      <path d="M9 12h11" />
+      <path d="M9 18h11" />
+      <path d="M4.5 6h.01" />
+      <path d="M4.5 12h.01" />
+      <path d="M4.5 18h.01" />
     </>
   ),
 };

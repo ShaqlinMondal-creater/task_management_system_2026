@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
+import { scopeFor } from "../access";
 import { Avatar, Field, Icon, IdChip, Pill } from "../components/Bits";
 import { Confirm, Modal } from "../components/Modal";
 import { USER_ROLES, label, matches, taskLinks } from "../lib";
@@ -27,7 +28,8 @@ export function People({ query }: { query: string }) {
 
   if (!data || !sessionUser) return null;
 
-  const people = data.users.filter((user) =>
+  const admin = sessionUser.role === "admin";
+  const people = scopeFor(data, sessionUser).users.filter((user) =>
     matches(query, [user.name, user.email, user.id, user.title, user.department, user.role]),
   );
 
@@ -76,10 +78,18 @@ export function People({ query }: { query: string }) {
   return (
     <div className="stack">
       <div className="view-head">
-        <p>People live in users.json. Their id is what projects and assignments point at.</p>
-        <button type="button" className="btn primary" onClick={openCreate}>
-          <Icon name="plus" /> New person
-        </button>
+        <p>
+          {admin
+            ? "Everyone on Northline. Only an admin sees the full list."
+            : sessionUser.role === "reviewer"
+              ? "Your review account. Other people stay hidden."
+              : "Your account. Other people stay hidden."}
+        </p>
+        {admin && (
+          <button type="button" className="btn primary" onClick={openCreate}>
+            <Icon name="plus" /> New person
+          </button>
+        )}
       </div>
       {people.length === 0 && <p className="empty">No one matches that search.</p>}
       <div className="people-grid">
@@ -107,14 +117,16 @@ export function People({ query }: { query: string }) {
                 <button type="button" className="btn ghost small" onClick={() => openEdit(user)}>
                   Edit
                 </button>
-                <button
-                  type="button"
-                  className="btn danger small"
-                  disabled={user.id === sessionUser.id}
-                  onClick={() => setDialog({ mode: "delete", user })}
-                >
-                  {user.id === sessionUser.id ? "Signed in" : "Remove"}
-                </button>
+                {admin && (
+                  <button
+                    type="button"
+                    className="btn danger small"
+                    disabled={user.id === sessionUser.id}
+                    onClick={() => setDialog({ mode: "delete", user })}
+                  >
+                    {user.id === sessionUser.id ? "Signed in" : "Remove"}
+                  </button>
+                )}
               </div>
             </article>
           );
@@ -137,7 +149,7 @@ export function People({ query }: { query: string }) {
               <input className="control" value={draft.department} onChange={(event) => setDraft({ ...draft, department: event.target.value })} />
             </Field>
             <Field label="Role">
-              <select className="control" value={draft.role} onChange={(event) => setDraft({ ...draft, role: event.target.value as Role })}>
+              <select className="control" value={draft.role} disabled={!admin} onChange={(event) => setDraft({ ...draft, role: event.target.value as Role })}>
                 {USER_ROLES.map((role) => (
                   <option key={role} value={role}>
                     {label(role)}
