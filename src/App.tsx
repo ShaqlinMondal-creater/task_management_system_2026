@@ -14,7 +14,7 @@ import { Projects } from "./views/Projects";
 import { Tasks } from "./views/Tasks";
 
 const NAV: { id: ViewId; label: string; icon: IconName }[] = [
-  { id: "desk", label: "Desk", icon: "desk" },
+  { id: "desk", label: "Dashboard", icon: "desk" },
   { id: "projects", label: "Projects", icon: "projects" },
   { id: "tasks", label: "Tasks", icon: "tasks" },
   { id: "people", label: "People", icon: "people" },
@@ -136,7 +136,7 @@ function Shell() {
           <p className="banner">This browser is using your working copy. The files in public/assets are still the original seed.</p>
         )}
         <div className="content">
-          {active === "desk" && <Desk query={query} />}
+          {active === "desk" && <Desk query={query} onOpen={setView} />}
           {active === "projects" && <Projects query={query} />}
           {active === "tasks" && <Tasks query={query} />}
           {active === "people" && <People query={query} />}
