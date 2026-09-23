@@ -158,7 +158,7 @@ export function Tasks({ query }: { query: string }) {
             return (
               <section
                 key={status}
-                className={over === status ? "column over" : "column"}
+                className={over === status ? `column column-${status} over` : `column column-${status}`}
                 onDragOver={(event) => {
                   event.preventDefault();
                   setOver(status);
@@ -207,10 +207,11 @@ export function Tasks({ query }: { query: string }) {
                       </div>
                       <h3>{task.title}</h3>
                       <ul className="task-points">
-                        {task.checkpointIds.map((id) => {
+                        {task.checkpointIds.slice(0, 3).map((id) => {
                           const point = data.checkpoints.find((item) => item.id === id);
                           return <li key={id}>{point?.label ?? id}</li>;
                         })}
+                        {task.checkpointIds.length > 3 && <li className="more">+{task.checkpointIds.length - 3}</li>}
                       </ul>
                       <p className={late ? "muted overdue" : "muted"}>
                         {project?.code ?? task.projectId} · {formatDate(task.dueDate)}

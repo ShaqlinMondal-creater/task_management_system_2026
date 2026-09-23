@@ -103,7 +103,7 @@ export function Checkpoints({ query }: { query: string }) {
                   <li key={item.id} className={`check-item state-${item.state}`}>
                     <span className="check-mark" aria-hidden="true" />
                     <span>{item.label}</span>
-                    <span className="check-task">{holder(item)}</span>
+                    <span className={taskOf(item.id) ? "hold hold-task" : "hold hold-admin"}>{holder(item)}</span>
                     <em>{STATE_LABEL[item.state]}</em>
                   </li>
                 ))}
