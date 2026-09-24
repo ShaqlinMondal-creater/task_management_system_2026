@@ -10,10 +10,19 @@ export interface User {
   name: string;
   email: string;
   password: string;
+  mobile?: string;
   role: Role;
   title: string;
   department: string;
   status: UserStatus;
+}
+
+export interface ProjectCredential {
+  id: string;
+  label: string;
+  username: string;
+  secret: string;
+  url: string;
 }
 
 export interface Project {
@@ -27,6 +36,9 @@ export interface Project {
   dueDate: string;
   ownerId: string;
   color: string;
+  icon?: string;
+  credentials?: ProjectCredential[];
+  notes?: string;
 }
 
 export interface Checkpoint {
@@ -38,6 +50,23 @@ export interface Checkpoint {
   label: string;
   state: "done" | "partial" | "open";
   role: Role;
+  doneAt?: string | null;
+  details?: string;
+  link?: string;
+  photo?: string;
+}
+
+export interface TaskFile {
+  id: string;
+  name: string;
+  url: string;
+}
+
+export interface TaskComment {
+  id: string;
+  userId: string;
+  body: string;
+  at: string;
 }
 
 export interface Task {
@@ -48,9 +77,19 @@ export interface Task {
   status: TaskStatus;
   priority: Priority;
   dueDate: string;
+  startDate?: string;
   createdBy: string;
   createdAt: string;
+  updatedAt?: string | null;
+  doneAt?: string | null;
   checkpointIds: string[];
+  tags?: string[];
+  attachments?: TaskFile[];
+  estimate?: string;
+  actual?: string;
+  parentId?: string | null;
+  customStatus?: string;
+  comments?: TaskComment[];
 }
 
 export interface Assignment {

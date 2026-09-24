@@ -52,15 +52,28 @@ export function todayISO() {
   return `${d.getFullYear()}-${m}-${day}`;
 }
 
+export function nowStamp() {
+  const d = new Date();
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
 export function formatDate(iso: string) {
   if (!iso) return "No date";
-  const [y, m, d] = iso.split("-").map(Number);
+  const [y, m, d] = iso.split("T")[0].split("-").map(Number);
   if (!y || !m || !d) return iso;
   return new Date(y, m - 1, d).toLocaleDateString("en-GB", {
     day: "numeric",
     month: "short",
     year: "numeric",
   });
+}
+
+export function formatWhen(iso?: string | null) {
+  if (!iso) return "";
+  const [date, time] = iso.split("T");
+  const formatted = formatDate(date);
+  return time ? `${formatted}, ${time}` : formatted;
 }
 
 export function isOverdue(iso: string, status: string) {

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { ReactNode } from "react";
 import { hue, initials, label } from "../lib";
 
@@ -15,7 +16,10 @@ export type IconName =
   | "enter"
   | "close"
   | "check"
-  | "alert";
+  | "alert"
+  | "bell"
+  | "menu"
+  | "chevron";
 
 const ICONS: Record<IconName, ReactNode> = {
   desk: (
@@ -100,6 +104,20 @@ const ICONS: Record<IconName, ReactNode> = {
       <path d="M4.5 18h.01" />
     </>
   ),
+  bell: (
+    <>
+      <path d="M6.2 16.2h11.6l-1.1-1.8V11a4.7 4.7 0 0 0-9.4 0v3.4l-1.1 1.8z" />
+      <path d="M10 16.4a2 2 0 0 0 4 0" />
+    </>
+  ),
+  menu: (
+    <>
+      <path d="M4 7h16" />
+      <path d="M4 12h16" />
+      <path d="M4 17h16" />
+    </>
+  ),
+  chevron: <path d="M6 9l6 6 6-6" />,
 };
 
 export function Icon({ name }: { name: IconName }) {
@@ -141,6 +159,65 @@ export function Pill({ value }: { value: string }) {
 
 export function IdChip({ id }: { id: string }) {
   return <span className="idchip">{id}</span>;
+}
+
+export function SearchSelect({
+  value,
+  onChange,
+  options,
+  placeholder,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  options: { value: string; label: string }[];
+  placeholder?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [text, setText] = useState("");
+  const selected = options.find((item) => item.value === value);
+  const query = text.trim().toLowerCase();
+  const shown = options.filter((item) => item.label.toLowerCase().includes(query));
+
+  return (
+    <div className="search-select">
+      <input
+        className="control"
+        role="combobox"
+        aria-expanded={open}
+        value={open ? text : (selected?.label ?? "")}
+        placeholder={placeholder ?? "Search"}
+        onFocus={() => {
+          setOpen(true);
+          setText("");
+        }}
+        onChange={(event) => {
+          setText(event.target.value);
+          setOpen(true);
+        }}
+        onBlur={() => window.setTimeout(() => setOpen(false), 120)}
+      />
+      {open && (
+        <ul className="search-select-menu">
+          {shown.length === 0 && <li className="empty">No match</li>}
+          {shown.map((item) => (
+            <li key={item.value}>
+              <button
+                type="button"
+                className={item.value === value ? "on" : undefined}
+                onMouseDown={(event) => {
+                  event.preventDefault();
+                  onChange(item.value);
+                  setOpen(false);
+                }}
+              >
+                {item.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
 }
 
 export function Field({ label: text, wide, children }: { label: string; wide?: boolean; children: ReactNode }) {

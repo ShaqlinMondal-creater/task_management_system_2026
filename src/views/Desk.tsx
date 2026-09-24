@@ -1,7 +1,7 @@
 import { scopeFor } from "../access";
 import type { ViewId } from "../access";
 import { Avatar, Icon, IdChip, Pill } from "../components/Bits";
-import { PRIORITIES, TASK_STATUSES, formatDate, isOverdue, label, matches, personName, todayISO } from "../lib";
+import { PRIORITIES, TASK_STATUSES, formatDate, isOverdue, label, matches, personName } from "../lib";
 import { useStore } from "../store";
 import type { Checkpoint, Task, TaskStatus } from "../types";
 
@@ -71,7 +71,7 @@ function monthLabel(key: string) {
   return new Date(year, month - 1, 1).toLocaleDateString("en-GB", { month: "short", year: "numeric" });
 }
 
-export function Desk({ query, onOpen }: { query: string; onOpen: (view: ViewId) => void }) {
+export function Desk({ query, onOpen }: { query: string; onOpen: (view: ViewId, intent?: "create-task" | "create-project" | "invite" | "my-tasks") => void }) {
   const { data, sessionUser } = useStore();
   if (!data || !sessionUser) return null;
 
@@ -92,24 +92,31 @@ export function Desk({ query, onOpen }: { query: string; onOpen: (view: ViewId) 
   const review = countStatus("review");
   const completed = countStatus("done");
   const overdue = tasks.filter((task) => isOverdue(task.dueDate, task.status));
-  const today = todayISO();
-  const soon = tasks.filter((task) => task.status !== "done" && task.dueDate >= today && task.dueDate <= shift(today, 30));
-  const later = tasks.filter((task) => task.status !== "done" && task.dueDate > shift(today, 30));
   const taskPct = tasks.length ? Math.round((completed / tasks.length) * 100) : 0;
   const pointDone = points.filter((item) => item.state === "done").length;
   const pointPartial = points.filter((item) => item.state === "partial").length;
   const pointOpen = points.filter((item) => item.state === "open").length;
   const pointPct = points.length ? Math.round((pointDone / points.length) * 100) : 0;
 
-  const byMonth = new Map<string, { done: number; open: number }>();
+  const completedByMonth = new Map<string, number>();
+  for (const task of tasks.filter((item) => item.status === "done")) {
+    const when = task.doneAt || task.updatedAt || task.createdAt;
+    const key = monthKey(when);
+    completedByMonth.set(key, (completedByMonth.get(key) ?? 0) + 1);
+  }
+  const completedMonths = [...completedByMonth.entries()].sort(([a], [b]) => a.localeCompare(b));
+  const completedPeak = Math.max(1, ...completedMonths.map(([, count]) => count));
+
+  const dueMonths = new Map<string, { late: number; done: number; open: number }>();
   for (const task of tasks) {
     const key = monthKey(task.dueDate);
-    const bucket = byMonth.get(key) ?? { done: 0, open: 0 };
-    if (task.status === "done") bucket.done += 1;
+    const bucket = dueMonths.get(key) ?? { late: 0, done: 0, open: 0 };
+    if (isOverdue(task.dueDate, task.status)) bucket.late += 1;
+    else if (task.status === "done") bucket.done += 1;
     else bucket.open += 1;
-    byMonth.set(key, bucket);
+    dueMonths.set(key, bucket);
   }
-  const months = [...byMonth.entries()].sort(([a], [b]) => a.localeCompare(b));
+  const trendMonths = [...dueMonths.entries()].sort(([a], [b]) => a.localeCompare(b));
 
   const loads = (admin ? data.users : scoped.users)
     .map((user) => ({
@@ -128,36 +135,67 @@ export function Desk({ query, onOpen }: { query: string; onOpen: (view: ViewId) 
     return matches(query, [task.title, task.id, task.status, task.priority, project?.name, project?.code]);
   };
   const upcoming = tasks.filter((task) => task.status !== "done" && visible(task)).sort((a, b) => a.dueDate.localeCompare(b.dueDate)).slice(0, 6);
-  const finished = points.filter((item) => item.state === "done" && matches(query, [item.label, item.phase, item.group])).slice(0, 6);
-  const activity = data.assignments
-    .filter((item) => item.kind === "task" && item.taskId && (admin || item.userId === sessionUser.id))
-    .map((item) => {
-      const task = data.tasks.find((entry) => entry.id === item.taskId);
-      const who = admin ? personName(data.users, item.userId) : "You";
-      return { id: item.id, when: item.assignedAt, task, who, role: item.role };
-    })
-    .filter((item) => item.task && matches(query, [item.task.title, item.who, item.role]))
+  const finishedTasks = tasks
+    .filter((task) => task.status === "done" && visible(task))
+    .sort((a, b) => (b.doneAt || b.updatedAt || b.createdAt).localeCompare(a.doneAt || a.updatedAt || a.createdAt))
     .slice(0, 6);
+  const finishedPoints = points
+    .filter((item) => item.state === "done" && item.doneAt && matches(query, [item.label, item.phase, item.group]))
+    .sort((a, b) => (b.doneAt || "").localeCompare(a.doneAt || ""))
+    .slice(0, 6);
+  const activity = [
+    ...data.assignments
+      .filter((item) => item.kind === "task" && item.taskId && (admin || item.userId === sessionUser.id))
+      .map((item) => {
+        const task = data.tasks.find((entry) => entry.id === item.taskId);
+        const who = admin ? personName(data.users, item.userId) : "You";
+        return task ? { id: item.id, when: item.assignedAt, title: `${who} ${item.role === "reviewer" ? "is reviewing" : "was assigned"}`, detail: task.title } : null;
+      }),
+    ...tasks
+      .filter((task) => task.updatedAt)
+      .map((task) => ({ id: `upd-${task.id}`, when: task.updatedAt || task.createdAt, title: task.title, detail: `Updated · ${label(task.status)}` })),
+  ]
+    .filter((item): item is { id: string; when: string; title: string; detail: string } => Boolean(item) && matches(query, [item!.title, item!.detail]))
+    .sort((a, b) => b.when.localeCompare(a.when))
+    .slice(0, 6);
+
+  const memberRows = (admin ? data.users.filter((user) => user.role !== "admin") : [sessionUser]).map((user) => {
+    const held = data.tasks.filter((task) =>
+      data.assignments.some((item) => item.kind === "task" && item.taskId === task.id && item.userId === user.id),
+    );
+    const heldPoints = data.checkpoints.filter((item) => held.some((task) => task.checkpointIds.includes(item.id)));
+    return {
+      user,
+      tasks: held,
+      done: held.filter((task) => task.status === "done").length,
+      open: held.filter((task) => task.status !== "done").length,
+      late: held.filter((task) => isOverdue(task.dueDate, task.status)).length,
+      pointDone: heldPoints.filter((item) => item.state === "done").length,
+      pointPartial: heldPoints.filter((item) => item.state === "partial").length,
+      pointOpen: heldPoints.filter((item) => item.state === "open").length,
+      points: heldPoints.length,
+    };
+  });
 
   return (
     <div className="stack">
       <div className="quick-actions">
         {!reviewer && (
-          <button type="button" className="btn primary" onClick={() => onOpen("tasks")}>
+          <button type="button" className="btn primary" onClick={() => onOpen("tasks", "create-task")}>
             <Icon name="plus" /> Create task
           </button>
         )}
         {admin && (
-          <button type="button" className="btn ghost" onClick={() => onOpen("projects")}>
+          <button type="button" className="btn ghost" onClick={() => onOpen("projects", "create-project")}>
             <Icon name="projects" /> Create project
           </button>
         )}
         {admin && (
-          <button type="button" className="btn ghost" onClick={() => onOpen("people")}>
+          <button type="button" className="btn ghost" onClick={() => onOpen("people", "invite")}>
             <Icon name="people" /> Invite member
           </button>
         )}
-        <button type="button" className="btn ghost" onClick={() => onOpen("tasks")}>
+        <button type="button" className="btn ghost" onClick={() => onOpen("tasks", "my-tasks")}>
           <Icon name="tasks" /> {reviewer ? "View my reviews" : "View my tasks"}
         </button>
         {admin && (
@@ -169,19 +207,19 @@ export function Desk({ query, onOpen }: { query: string; onOpen: (view: ViewId) 
 
       <section className="metrics">
         <article className="metric">
-          <span><Icon name="projects" /> {admin ? "Projects" : "My project"}</span>
+          <span><Icon name="projects" /> Total projects</span>
           <strong>{scoped.projects.length}</strong>
         </article>
         <article className="metric">
-          <span><Icon name="tasks" /> {admin ? "Tasks" : reviewer ? "Reviews" : "My tasks"}</span>
+          <span><Icon name="tasks" /> Total tasks</span>
           <strong>{tasks.length}</strong>
         </article>
         <article className="metric">
-          <span>Pending</span>
+          <span>Pending tasks</span>
           <strong>{pending}</strong>
         </article>
         <article className="metric">
-          <span>In progress</span>
+          <span>In-progress tasks</span>
           <strong>{doing}</strong>
         </article>
         <article className="metric">
@@ -189,19 +227,17 @@ export function Desk({ query, onOpen }: { query: string; onOpen: (view: ViewId) 
           <strong>{review}</strong>
         </article>
         <article className="metric">
-          <span>Completed</span>
+          <span>Completed tasks</span>
           <strong>{completed}</strong>
         </article>
-        <article className="metric">
-          <span><Icon name="alert" /> Overdue</span>
+        <article className="metric tone-late">
+          <span><Icon name="alert" /> Overdue tasks</span>
           <strong>{overdue.length}</strong>
         </article>
-        {admin && (
-          <article className="metric">
-            <span>Assigned to me</span>
-            <strong>{mine.length}</strong>
-          </article>
-        )}
+        <article className="metric">
+          <span>Tasks assigned to me</span>
+          <strong>{mine.length}</strong>
+        </article>
       </section>
 
       <section className="metrics">
@@ -226,7 +262,7 @@ export function Desk({ query, onOpen }: { query: string; onOpen: (view: ViewId) 
       <div className="chart-grid">
         <section className="panel">
           <header className="panel-head">
-            <h2>Tasks by status</h2>
+            <h2>{admin ? "Tasks by status" : "Your tasks by status"}</h2>
             <span>{taskPct}% complete</span>
           </header>
           <div className="donut-row">
@@ -245,7 +281,7 @@ export function Desk({ query, onOpen }: { query: string; onOpen: (view: ViewId) 
 
         <section className="panel">
           <header className="panel-head">
-            <h2>Tasks by priority</h2>
+            <h2>{admin ? "Tasks by priority" : "Your tasks by priority"}</h2>
           </header>
           <ul className="bars">
             {PRIORITIES.map((priority) => {
@@ -266,26 +302,21 @@ export function Desk({ query, onOpen }: { query: string; onOpen: (view: ViewId) 
 
         <section className="panel">
           <header className="panel-head">
-            <h2>Tasks by due month</h2>
-            <span>Done and still open</span>
+            <h2>{admin ? "Tasks completed over time" : "Your tasks completed over time"}</h2>
+            <span>Marked done</span>
           </header>
-          {months.length === 0 && <p className="empty">No dated tasks yet.</p>}
+          {completedMonths.length === 0 && <p className="empty">No tasks have been completed yet.</p>}
           <ul className="bars">
-            {months.map(([key, bucket]) => {
-              const total = bucket.done + bucket.open || 1;
-              return (
-                <li key={key}>
-                  <span>{monthLabel(key)}</span>
-                  <div className="bar stack-bar">
-                    <span style={{ width: `${(bucket.done / total) * 100}%`, background: "#16a34a" }} />
-                    <span style={{ width: `${(bucket.open / total) * 100}%`, background: "#2563eb" }} />
-                  </div>
-                  <em>{bucket.done + bucket.open}</em>
-                </li>
-              );
-            })}
+            {completedMonths.map(([key, count]) => (
+              <li key={key}>
+                <span>{monthLabel(key)}</span>
+                <div className="bar">
+                  <span style={{ width: `${(count / completedPeak) * 100}%`, background: "#16a34a" }} />
+                </div>
+                <em>{count}</em>
+              </li>
+            ))}
           </ul>
-          <p className="muted chart-key"><i className="swatch-done" /> Done <i className="swatch-open" /> Still open</p>
         </section>
 
         <section className="panel">
@@ -331,6 +362,60 @@ export function Desk({ query, onOpen }: { query: string; onOpen: (view: ViewId) 
         </section>
       </div>
 
+      {admin && (
+        <section className="panel">
+          <header className="panel-head">
+            <h2>By member</h2>
+            <span>Each person's tasks and checkpoints</span>
+          </header>
+          <ul className="member-analytics">
+            {memberRows.map((row) => {
+              const taskTotal = Math.max(1, row.tasks.length);
+              const pointTotal = Math.max(1, row.points);
+              return (
+                <li key={row.user.id}>
+                  <div className="card-top">
+                    <Avatar name={row.user.name} id={row.user.id} />
+                    <strong>
+                      {row.user.name} <IdChip id={row.user.id} />
+                    </strong>
+                    <Pill value={row.user.role} />
+                  </div>
+                  <p className="muted">{row.tasks.length} tasks · {row.points} checkpoints · {row.late} overdue</p>
+                  <ul className="bars">
+                    <li>
+                      <span>Tasks done</span>
+                      <div className="bar"><span style={{ width: `${(row.done / taskTotal) * 100}%`, background: "#16a34a" }} /></div>
+                      <em>{row.done}</em>
+                    </li>
+                    <li>
+                      <span>Still open</span>
+                      <div className="bar"><span style={{ width: `${(row.open / taskTotal) * 100}%`, background: "#2563eb" }} /></div>
+                      <em>{row.open}</em>
+                    </li>
+                    <li>
+                      <span>Checkpoints done</span>
+                      <div className="bar"><span style={{ width: `${(row.pointDone / pointTotal) * 100}%`, background: "#16a34a" }} /></div>
+                      <em>{row.pointDone}</em>
+                    </li>
+                    <li>
+                      <span>Partial</span>
+                      <div className="bar"><span style={{ width: `${(row.pointPartial / pointTotal) * 100}%`, background: "#d97706" }} /></div>
+                      <em>{row.pointPartial}</em>
+                    </li>
+                    <li>
+                      <span>Not started</span>
+                      <div className="bar"><span style={{ width: `${(row.pointOpen / pointTotal) * 100}%`, background: "#94a3b8" }} /></div>
+                      <em>{row.pointOpen}</em>
+                    </li>
+                  </ul>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
+
       <div className="chart-grid">
         <section className="panel">
           <header className="panel-head">
@@ -357,27 +442,27 @@ export function Desk({ query, onOpen }: { query: string; onOpen: (view: ViewId) 
 
         <section className="panel">
           <header className="panel-head">
-            <h2>Due outlook</h2>
-            <span>Open tasks</span>
+            <h2>{admin ? "Overdue trends" : "Your overdue trends"}</h2>
+            <span>{overdue.length} overdue now</span>
           </header>
+          {trendMonths.length === 0 && <p className="empty">No dated tasks yet.</p>}
           <ul className="bars">
-            {[
-              { label: "Overdue", value: overdue.length, color: "#dc2626" },
-              { label: "Next 30 days", value: soon.length, color: "#d97706" },
-              { label: "Later", value: later.length, color: "#2563eb" },
-            ].map((row) => {
-              const max = Math.max(1, overdue.length, soon.length, later.length);
+            {trendMonths.map(([key, bucket]) => {
+              const total = bucket.late + bucket.done + bucket.open || 1;
               return (
-                <li key={row.label}>
-                  <span>{row.label}</span>
-                  <div className="bar">
-                    <span style={{ width: `${(row.value / max) * 100}%`, background: row.color }} />
+                <li key={key}>
+                  <span>{monthLabel(key)}</span>
+                  <div className="bar stack-bar">
+                    <span style={{ width: `${(bucket.late / total) * 100}%`, background: "#dc2626" }} />
+                    <span style={{ width: `${(bucket.done / total) * 100}%`, background: "#16a34a" }} />
+                    <span style={{ width: `${(bucket.open / total) * 100}%`, background: "#2563eb" }} />
                   </div>
-                  <em>{row.value}</em>
+                  <em>{bucket.late}</em>
                 </li>
               );
             })}
           </ul>
+          <p className="muted chart-key"><i className="swatch-late" /> Overdue <i className="swatch-done" /> Done <i className="swatch-open" /> Still open</p>
         </section>
       </div>
 
@@ -415,15 +500,15 @@ export function Desk({ query, onOpen }: { query: string; onOpen: (view: ViewId) 
         <section className="panel">
           <header className="panel-head">
             <h2>Recently completed</h2>
-            <span>Checkpoints marked done</span>
+            <span>{finishedTasks.length ? "Tasks marked done" : "Checkpoints marked done"}</span>
           </header>
-          {finished.length === 0 && <p className="empty">No completed checkpoints in this view.</p>}
+          {finishedTasks.length === 0 && finishedPoints.length === 0 && <p className="empty">Nothing has been completed in this view.</p>}
           <ul className="due-list">
-            {finished.map((item) => (
+            {(finishedTasks.length ? finishedTasks.map((task) => ({ id: task.id, title: task.title, when: task.doneAt || task.updatedAt || task.createdAt })) : finishedPoints.map((item) => ({ id: item.id, title: item.label, when: item.doneAt || "" }))).map((item) => (
               <li key={item.id} className="due-row">
                 <div>
-                  <strong>{item.label}</strong>
-                  <p className="muted">{item.phase}</p>
+                  <strong>{item.title}</strong>
+                  <p className="muted">{item.when ? formatDate(item.when.slice(0, 10)) : "Done"}</p>
                 </div>
                 <Pill value="done" />
               </li>
@@ -440,11 +525,9 @@ export function Desk({ query, onOpen }: { query: string; onOpen: (view: ViewId) 
             {activity.map((item) => (
               <li key={item.id} className="due-row">
                 <div>
-                  <strong>
-                    {item.who} {item.role === "reviewer" ? "is reviewing" : "is assigned"}
-                  </strong>
+                  <strong>{item.title}</strong>
                   <p className="muted">
-                    {item.task?.title} · {formatDate(item.when)}
+                    {item.detail} · {formatDate(item.when.slice(0, 10))}
                   </p>
                 </div>
               </li>
@@ -460,11 +543,3 @@ function pointCount(points: Checkpoint[], task: Task, state: Checkpoint["state"]
   return points.filter((item) => task.checkpointIds.includes(item.id) && item.state === state).length;
 }
 
-function shift(iso: string, days: number) {
-  const [year, month, day] = iso.split("-").map(Number);
-  const date = new Date(year, (month ?? 1) - 1, day ?? 1);
-  date.setDate(date.getDate() + days);
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${date.getFullYear()}-${m}-${d}`;
-}

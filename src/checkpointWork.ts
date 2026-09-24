@@ -21,6 +21,7 @@ export function checkpointsForProject(projectId: string, existingIds: string[]) 
           label: item.label,
           state: item.state,
           role: item.owner ?? phase.owner,
+          doneAt: item.state === "done" ? "2026-09-23T09:00" : null,
         });
       }
     }

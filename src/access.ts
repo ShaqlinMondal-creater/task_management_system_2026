@@ -4,8 +4,8 @@ export type ViewId = "desk" | "projects" | "tasks" | "people" | "assign" | "chec
 
 const NAV: Record<User["role"], ViewId[]> = {
   admin: ["desk", "projects", "tasks", "people", "assign", "checks"],
-  member: ["desk", "projects", "tasks", "people"],
-  reviewer: ["desk", "tasks", "people"],
+  member: ["desk", "projects", "tasks", "people", "assign"],
+  reviewer: ["desk", "tasks", "people", "assign"],
 };
 
 export function viewsFor(role: User["role"]) {

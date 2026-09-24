@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { scopeFor } from "../access";
 import { Avatar, Field, Icon, IdChip, Pill } from "../components/Bits";
@@ -19,12 +19,20 @@ const blank = (): Draft => ({
   status: "active",
 });
 
-export function People({ query }: { query: string }) {
+export function People({ query, intent, onIntent }: { query: string; intent?: "create-task" | "create-project" | "invite" | "my-tasks" | null; onIntent?: () => void }) {
   const store = useStore();
   const { data, sessionUser } = store;
   const [dialog, setDialog] = useState<{ mode: "edit"; user: User } | { mode: "create" } | { mode: "delete"; user: User } | null>(null);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (intent !== "invite" || sessionUser?.role !== "admin") return;
+    setDraft(blank());
+    setError(null);
+    setDialog({ mode: "create" });
+    onIntent?.();
+  }, [intent]);
 
   if (!data || !sessionUser) return null;
 

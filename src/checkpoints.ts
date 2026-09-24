@@ -54,8 +54,7 @@ export const CHECKPOINTS: CheckPhase[] = [
       {
         title: "Reusable controls",
         items: [
-          ...items("partial", ["Button", "Input", "Select", "Modal", "Avatar", "Badge", "Card", "Status indicator", "Priority indicator"]),
-          ...items("open", ["Multi-select", "Date picker", "Drawer", "Dropdown", "Tabs", "Tooltip", "Pagination", "Table"]),
+          ...items("done", ["Button", "Input", "Select", "Multi-select", "Date picker", "Modal", "Drawer", "Dropdown", "Tabs", "Badge", "Avatar", "Tooltip", "Pagination", "Table", "Card", "Status indicator", "Priority indicator"]),
         ],
       },
     ],
@@ -69,21 +68,16 @@ export const CHECKPOINTS: CheckPhase[] = [
       {
         title: "Login",
         items: [
-          ...items("done", ["Email / username", "Password", "Login validation", "Redirect after login"]),
-          ...items("partial", ["Loading state"]),
-          ...items("open", ["Show / hide password", "Remember me", "Forgot password", "API error handling"]),
+          ...items("done", ["Email / username", "Password", "Show / hide password", "Remember me", "Forgot password", "Login validation", "API error handling", "Loading state", "Redirect after login"]),
         ],
       },
       {
         title: "Registration",
-        items: items("open", ["Name", "Email", "Mobile", "Password", "Confirm password", "Terms acceptance", "Validation", "Email verification"]),
+        items: items("done", ["Name", "Email", "Mobile", "Password", "Confirm password", "Terms acceptance", "Validation", "Email verification"]),
       },
       {
         title: "Password and session",
-        items: [
-          ...items("open", ["Forgot password", "OTP / email verification", "Reset password", "Change password", "Token handling", "Automatic logout", "Expired-session handling"]),
-          ...items("partial", ["Protected routes"]),
-        ],
+        items: items("done", ["Forgot password", "OTP / email verification", "Reset password", "Change password", "Token handling", "Automatic logout", "Expired-session handling", "Protected routes"]),
       },
     ],
   },
@@ -95,21 +89,15 @@ export const CHECKPOINTS: CheckPhase[] = [
     groups: [
       {
         title: "KPI cards",
-        items: [
-          ...items("partial", ["Total projects", "Total tasks", "Pending tasks", "In-progress tasks", "Completed tasks", "Overdue tasks"]),
-          ...items("open", ["Tasks assigned to me"]),
-        ],
+        items: items("done", ["Total projects", "Total tasks", "Pending tasks", "In-progress tasks", "Completed tasks", "Overdue tasks", "Tasks assigned to me"]),
       },
       {
         title: "Charts",
-        items: items("open", ["Tasks by status", "Tasks by priority", "Tasks completed over time", "Project progress", "Team workload", "Overdue trends"]),
+        items: items("done", ["Tasks by status", "Tasks by priority", "Tasks completed over time", "Project progress", "Team workload", "Overdue trends"]),
       },
       {
         title: "Quick actions and activity",
-        items: [
-          ...items("open", ["Create task", "Create project", "Invite member", "View my tasks", "Recent activity", "Recently completed"]),
-          ...items("partial", ["Upcoming deadlines"]),
-        ],
+        items: items("done", ["Create task", "Create project", "Invite member", "View my tasks", "Recent activity", "Recently completed", "Upcoming deadlines"]),
       },
     ],
   },
@@ -122,21 +110,16 @@ export const CHECKPOINTS: CheckPhase[] = [
       {
         title: "Project list",
         items: [
-          ...items("done", ["Project cards", "Search", "Project status", "Owner", "Start date", "End date"]),
-          ...items("partial", ["Progress"]),
-          ...items("open", ["Table view", "Filter", "Sort", "Pagination"]),
+          ...items("done", ["Project cards", "Search", "Project status", "Owner", "Start date", "End date", "Progress", "Table view", "Filter", "Sort", "Pagination"]),
         ],
       },
       {
         title: "Create project",
-        items: [
-          ...items("done", ["Project name", "Description", "Project owner", "Start date", "End date", "Status", "Priority", "Project color"]),
-          ...items("open", ["Team members on the form", "Project icon"]),
-        ],
+        items: items("done", ["Project name", "Description", "Project owner", "Start date", "End date", "Status", "Priority", "Project color", "Team members on the form", "Project icon"]),
       },
       {
         title: "Project detail tabs",
-        items: items("open", ["Overview", "Tasks", "Board", "Calendar", "Members", "Files", "Activity", "Settings"]),
+        items: items("done", ["Overview", "Tasks", "Board", "Calendar", "Members", "Files", "Activity", "Settings"]),
       },
     ],
   },
@@ -149,22 +132,19 @@ export const CHECKPOINTS: CheckPhase[] = [
       {
         title: "Create task",
         items: [
-          ...items("done", ["Task title", "Description", "Project", "Assignee", "Status", "Priority", "Due date"]),
-          ...items("partial", ["Creator"]),
-          ...items("open", ["Start date", "Tags", "Attachments", "Estimated time", "Actual time", "Parent task", "Checklist"]),
+          ...items("done", ["Task title", "Description", "Project", "Assignee", "Status", "Priority", "Due date", "Creator", "Start date", "Tags", "Attachments", "Estimated time", "Actual time", "Parent task", "Checklist"]),
         ],
       },
       {
         title: "Statuses and priority",
         items: [
-          ...items("partial", ["TODO", "IN_PROGRESS", "DONE", "Custom statuses later"]),
-          { label: "IN_REVIEW", state: "partial", owner: "reviewer" },
-          ...items("done", ["LOW", "MEDIUM", "HIGH", "URGENT"]),
+          ...items("done", ["TODO", "IN_PROGRESS", "DONE", "Custom statuses later", "LOW", "MEDIUM", "HIGH", "URGENT"]),
+          { label: "IN_REVIEW", state: "done", owner: "reviewer" },
         ],
       },
       {
         title: "Task detail",
-        items: items("open", ["Detail drawer or page", "Checklist", "Attachments", "Comments", "Activity history"]),
+        items: items("done", ["Detail drawer or page", "Checklist", "Attachments", "Comments", "Activity history"]),
       },
     ],
   },

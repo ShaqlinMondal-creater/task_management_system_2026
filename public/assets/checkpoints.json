@@ -7,7 +7,8 @@
     "group": "Shell",
     "label": "Responsive sidebar",
     "state": "partial",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c02",
@@ -17,7 +18,8 @@
     "group": "Shell",
     "label": "Mobile navigation / drawer",
     "state": "partial",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c03",
@@ -27,7 +29,8 @@
     "group": "Shell",
     "label": "Desktop navigation",
     "state": "done",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c04",
@@ -37,7 +40,8 @@
     "group": "Shell",
     "label": "Top navbar",
     "state": "done",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c05",
@@ -47,7 +51,8 @@
     "group": "Shell",
     "label": "Search",
     "state": "done",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c06",
@@ -57,7 +62,8 @@
     "group": "Shell",
     "label": "Consistent page container",
     "state": "done",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c07",
@@ -67,7 +73,8 @@
     "group": "Shell",
     "label": "Loading states",
     "state": "done",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c08",
@@ -77,7 +84,8 @@
     "group": "Shell",
     "label": "Empty states",
     "state": "done",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c09",
@@ -87,7 +95,8 @@
     "group": "Shell",
     "label": "Confirmation dialogs",
     "state": "done",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c10",
@@ -97,7 +106,8 @@
     "group": "Shell",
     "label": "User profile menu",
     "state": "partial",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c11",
@@ -107,7 +117,8 @@
     "group": "Shell",
     "label": "Error states",
     "state": "partial",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c12",
@@ -117,7 +128,8 @@
     "group": "Shell",
     "label": "Notification icon",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c13",
@@ -127,7 +139,8 @@
     "group": "Shell",
     "label": "Breadcrumbs",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c14",
@@ -137,7 +150,8 @@
     "group": "Shell",
     "label": "Toast notifications",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c15",
@@ -147,7 +161,8 @@
     "group": "Shell",
     "label": "Skeleton loaders",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c16",
@@ -156,8 +171,9 @@
     "phase": "2. Design system",
     "group": "Reusable controls",
     "label": "Button",
-    "state": "partial",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:00"
   },
   {
     "id": "c17",
@@ -166,8 +182,9 @@
     "phase": "2. Design system",
     "group": "Reusable controls",
     "label": "Input",
-    "state": "partial",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:00"
   },
   {
     "id": "c18",
@@ -176,8 +193,9 @@
     "phase": "2. Design system",
     "group": "Reusable controls",
     "label": "Select",
-    "state": "partial",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:00"
   },
   {
     "id": "c19",
@@ -186,8 +204,9 @@
     "phase": "2. Design system",
     "group": "Reusable controls",
     "label": "Modal",
-    "state": "partial",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:00"
   },
   {
     "id": "c20",
@@ -196,8 +215,9 @@
     "phase": "2. Design system",
     "group": "Reusable controls",
     "label": "Avatar",
-    "state": "partial",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:00"
   },
   {
     "id": "c21",
@@ -206,8 +226,9 @@
     "phase": "2. Design system",
     "group": "Reusable controls",
     "label": "Badge",
-    "state": "partial",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:00"
   },
   {
     "id": "c22",
@@ -216,8 +237,9 @@
     "phase": "2. Design system",
     "group": "Reusable controls",
     "label": "Card",
-    "state": "partial",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:00"
   },
   {
     "id": "c23",
@@ -226,8 +248,9 @@
     "phase": "2. Design system",
     "group": "Reusable controls",
     "label": "Status indicator",
-    "state": "partial",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:00"
   },
   {
     "id": "c24",
@@ -236,8 +259,9 @@
     "phase": "2. Design system",
     "group": "Reusable controls",
     "label": "Priority indicator",
-    "state": "partial",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:00"
   },
   {
     "id": "c25",
@@ -246,8 +270,9 @@
     "phase": "2. Design system",
     "group": "Reusable controls",
     "label": "Multi-select",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:00"
   },
   {
     "id": "c26",
@@ -256,8 +281,9 @@
     "phase": "2. Design system",
     "group": "Reusable controls",
     "label": "Date picker",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:00"
   },
   {
     "id": "c27",
@@ -266,8 +292,9 @@
     "phase": "2. Design system",
     "group": "Reusable controls",
     "label": "Drawer",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:00"
   },
   {
     "id": "c28",
@@ -276,8 +303,9 @@
     "phase": "2. Design system",
     "group": "Reusable controls",
     "label": "Dropdown",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:00"
   },
   {
     "id": "c29",
@@ -286,8 +314,9 @@
     "phase": "2. Design system",
     "group": "Reusable controls",
     "label": "Tabs",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:00"
   },
   {
     "id": "c30",
@@ -296,8 +325,9 @@
     "phase": "2. Design system",
     "group": "Reusable controls",
     "label": "Tooltip",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:00"
   },
   {
     "id": "c31",
@@ -306,8 +336,9 @@
     "phase": "2. Design system",
     "group": "Reusable controls",
     "label": "Pagination",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:00"
   },
   {
     "id": "c32",
@@ -316,8 +347,9 @@
     "phase": "2. Design system",
     "group": "Reusable controls",
     "label": "Table",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:00"
   },
   {
     "id": "c33",
@@ -327,7 +359,8 @@
     "group": "Login",
     "label": "Email / username",
     "state": "done",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c34",
@@ -337,7 +370,8 @@
     "group": "Login",
     "label": "Password",
     "state": "done",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c35",
@@ -347,7 +381,8 @@
     "group": "Login",
     "label": "Login validation",
     "state": "done",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c36",
@@ -357,7 +392,8 @@
     "group": "Login",
     "label": "Redirect after login",
     "state": "done",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c37",
@@ -366,8 +402,9 @@
     "phase": "3. Authentication",
     "group": "Login",
     "label": "Loading state",
-    "state": "partial",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:15"
   },
   {
     "id": "c38",
@@ -376,8 +413,9 @@
     "phase": "3. Authentication",
     "group": "Login",
     "label": "Show / hide password",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:15"
   },
   {
     "id": "c39",
@@ -386,8 +424,9 @@
     "phase": "3. Authentication",
     "group": "Login",
     "label": "Remember me",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:15"
   },
   {
     "id": "c40",
@@ -396,8 +435,9 @@
     "phase": "3. Authentication",
     "group": "Login",
     "label": "Forgot password",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:15"
   },
   {
     "id": "c41",
@@ -406,8 +446,9 @@
     "phase": "3. Authentication",
     "group": "Login",
     "label": "API error handling",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:15"
   },
   {
     "id": "c42",
@@ -416,8 +457,9 @@
     "phase": "3. Authentication",
     "group": "Registration",
     "label": "Name",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:15"
   },
   {
     "id": "c43",
@@ -426,8 +468,9 @@
     "phase": "3. Authentication",
     "group": "Registration",
     "label": "Email",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:15"
   },
   {
     "id": "c44",
@@ -436,8 +479,9 @@
     "phase": "3. Authentication",
     "group": "Registration",
     "label": "Mobile",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:15"
   },
   {
     "id": "c45",
@@ -446,8 +490,9 @@
     "phase": "3. Authentication",
     "group": "Registration",
     "label": "Password",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:15"
   },
   {
     "id": "c46",
@@ -456,8 +501,9 @@
     "phase": "3. Authentication",
     "group": "Registration",
     "label": "Confirm password",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:15"
   },
   {
     "id": "c47",
@@ -466,8 +512,9 @@
     "phase": "3. Authentication",
     "group": "Registration",
     "label": "Terms acceptance",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:15"
   },
   {
     "id": "c48",
@@ -476,8 +523,9 @@
     "phase": "3. Authentication",
     "group": "Registration",
     "label": "Validation",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:15"
   },
   {
     "id": "c49",
@@ -486,8 +534,9 @@
     "phase": "3. Authentication",
     "group": "Registration",
     "label": "Email verification",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:15"
   },
   {
     "id": "c50",
@@ -496,8 +545,9 @@
     "phase": "3. Authentication",
     "group": "Password and session",
     "label": "Forgot password",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:15"
   },
   {
     "id": "c51",
@@ -506,8 +556,9 @@
     "phase": "3. Authentication",
     "group": "Password and session",
     "label": "OTP / email verification",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:15"
   },
   {
     "id": "c52",
@@ -516,8 +567,9 @@
     "phase": "3. Authentication",
     "group": "Password and session",
     "label": "Reset password",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:15"
   },
   {
     "id": "c53",
@@ -526,8 +578,9 @@
     "phase": "3. Authentication",
     "group": "Password and session",
     "label": "Change password",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:15"
   },
   {
     "id": "c54",
@@ -536,8 +589,9 @@
     "phase": "3. Authentication",
     "group": "Password and session",
     "label": "Token handling",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:15"
   },
   {
     "id": "c55",
@@ -546,8 +600,9 @@
     "phase": "3. Authentication",
     "group": "Password and session",
     "label": "Automatic logout",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:15"
   },
   {
     "id": "c56",
@@ -556,8 +611,9 @@
     "phase": "3. Authentication",
     "group": "Password and session",
     "label": "Expired-session handling",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:15"
   },
   {
     "id": "c57",
@@ -566,8 +622,9 @@
     "phase": "3. Authentication",
     "group": "Password and session",
     "label": "Protected routes",
-    "state": "partial",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:15"
   },
   {
     "id": "c58",
@@ -576,8 +633,9 @@
     "phase": "4. Dashboard",
     "group": "KPI cards",
     "label": "Total projects",
-    "state": "partial",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:30"
   },
   {
     "id": "c59",
@@ -586,8 +644,9 @@
     "phase": "4. Dashboard",
     "group": "KPI cards",
     "label": "Total tasks",
-    "state": "partial",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:30"
   },
   {
     "id": "c60",
@@ -596,8 +655,9 @@
     "phase": "4. Dashboard",
     "group": "KPI cards",
     "label": "Pending tasks",
-    "state": "partial",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:30"
   },
   {
     "id": "c61",
@@ -606,8 +666,9 @@
     "phase": "4. Dashboard",
     "group": "KPI cards",
     "label": "In-progress tasks",
-    "state": "partial",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:30"
   },
   {
     "id": "c62",
@@ -616,8 +677,9 @@
     "phase": "4. Dashboard",
     "group": "KPI cards",
     "label": "Completed tasks",
-    "state": "partial",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:30"
   },
   {
     "id": "c63",
@@ -626,8 +688,9 @@
     "phase": "4. Dashboard",
     "group": "KPI cards",
     "label": "Overdue tasks",
-    "state": "partial",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:30"
   },
   {
     "id": "c64",
@@ -636,8 +699,9 @@
     "phase": "4. Dashboard",
     "group": "KPI cards",
     "label": "Tasks assigned to me",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:30"
   },
   {
     "id": "c65",
@@ -646,8 +710,9 @@
     "phase": "4. Dashboard",
     "group": "Charts",
     "label": "Tasks by status",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:30"
   },
   {
     "id": "c66",
@@ -656,8 +721,9 @@
     "phase": "4. Dashboard",
     "group": "Charts",
     "label": "Tasks by priority",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:30"
   },
   {
     "id": "c67",
@@ -666,8 +732,9 @@
     "phase": "4. Dashboard",
     "group": "Charts",
     "label": "Tasks completed over time",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:30"
   },
   {
     "id": "c68",
@@ -676,8 +743,9 @@
     "phase": "4. Dashboard",
     "group": "Charts",
     "label": "Project progress",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:30"
   },
   {
     "id": "c69",
@@ -686,8 +754,9 @@
     "phase": "4. Dashboard",
     "group": "Charts",
     "label": "Team workload",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:30"
   },
   {
     "id": "c70",
@@ -696,8 +765,9 @@
     "phase": "4. Dashboard",
     "group": "Charts",
     "label": "Overdue trends",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:30"
   },
   {
     "id": "c71",
@@ -706,8 +776,9 @@
     "phase": "4. Dashboard",
     "group": "Quick actions and activity",
     "label": "Create task",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:30"
   },
   {
     "id": "c72",
@@ -716,8 +787,9 @@
     "phase": "4. Dashboard",
     "group": "Quick actions and activity",
     "label": "Create project",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:30"
   },
   {
     "id": "c73",
@@ -726,8 +798,9 @@
     "phase": "4. Dashboard",
     "group": "Quick actions and activity",
     "label": "Invite member",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:30"
   },
   {
     "id": "c74",
@@ -736,8 +809,9 @@
     "phase": "4. Dashboard",
     "group": "Quick actions and activity",
     "label": "View my tasks",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:30"
   },
   {
     "id": "c75",
@@ -746,8 +820,9 @@
     "phase": "4. Dashboard",
     "group": "Quick actions and activity",
     "label": "Recent activity",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:30"
   },
   {
     "id": "c76",
@@ -756,8 +831,9 @@
     "phase": "4. Dashboard",
     "group": "Quick actions and activity",
     "label": "Recently completed",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:30"
   },
   {
     "id": "c77",
@@ -766,8 +842,9 @@
     "phase": "4. Dashboard",
     "group": "Quick actions and activity",
     "label": "Upcoming deadlines",
-    "state": "partial",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:30"
   },
   {
     "id": "c78",
@@ -777,7 +854,8 @@
     "group": "Project list",
     "label": "Project cards",
     "state": "done",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c79",
@@ -787,7 +865,8 @@
     "group": "Project list",
     "label": "Search",
     "state": "done",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c80",
@@ -797,7 +876,8 @@
     "group": "Project list",
     "label": "Project status",
     "state": "done",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c81",
@@ -807,7 +887,8 @@
     "group": "Project list",
     "label": "Owner",
     "state": "done",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c82",
@@ -817,7 +898,8 @@
     "group": "Project list",
     "label": "Start date",
     "state": "done",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c83",
@@ -827,7 +909,8 @@
     "group": "Project list",
     "label": "End date",
     "state": "done",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c84",
@@ -836,8 +919,9 @@
     "phase": "5. Project management",
     "group": "Project list",
     "label": "Progress",
-    "state": "partial",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:45"
   },
   {
     "id": "c85",
@@ -846,8 +930,9 @@
     "phase": "5. Project management",
     "group": "Project list",
     "label": "Table view",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:45"
   },
   {
     "id": "c86",
@@ -856,8 +941,9 @@
     "phase": "5. Project management",
     "group": "Project list",
     "label": "Filter",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:45"
   },
   {
     "id": "c87",
@@ -866,8 +952,9 @@
     "phase": "5. Project management",
     "group": "Project list",
     "label": "Sort",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:45"
   },
   {
     "id": "c88",
@@ -876,8 +963,9 @@
     "phase": "5. Project management",
     "group": "Project list",
     "label": "Pagination",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:45"
   },
   {
     "id": "c89",
@@ -887,7 +975,8 @@
     "group": "Create project",
     "label": "Project name",
     "state": "done",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c90",
@@ -897,7 +986,8 @@
     "group": "Create project",
     "label": "Description",
     "state": "done",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c91",
@@ -907,7 +997,8 @@
     "group": "Create project",
     "label": "Project owner",
     "state": "done",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c92",
@@ -917,7 +1008,8 @@
     "group": "Create project",
     "label": "Start date",
     "state": "done",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c93",
@@ -927,7 +1019,8 @@
     "group": "Create project",
     "label": "End date",
     "state": "done",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c94",
@@ -937,7 +1030,8 @@
     "group": "Create project",
     "label": "Status",
     "state": "done",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c95",
@@ -947,7 +1041,8 @@
     "group": "Create project",
     "label": "Priority",
     "state": "done",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c96",
@@ -957,7 +1052,8 @@
     "group": "Create project",
     "label": "Project color",
     "state": "done",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c97",
@@ -966,8 +1062,9 @@
     "phase": "5. Project management",
     "group": "Create project",
     "label": "Team members on the form",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:45"
   },
   {
     "id": "c98",
@@ -976,8 +1073,9 @@
     "phase": "5. Project management",
     "group": "Create project",
     "label": "Project icon",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:45"
   },
   {
     "id": "c99",
@@ -986,8 +1084,9 @@
     "phase": "5. Project management",
     "group": "Project detail tabs",
     "label": "Overview",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:45"
   },
   {
     "id": "c100",
@@ -996,8 +1095,9 @@
     "phase": "5. Project management",
     "group": "Project detail tabs",
     "label": "Tasks",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:45"
   },
   {
     "id": "c101",
@@ -1006,8 +1106,9 @@
     "phase": "5. Project management",
     "group": "Project detail tabs",
     "label": "Board",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:45"
   },
   {
     "id": "c102",
@@ -1016,8 +1117,9 @@
     "phase": "5. Project management",
     "group": "Project detail tabs",
     "label": "Calendar",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:45"
   },
   {
     "id": "c103",
@@ -1026,8 +1128,9 @@
     "phase": "5. Project management",
     "group": "Project detail tabs",
     "label": "Members",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:45"
   },
   {
     "id": "c104",
@@ -1036,8 +1139,9 @@
     "phase": "5. Project management",
     "group": "Project detail tabs",
     "label": "Files",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:45"
   },
   {
     "id": "c105",
@@ -1046,8 +1150,9 @@
     "phase": "5. Project management",
     "group": "Project detail tabs",
     "label": "Activity",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:45"
   },
   {
     "id": "c106",
@@ -1056,8 +1161,9 @@
     "phase": "5. Project management",
     "group": "Project detail tabs",
     "label": "Settings",
-    "state": "open",
-    "role": "admin"
+    "state": "done",
+    "role": "admin",
+    "doneAt": "2026-09-24T21:45"
   },
   {
     "id": "c107",
@@ -1067,7 +1173,8 @@
     "group": "Create task",
     "label": "Task title",
     "state": "done",
-    "role": "member"
+    "role": "member",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c108",
@@ -1077,7 +1184,8 @@
     "group": "Create task",
     "label": "Description",
     "state": "done",
-    "role": "member"
+    "role": "member",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c109",
@@ -1087,7 +1195,8 @@
     "group": "Create task",
     "label": "Project",
     "state": "done",
-    "role": "member"
+    "role": "member",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c110",
@@ -1097,7 +1206,8 @@
     "group": "Create task",
     "label": "Assignee",
     "state": "done",
-    "role": "member"
+    "role": "member",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c111",
@@ -1107,7 +1217,8 @@
     "group": "Create task",
     "label": "Status",
     "state": "done",
-    "role": "member"
+    "role": "member",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c112",
@@ -1117,7 +1228,8 @@
     "group": "Create task",
     "label": "Priority",
     "state": "done",
-    "role": "member"
+    "role": "member",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c113",
@@ -1127,7 +1239,8 @@
     "group": "Create task",
     "label": "Due date",
     "state": "done",
-    "role": "member"
+    "role": "member",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c114",
@@ -1136,8 +1249,9 @@
     "phase": "6. Task management",
     "group": "Create task",
     "label": "Creator",
-    "state": "partial",
-    "role": "member"
+    "state": "done",
+    "role": "member",
+    "doneAt": "2026-09-24T21:55"
   },
   {
     "id": "c115",
@@ -1146,8 +1260,9 @@
     "phase": "6. Task management",
     "group": "Create task",
     "label": "Start date",
-    "state": "open",
-    "role": "member"
+    "state": "done",
+    "role": "member",
+    "doneAt": "2026-09-24T21:55"
   },
   {
     "id": "c116",
@@ -1156,8 +1271,9 @@
     "phase": "6. Task management",
     "group": "Create task",
     "label": "Tags",
-    "state": "open",
-    "role": "member"
+    "state": "done",
+    "role": "member",
+    "doneAt": "2026-09-24T21:55"
   },
   {
     "id": "c117",
@@ -1166,8 +1282,9 @@
     "phase": "6. Task management",
     "group": "Create task",
     "label": "Attachments",
-    "state": "open",
-    "role": "member"
+    "state": "done",
+    "role": "member",
+    "doneAt": "2026-09-24T21:55"
   },
   {
     "id": "c118",
@@ -1176,8 +1293,9 @@
     "phase": "6. Task management",
     "group": "Create task",
     "label": "Estimated time",
-    "state": "open",
-    "role": "member"
+    "state": "done",
+    "role": "member",
+    "doneAt": "2026-09-24T21:55"
   },
   {
     "id": "c119",
@@ -1186,8 +1304,9 @@
     "phase": "6. Task management",
     "group": "Create task",
     "label": "Actual time",
-    "state": "open",
-    "role": "member"
+    "state": "done",
+    "role": "member",
+    "doneAt": "2026-09-24T21:55"
   },
   {
     "id": "c120",
@@ -1196,8 +1315,9 @@
     "phase": "6. Task management",
     "group": "Create task",
     "label": "Parent task",
-    "state": "open",
-    "role": "member"
+    "state": "done",
+    "role": "member",
+    "doneAt": "2026-09-24T21:55"
   },
   {
     "id": "c121",
@@ -1206,8 +1326,9 @@
     "phase": "6. Task management",
     "group": "Create task",
     "label": "Checklist",
-    "state": "open",
-    "role": "member"
+    "state": "done",
+    "role": "member",
+    "doneAt": "2026-09-24T21:55"
   },
   {
     "id": "c122",
@@ -1216,8 +1337,9 @@
     "phase": "6. Task management",
     "group": "Statuses and priority",
     "label": "TODO",
-    "state": "partial",
-    "role": "member"
+    "state": "done",
+    "role": "member",
+    "doneAt": "2026-09-24T21:55"
   },
   {
     "id": "c123",
@@ -1226,8 +1348,9 @@
     "phase": "6. Task management",
     "group": "Statuses and priority",
     "label": "IN_PROGRESS",
-    "state": "partial",
-    "role": "member"
+    "state": "done",
+    "role": "member",
+    "doneAt": "2026-09-24T21:55"
   },
   {
     "id": "c124",
@@ -1236,8 +1359,9 @@
     "phase": "6. Task management",
     "group": "Statuses and priority",
     "label": "DONE",
-    "state": "partial",
-    "role": "member"
+    "state": "done",
+    "role": "member",
+    "doneAt": "2026-09-24T21:55"
   },
   {
     "id": "c125",
@@ -1246,8 +1370,9 @@
     "phase": "6. Task management",
     "group": "Statuses and priority",
     "label": "Custom statuses later",
-    "state": "partial",
-    "role": "member"
+    "state": "done",
+    "role": "member",
+    "doneAt": "2026-09-24T21:55"
   },
   {
     "id": "c126",
@@ -1256,8 +1381,9 @@
     "phase": "6. Task management",
     "group": "Statuses and priority",
     "label": "IN_REVIEW",
-    "state": "partial",
-    "role": "reviewer"
+    "state": "done",
+    "role": "reviewer",
+    "doneAt": "2026-09-24T21:55"
   },
   {
     "id": "c127",
@@ -1267,7 +1393,8 @@
     "group": "Statuses and priority",
     "label": "LOW",
     "state": "done",
-    "role": "member"
+    "role": "member",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c128",
@@ -1277,7 +1404,8 @@
     "group": "Statuses and priority",
     "label": "MEDIUM",
     "state": "done",
-    "role": "member"
+    "role": "member",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c129",
@@ -1287,7 +1415,8 @@
     "group": "Statuses and priority",
     "label": "HIGH",
     "state": "done",
-    "role": "member"
+    "role": "member",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c130",
@@ -1297,7 +1426,8 @@
     "group": "Statuses and priority",
     "label": "URGENT",
     "state": "done",
-    "role": "member"
+    "role": "member",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c131",
@@ -1306,8 +1436,9 @@
     "phase": "6. Task management",
     "group": "Task detail",
     "label": "Detail drawer or page",
-    "state": "open",
-    "role": "member"
+    "state": "done",
+    "role": "member",
+    "doneAt": "2026-09-24T21:55"
   },
   {
     "id": "c132",
@@ -1316,8 +1447,9 @@
     "phase": "6. Task management",
     "group": "Task detail",
     "label": "Checklist",
-    "state": "open",
-    "role": "member"
+    "state": "done",
+    "role": "member",
+    "doneAt": "2026-09-24T21:55"
   },
   {
     "id": "c133",
@@ -1326,8 +1458,9 @@
     "phase": "6. Task management",
     "group": "Task detail",
     "label": "Attachments",
-    "state": "open",
-    "role": "member"
+    "state": "done",
+    "role": "member",
+    "doneAt": "2026-09-24T21:55"
   },
   {
     "id": "c134",
@@ -1336,8 +1469,9 @@
     "phase": "6. Task management",
     "group": "Task detail",
     "label": "Comments",
-    "state": "open",
-    "role": "member"
+    "state": "done",
+    "role": "member",
+    "doneAt": "2026-09-24T21:55"
   },
   {
     "id": "c135",
@@ -1346,8 +1480,9 @@
     "phase": "6. Task management",
     "group": "Task detail",
     "label": "Activity history",
-    "state": "open",
-    "role": "member"
+    "state": "done",
+    "role": "member",
+    "doneAt": "2026-09-24T21:55"
   },
   {
     "id": "c136",
@@ -1357,7 +1492,8 @@
     "group": "Subtasks",
     "label": "Create subtask",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c137",
@@ -1367,7 +1503,8 @@
     "group": "Subtasks",
     "label": "Assign subtask",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c138",
@@ -1377,7 +1514,8 @@
     "group": "Subtasks",
     "label": "Due date",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c139",
@@ -1387,7 +1525,8 @@
     "group": "Subtasks",
     "label": "Status",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c140",
@@ -1397,7 +1536,8 @@
     "group": "Subtasks",
     "label": "Priority",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c141",
@@ -1407,7 +1547,8 @@
     "group": "Subtasks",
     "label": "Progress",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c142",
@@ -1417,7 +1558,8 @@
     "group": "Subtasks",
     "label": "Nested tree",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c143",
@@ -1427,7 +1569,8 @@
     "group": "Dependencies",
     "label": "Blocked by",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c144",
@@ -1437,7 +1580,8 @@
     "group": "Dependencies",
     "label": "Blocks",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c145",
@@ -1447,7 +1591,8 @@
     "group": "Dependencies",
     "label": "Related task",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c146",
@@ -1457,7 +1602,8 @@
     "group": "Required",
     "label": "List view",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c147",
@@ -1467,7 +1613,8 @@
     "group": "Required",
     "label": "Calendar",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c148",
@@ -1477,7 +1624,8 @@
     "group": "Required",
     "label": "Kanban board",
     "state": "done",
-    "role": "member"
+    "role": "member",
+    "doneAt": "2026-09-23T09:00"
   },
   {
     "id": "c149",
@@ -1487,7 +1635,8 @@
     "group": "Advanced",
     "label": "Timeline",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c150",
@@ -1497,7 +1646,8 @@
     "group": "Advanced",
     "label": "Gantt",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c151",
@@ -1507,7 +1657,8 @@
     "group": "Advanced",
     "label": "Table",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c152",
@@ -1517,7 +1668,8 @@
     "group": "Advanced",
     "label": "Workload",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c153",
@@ -1527,7 +1679,8 @@
     "group": "Search",
     "label": "Global task search",
     "state": "partial",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c154",
@@ -1537,7 +1690,8 @@
     "group": "Search",
     "label": "Project search",
     "state": "partial",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c155",
@@ -1547,7 +1701,8 @@
     "group": "Search",
     "label": "User search",
     "state": "partial",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c156",
@@ -1557,7 +1712,8 @@
     "group": "Search",
     "label": "Search by title",
     "state": "partial",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c157",
@@ -1567,7 +1723,8 @@
     "group": "Search",
     "label": "Search by description",
     "state": "partial",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c158",
@@ -1577,7 +1734,8 @@
     "group": "Filters and sort",
     "label": "Assignee",
     "state": "partial",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c159",
@@ -1587,7 +1745,8 @@
     "group": "Filters and sort",
     "label": "Project",
     "state": "partial",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c160",
@@ -1597,7 +1756,8 @@
     "group": "Filters and sort",
     "label": "Status",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c161",
@@ -1607,7 +1767,8 @@
     "group": "Filters and sort",
     "label": "Priority",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c162",
@@ -1617,7 +1778,8 @@
     "group": "Filters and sort",
     "label": "Due date",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c163",
@@ -1627,7 +1789,8 @@
     "group": "Filters and sort",
     "label": "Created date",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c164",
@@ -1637,7 +1800,8 @@
     "group": "Filters and sort",
     "label": "Tags",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c165",
@@ -1647,7 +1811,8 @@
     "group": "Filters and sort",
     "label": "Creator",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c166",
@@ -1657,7 +1822,8 @@
     "group": "Filters and sort",
     "label": "Newest",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c167",
@@ -1667,7 +1833,8 @@
     "group": "Filters and sort",
     "label": "Oldest",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c168",
@@ -1677,7 +1844,8 @@
     "group": "Filters and sort",
     "label": "Due date sort",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c169",
@@ -1687,7 +1855,8 @@
     "group": "Filters and sort",
     "label": "Priority sort",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c170",
@@ -1697,7 +1866,8 @@
     "group": "Filters and sort",
     "label": "Updated",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c171",
@@ -1707,7 +1877,8 @@
     "group": "Filters and sort",
     "label": "Alphabetical",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c172",
@@ -1717,7 +1888,8 @@
     "group": "Filters and sort",
     "label": "Saved filters",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c173",
@@ -1727,7 +1899,8 @@
     "group": "Filters and sort",
     "label": "My overdue tasks",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c174",
@@ -1737,7 +1910,8 @@
     "group": "Filters and sort",
     "label": "High priority",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c175",
@@ -1747,7 +1921,8 @@
     "group": "Filters and sort",
     "label": "Due this week",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c176",
@@ -1757,7 +1932,8 @@
     "group": "Filters and sort",
     "label": "Unassigned",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c177",
@@ -1767,7 +1943,8 @@
     "group": "Team",
     "label": "Team list",
     "state": "partial",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c178",
@@ -1777,7 +1954,8 @@
     "group": "Team",
     "label": "Assign role",
     "state": "partial",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c179",
@@ -1787,7 +1965,8 @@
     "group": "Team",
     "label": "Member workload",
     "state": "partial",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c180",
@@ -1797,7 +1976,8 @@
     "group": "Team",
     "label": "Invite member",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c181",
@@ -1807,7 +1987,8 @@
     "group": "Team",
     "label": "Remove member",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c182",
@@ -1817,7 +1998,8 @@
     "group": "Team",
     "label": "Member profile",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c183",
@@ -1827,7 +2009,8 @@
     "group": "Comments and activity",
     "label": "Add comment",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c184",
@@ -1837,7 +2020,8 @@
     "group": "Comments and activity",
     "label": "Edit comment",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c185",
@@ -1847,7 +2031,8 @@
     "group": "Comments and activity",
     "label": "Delete comment",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c186",
@@ -1857,7 +2042,8 @@
     "group": "Comments and activity",
     "label": "Reply",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c187",
@@ -1867,7 +2053,8 @@
     "group": "Comments and activity",
     "label": "@mention",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c188",
@@ -1877,7 +2064,8 @@
     "group": "Comments and activity",
     "label": "Comment timestamps",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c189",
@@ -1887,7 +2075,8 @@
     "group": "Comments and activity",
     "label": "Activity stream",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c190",
@@ -1897,7 +2086,8 @@
     "group": "In-app center",
     "label": "Task assigned",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c191",
@@ -1907,7 +2097,8 @@
     "group": "In-app center",
     "label": "Task mentioned",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c192",
@@ -1917,7 +2108,8 @@
     "group": "In-app center",
     "label": "Comment",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c193",
@@ -1927,7 +2119,8 @@
     "group": "In-app center",
     "label": "Due soon",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c194",
@@ -1937,7 +2130,8 @@
     "group": "In-app center",
     "label": "Overdue",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c195",
@@ -1947,7 +2141,8 @@
     "group": "In-app center",
     "label": "Project invitation",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c196",
@@ -1957,7 +2152,8 @@
     "group": "In-app center",
     "label": "Task completed",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c197",
@@ -1967,7 +2163,8 @@
     "group": "In-app center",
     "label": "Status changed",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c198",
@@ -1977,7 +2174,8 @@
     "group": "In-app center",
     "label": "Email notifications",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c199",
@@ -1987,7 +2185,8 @@
     "group": "In-app center",
     "label": "Push notifications",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c200",
@@ -1997,7 +2196,8 @@
     "group": "In-app center",
     "label": "WhatsApp integration",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c201",
@@ -2007,7 +2207,8 @@
     "group": "Sections",
     "label": "Admin dashboard",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c202",
@@ -2017,7 +2218,8 @@
     "group": "Sections",
     "label": "Users",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c203",
@@ -2027,7 +2229,8 @@
     "group": "Sections",
     "label": "Roles",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c204",
@@ -2037,7 +2240,8 @@
     "group": "Sections",
     "label": "Projects",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c205",
@@ -2047,7 +2251,8 @@
     "group": "Sections",
     "label": "Tasks",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c206",
@@ -2057,7 +2262,8 @@
     "group": "Sections",
     "label": "Activity logs",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c207",
@@ -2067,7 +2273,8 @@
     "group": "Sections",
     "label": "Settings",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c208",
@@ -2077,7 +2284,8 @@
     "group": "Sections",
     "label": "System",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c209",
@@ -2087,7 +2295,8 @@
     "group": "Users and roles",
     "label": "User list",
     "state": "partial",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c210",
@@ -2097,7 +2306,8 @@
     "group": "Users and roles",
     "label": "Search",
     "state": "partial",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c211",
@@ -2107,7 +2317,8 @@
     "group": "Users and roles",
     "label": "Create",
     "state": "partial",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c212",
@@ -2117,7 +2328,8 @@
     "group": "Users and roles",
     "label": "Edit",
     "state": "partial",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c213",
@@ -2127,7 +2339,8 @@
     "group": "Users and roles",
     "label": "Delete",
     "state": "partial",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c214",
@@ -2137,7 +2350,8 @@
     "group": "Users and roles",
     "label": "Assign role",
     "state": "partial",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c215",
@@ -2147,7 +2361,8 @@
     "group": "Users and roles",
     "label": "Filter",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c216",
@@ -2157,7 +2372,8 @@
     "group": "Users and roles",
     "label": "Activate / deactivate",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c217",
@@ -2167,7 +2383,8 @@
     "group": "Users and roles",
     "label": "Admin",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c218",
@@ -2177,7 +2394,8 @@
     "group": "Users and roles",
     "label": "Manager",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c219",
@@ -2187,7 +2405,8 @@
     "group": "Users and roles",
     "label": "Member",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c220",
@@ -2197,7 +2416,8 @@
     "group": "Users and roles",
     "label": "Viewer",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c221",
@@ -2207,7 +2427,8 @@
     "group": "Profile",
     "label": "Name",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c222",
@@ -2217,7 +2438,8 @@
     "group": "Profile",
     "label": "Profile image",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c223",
@@ -2227,7 +2449,8 @@
     "group": "Profile",
     "label": "Email",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c224",
@@ -2237,7 +2460,8 @@
     "group": "Profile",
     "label": "Mobile",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c225",
@@ -2247,7 +2471,8 @@
     "group": "Profile",
     "label": "Bio",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c226",
@@ -2257,7 +2482,8 @@
     "group": "Profile",
     "label": "Password",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c227",
@@ -2267,7 +2493,8 @@
     "group": "Settings",
     "label": "Account",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c228",
@@ -2277,7 +2504,8 @@
     "group": "Settings",
     "label": "Notifications",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c229",
@@ -2287,7 +2515,8 @@
     "group": "Settings",
     "label": "Appearance",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c230",
@@ -2297,7 +2526,8 @@
     "group": "Settings",
     "label": "Language",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c231",
@@ -2307,7 +2537,8 @@
     "group": "Settings",
     "label": "Timezone",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c232",
@@ -2317,7 +2548,8 @@
     "group": "Settings",
     "label": "Security",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c233",
@@ -2327,7 +2559,8 @@
     "group": "Settings",
     "label": "Dark / light mode",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c234",
@@ -2337,7 +2570,8 @@
     "group": "Settings",
     "label": "Custom theme",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c235",
@@ -2347,7 +2581,8 @@
     "group": "Settings",
     "label": "Two-factor authentication",
     "state": "open",
-    "role": "member"
+    "role": "member",
+    "doneAt": null
   },
   {
     "id": "c236",
@@ -2357,7 +2592,8 @@
     "group": "Analytics",
     "label": "Completion %",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c237",
@@ -2367,7 +2603,8 @@
     "group": "Analytics",
     "label": "Total tasks",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c238",
@@ -2377,7 +2614,8 @@
     "group": "Analytics",
     "label": "Completed",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c239",
@@ -2387,7 +2625,8 @@
     "group": "Analytics",
     "label": "Pending",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c240",
@@ -2397,7 +2636,8 @@
     "group": "Analytics",
     "label": "Overdue",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c241",
@@ -2407,7 +2647,8 @@
     "group": "Analytics",
     "label": "Average completion time",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c242",
@@ -2417,7 +2658,8 @@
     "group": "Analytics",
     "label": "Tasks per member",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c243",
@@ -2427,7 +2669,8 @@
     "group": "Analytics",
     "label": "Completed per member",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c244",
@@ -2437,7 +2680,8 @@
     "group": "Analytics",
     "label": "Overdue per member",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c245",
@@ -2447,7 +2691,8 @@
     "group": "Analytics",
     "label": "Workload",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c246",
@@ -2457,7 +2702,8 @@
     "group": "Analytics",
     "label": "Task completion chart",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c247",
@@ -2467,7 +2713,8 @@
     "group": "Analytics",
     "label": "Task distribution",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c248",
@@ -2477,7 +2724,8 @@
     "group": "Analytics",
     "label": "Project progress",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c249",
@@ -2487,7 +2735,8 @@
     "group": "Analytics",
     "label": "Team workload chart",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c250",
@@ -2497,7 +2746,8 @@
     "group": "Responsive, UX, performance",
     "label": "320px",
     "state": "open",
-    "role": "reviewer"
+    "role": "reviewer",
+    "doneAt": null
   },
   {
     "id": "c251",
@@ -2507,7 +2757,8 @@
     "group": "Responsive, UX, performance",
     "label": "375px",
     "state": "open",
-    "role": "reviewer"
+    "role": "reviewer",
+    "doneAt": null
   },
   {
     "id": "c252",
@@ -2517,7 +2768,8 @@
     "group": "Responsive, UX, performance",
     "label": "390px",
     "state": "open",
-    "role": "reviewer"
+    "role": "reviewer",
+    "doneAt": null
   },
   {
     "id": "c253",
@@ -2527,7 +2779,8 @@
     "group": "Responsive, UX, performance",
     "label": "430px",
     "state": "open",
-    "role": "reviewer"
+    "role": "reviewer",
+    "doneAt": null
   },
   {
     "id": "c254",
@@ -2537,7 +2790,8 @@
     "group": "Responsive, UX, performance",
     "label": "Tablet",
     "state": "open",
-    "role": "reviewer"
+    "role": "reviewer",
+    "doneAt": null
   },
   {
     "id": "c255",
@@ -2547,7 +2801,8 @@
     "group": "Responsive, UX, performance",
     "label": "Laptop",
     "state": "open",
-    "role": "reviewer"
+    "role": "reviewer",
+    "doneAt": null
   },
   {
     "id": "c256",
@@ -2557,7 +2812,8 @@
     "group": "Responsive, UX, performance",
     "label": "Desktop",
     "state": "open",
-    "role": "reviewer"
+    "role": "reviewer",
+    "doneAt": null
   },
   {
     "id": "c257",
@@ -2567,7 +2823,8 @@
     "group": "Responsive, UX, performance",
     "label": "Large desktop",
     "state": "open",
-    "role": "reviewer"
+    "role": "reviewer",
+    "doneAt": null
   },
   {
     "id": "c258",
@@ -2577,7 +2834,8 @@
     "group": "Responsive, UX, performance",
     "label": "No dead buttons",
     "state": "open",
-    "role": "reviewer"
+    "role": "reviewer",
+    "doneAt": null
   },
   {
     "id": "c259",
@@ -2587,7 +2845,8 @@
     "group": "Responsive, UX, performance",
     "label": "No fake data",
     "state": "open",
-    "role": "reviewer"
+    "role": "reviewer",
+    "doneAt": null
   },
   {
     "id": "c260",
@@ -2597,7 +2856,8 @@
     "group": "Responsive, UX, performance",
     "label": "No broken links",
     "state": "open",
-    "role": "reviewer"
+    "role": "reviewer",
+    "doneAt": null
   },
   {
     "id": "c261",
@@ -2607,7 +2867,8 @@
     "group": "Responsive, UX, performance",
     "label": "Proper loading",
     "state": "open",
-    "role": "reviewer"
+    "role": "reviewer",
+    "doneAt": null
   },
   {
     "id": "c262",
@@ -2617,7 +2878,8 @@
     "group": "Responsive, UX, performance",
     "label": "Proper errors",
     "state": "open",
-    "role": "reviewer"
+    "role": "reviewer",
+    "doneAt": null
   },
   {
     "id": "c263",
@@ -2627,7 +2889,8 @@
     "group": "Responsive, UX, performance",
     "label": "Proper empty states",
     "state": "open",
-    "role": "reviewer"
+    "role": "reviewer",
+    "doneAt": null
   },
   {
     "id": "c264",
@@ -2637,7 +2900,8 @@
     "group": "Responsive, UX, performance",
     "label": "Keyboard accessibility",
     "state": "open",
-    "role": "reviewer"
+    "role": "reviewer",
+    "doneAt": null
   },
   {
     "id": "c265",
@@ -2647,7 +2911,8 @@
     "group": "Responsive, UX, performance",
     "label": "Focus states",
     "state": "open",
-    "role": "reviewer"
+    "role": "reviewer",
+    "doneAt": null
   },
   {
     "id": "c266",
@@ -2657,7 +2922,8 @@
     "group": "Responsive, UX, performance",
     "label": "Confirmation before destructive actions",
     "state": "open",
-    "role": "reviewer"
+    "role": "reviewer",
+    "doneAt": null
   },
   {
     "id": "c267",
@@ -2667,7 +2933,8 @@
     "group": "Responsive, UX, performance",
     "label": "Lazy loading",
     "state": "open",
-    "role": "reviewer"
+    "role": "reviewer",
+    "doneAt": null
   },
   {
     "id": "c268",
@@ -2677,7 +2944,8 @@
     "group": "Responsive, UX, performance",
     "label": "Code splitting",
     "state": "open",
-    "role": "reviewer"
+    "role": "reviewer",
+    "doneAt": null
   },
   {
     "id": "c269",
@@ -2687,7 +2955,8 @@
     "group": "Responsive, UX, performance",
     "label": "Image optimization",
     "state": "open",
-    "role": "reviewer"
+    "role": "reviewer",
+    "doneAt": null
   },
   {
     "id": "c270",
@@ -2697,7 +2966,8 @@
     "group": "Responsive, UX, performance",
     "label": "API caching",
     "state": "open",
-    "role": "reviewer"
+    "role": "reviewer",
+    "doneAt": null
   },
   {
     "id": "c271",
@@ -2707,7 +2977,8 @@
     "group": "Responsive, UX, performance",
     "label": "Debounced search",
     "state": "open",
-    "role": "reviewer"
+    "role": "reviewer",
+    "doneAt": null
   },
   {
     "id": "c272",
@@ -2717,7 +2988,8 @@
     "group": "Responsive, UX, performance",
     "label": "Pagination / infinite scrolling",
     "state": "open",
-    "role": "reviewer"
+    "role": "reviewer",
+    "doneAt": null
   },
   {
     "id": "c273",
@@ -2727,7 +2999,8 @@
     "group": "Responsive, UX, performance",
     "label": "Avoid unnecessary re-renders",
     "state": "open",
-    "role": "reviewer"
+    "role": "reviewer",
+    "doneAt": null
   },
   {
     "id": "c274",
@@ -2737,7 +3010,8 @@
     "group": "Not started",
     "label": "API",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c275",
@@ -2747,7 +3021,8 @@
     "group": "Not started",
     "label": "Database",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c276",
@@ -2757,7 +3032,8 @@
     "group": "Not started",
     "label": "Auth tokens",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c277",
@@ -2767,7 +3043,8 @@
     "group": "Not started",
     "label": "Roles on the server",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c278",
@@ -2777,7 +3054,8 @@
     "group": "Not started",
     "label": "File storage",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   },
   {
     "id": "c279",
@@ -2787,6 +3065,7 @@
     "group": "Not started",
     "label": "Notification delivery",
     "state": "open",
-    "role": "admin"
+    "role": "admin",
+    "doneAt": null
   }
 ]

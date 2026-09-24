@@ -1,17 +1,25 @@
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
+import { holdsTask, scopeFor } from "../access";
 import { Avatar, Icon, IdChip, Pill } from "../components/Bits";
-import { PROJECT_ROLES, TASK_ROLES, formatDate, label, matches, personName, projectLinks, taskLinks } from "../lib";
+import { Confirm } from "../components/Modal";
+import { Table } from "../components/System";
+import { PROJECT_ROLES, TASK_ROLES, formatDate, formatWhen, label, matches, personName, projectLinks, taskLinks } from "../lib";
 import { useStore } from "../store";
+import { useToast } from "../toast";
 
 export function Assignments({ query }: { query: string }) {
   const store = useStore();
-  const { data } = store;
+  const toast = useToast();
+  const { data, sessionUser } = store;
+  const admin = sessionUser?.role === "admin";
   const [projectId, setProjectId] = useState(data?.projects[0]?.id ?? "");
   const [memberId, setMemberId] = useState("");
   const [memberRole, setMemberRole] = useState("member");
   const [kindFilter, setKindFilter] = useState("all");
   const [message, setMessage] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
+  const [openTask, setOpenTask] = useState<string | null>(null);
+  const [pendingRemove, setPendingRemove] = useState<{ id: string; name: string; from: string } | null>(null);
 
   const selected = data?.projects.find((project) => project.id === projectId) ?? data?.projects[0];
 
@@ -27,11 +35,13 @@ export function Assignments({ query }: { query: string }) {
     });
   }, [data, showAll, selected, kindFilter, query]);
 
-  if (!data) return null;
+  if (!data || !sessionUser) return null;
   if (!selected) return <p className="empty">Add a project before assigning people.</p>;
 
+  const scoped = scopeFor(data, sessionUser);
+  const projectChoices = admin ? data.projects : scoped.projects;
   const members = projectLinks(data.assignments, selected.id);
-  const tasks = data.tasks.filter((task) => task.projectId === selected.id);
+  const tasks = (admin ? data.tasks : scoped.tasks.filter((task) => holdsTask(data.assignments, task.id, sessionUser.id))).filter((task) => task.projectId === selected.id);
   const available = data.users.filter((user) => !members.some((member) => member.userId === user.id));
 
   const addMember = () => {
@@ -53,237 +63,246 @@ export function Assignments({ query }: { query: string }) {
   return (
     <div className="stack">
       <div className="view-head">
-        <p>A project row puts a person on the work. A task row points that person at one task. Each row keeps its own id.</p>
+        <div>
+          <p>{admin ? "Add people to the project first. Then hand each task to someone." : "These are your assignments. Open a task and update its checkpoints."}</p>
+        </div>
+        <label>
+          Project
+          <select
+            className="control"
+            value={selected.id}
+            onChange={(event) => {
+              setProjectId(event.target.value);
+              setMessage(null);
+            }}
+          >
+            {projectChoices.map((project) => (
+              <option key={project.id} value={project.id}>
+                {project.code} · {project.name}
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
       {message && <p className="form-error">{message}</p>}
-      <div className="assign-layout">
-        <aside className="panel project-pick">
+
+      {admin && <section className="panel">
           <header className="panel-head">
-            <h2>Projects</h2>
+            <h2>People on {selected.name}</h2>
+            <span>{members.length}</span>
           </header>
-          {data.projects.map((project) => (
-            <button
-              key={project.id}
-              type="button"
-              className={project.id === selected.id ? "pick on" : "pick"}
-              onClick={() => {
-                setProjectId(project.id);
-                setMessage(null);
-              }}
-            >
-              <span className="dot" style={{ background: project.color }} />
-              <span>
-                <strong>{project.name}</strong>
-                <small>
-                  {project.code} · <IdChip id={project.id} />
-                </small>
-              </span>
+          {members.length === 0 && <p className="empty">Nobody is on this project yet.</p>}
+          <ul className="assign-people">
+            {members.map((member) => {
+              const user = data.users.find((item) => item.id === member.userId);
+              if (!user) return null;
+              return (
+                <li key={member.id}>
+                  <Avatar name={user.name} id={user.id} />
+                  <div>
+                    <strong>{user.name}</strong>
+                    <p className="muted">{label(member.role)}</p>
+                  </div>
+                  <select className="control" value={member.role} aria-label={`${user.name} role`} onChange={(event) => store.updateAssignment(member.id, event.target.value)}>
+                    {PROJECT_ROLES.map((role) => (
+                      <option key={role} value={role}>
+                        {label(role)}
+                      </option>
+                    ))}
+                  </select>
+                  <button type="button" className="btn ghost small" onClick={() => setPendingRemove({ id: member.id, name: user.name, from: selected.name })}>
+                    Remove
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+          <div className="add-row">
+            <select className="control" value={memberId} onChange={(event) => setMemberId(event.target.value)}>
+              <option value="">Add a person</option>
+              {available.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name}
+                </option>
+              ))}
+            </select>
+            <select className="control" value={memberRole} onChange={(event) => setMemberRole(event.target.value)}>
+              {PROJECT_ROLES.map((role) => (
+                <option key={role} value={role}>
+                  {label(role)}
+                </option>
+              ))}
+            </select>
+            <button type="button" className="btn primary" onClick={addMember}>
+              <Icon name="plus" /> Add
             </button>
-          ))}
-        </aside>
-
-        <div className="stack">
-          <section className="panel">
-            <header className="panel-head">
-              <h2>On {selected.name}</h2>
-              <span>{members.length} people</span>
-            </header>
-            <ul className="member-list">
-              {members.map((member) => {
-                const user = data.users.find((item) => item.id === member.userId);
-                if (!user) return null;
-                return (
-                  <li key={member.id}>
-                    <Avatar name={user.name} id={user.id} />
-                    <div>
-                      <strong>
-                        {user.name} <IdChip id={user.id} />
-                      </strong>
-                      <p className="muted">
-                        Link <IdChip id={member.id} />
-                      </p>
-                    </div>
-                    <select className="control" value={member.role} onChange={(event) => store.updateAssignment(member.id, event.target.value)}>
-                      {PROJECT_ROLES.map((role) => (
-                        <option key={role} value={role}>
-                          {label(role)}
-                        </option>
-                      ))}
-                    </select>
-                    <button type="button" className="btn ghost small" onClick={() => store.removeAssignment(member.id)}>
-                      Remove
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-            <div className="add-row">
-              <select className="control" value={memberId} onChange={(event) => setMemberId(event.target.value)}>
-                <option value="">Add a person</option>
-                {available.map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.name} ({user.id})
-                  </option>
-                ))}
-              </select>
-              <select className="control" value={memberRole} onChange={(event) => setMemberRole(event.target.value)}>
-                {PROJECT_ROLES.map((role) => (
-                  <option key={role} value={role}>
-                    {label(role)}
-                  </option>
-                ))}
-              </select>
-              <button type="button" className="btn primary" onClick={addMember}>
-                <Icon name="plus" /> Assign
-              </button>
-            </div>
-          </section>
-
-          <section className="panel">
-            <header className="panel-head">
-              <h2>Tasks</h2>
-              <span>Who holds each one</span>
-            </header>
-            {tasks.length === 0 && <p className="empty">This project has no tasks yet.</p>}
-            <ul className="task-assign">
-              {tasks.map((task) => {
-                const links = taskLinks(data.assignments, task.id);
-                const openUsers = data.users.filter((user) => !links.some((link) => link.userId === user.id));
-                return (
-                  <li key={task.id}>
-                    <div className="card-top">
-                      <div>
-                        <strong>
-                          {task.title} <IdChip id={task.id} />
-                        </strong>
-                        <p className="muted">{label(task.status)}</p>
-                      </div>
-                      <Pill value={task.priority} />
-                    </div>
-                    <div className="chip-row">
-                      {links.length === 0 && <span className="muted">Nobody yet</span>}
-                      {links.map((link) => {
-                        const user = data.users.find((item) => item.id === link.userId);
-                        if (!user) return null;
-                        return (
-                          <span key={link.id} className="chip">
-                            <Avatar name={user.name} id={user.id} />
-                            {user.name}
-                            <select className="control tiny" value={link.role} onChange={(event) => store.updateAssignment(link.id, event.target.value)}>
-                              {TASK_ROLES.map((role) => (
-                                <option key={role} value={role}>
-                                  {label(role)}
-                                </option>
-                              ))}
-                            </select>
-                            <button type="button" className="icon-btn" aria-label={`Remove ${user.name}`} onClick={() => store.removeAssignment(link.id)}>
-                              ×
-                            </button>
-                          </span>
-                        );
-                      })}
-                      <select
-                        className="control"
-                        value=""
-                        onChange={(event) => {
-                          const userId = event.target.value;
-                          if (!userId) return;
-                          setMessage(
-                            store.addAssignment({
-                              kind: "task",
-                              projectId: selected.id,
-                              taskId: task.id,
-                              userId,
-                              role: "assignee",
-                            }),
-                          );
-                        }}
-                      >
-                        <option value="">Add to task</option>
-                        {openUsers.map((user) => (
-                          <option key={user.id} value={user.id}>
-                            {user.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
-        </div>
-      </div>
+          </div>
+      </section>}
 
       <section className="panel">
         <header className="panel-head">
-          <h2>Id map</h2>
-          <span>How the rows point at each other</span>
+          <h2>{admin ? "Tasks" : "Your tasks"}</h2>
+          <span>Open a row for the people and checkpoints</span>
+        </header>
+        {tasks.length === 0 && <p className="empty">This project has no tasks yet.</p>}
+        {tasks.length > 0 && (
+          <Table head={["Task", "Status", "People", "Checkpoints", ""]}>
+                {tasks.map((task) => {
+                  const links = taskLinks(data.assignments, task.id);
+                  const openUsers = data.users.filter((user) => !links.some((link) => link.userId === user.id));
+                  const points = task.checkpointIds.map((id) => data.checkpoints.find((item) => item.id === id)).filter((item) => item !== undefined);
+                  const open = openTask === task.id;
+                  return (
+                    <Fragment key={task.id}>
+                      <tr>
+                        <td><strong>{task.title}</strong></td>
+                        <td><Pill value={task.status} /></td>
+                        <td>{links.length}</td>
+                        <td>{points.length}</td>
+                        <td>
+                          <button type="button" className={open ? "icon-btn chev open" : "icon-btn chev"} aria-label={open ? "Hide task details" : "Show task details"} onClick={() => setOpenTask(open ? null : task.id)}>
+                            <Icon name="chevron" />
+                          </button>
+                        </td>
+                      </tr>
+                      {open && (
+                        <tr className="task-drop">
+                          <td colSpan={5}>
+                            <div className="task-drop-grid">
+                              <div className="drop-pane drop-people">
+                                <h3>People on this task</h3>
+                                {links.length === 0 && <p className="muted">Nobody yet.</p>}
+                                <ul className="drop-people-list">
+                                  {links.map((link) => {
+                                    const user = data.users.find((item) => item.id === link.userId);
+                                    if (!user) return null;
+                                    return (
+                                      <li key={link.id}>
+                                        <Avatar name={user.name} id={user.id} />
+                                        <div>
+                                          <strong>{user.name}</strong>
+                                          <p className="muted">{label(link.role)}</p>
+                                        </div>
+                                        {admin && (
+                                          <select className="control" value={link.role} aria-label={`${user.name} on ${task.title}`} onChange={(event) => store.updateAssignment(link.id, event.target.value)}>
+                                            {TASK_ROLES.map((role) => (
+                                              <option key={role} value={role}>{label(role)}</option>
+                                            ))}
+                                          </select>
+                                        )}
+                                        {admin && <button type="button" className="btn ghost small" onClick={() => setPendingRemove({ id: link.id, name: user.name, from: task.title })}>Remove</button>}
+                                      </li>
+                                    );
+                                  })}
+                                </ul>
+                                {admin && (
+                                  <select
+                                    className="control"
+                                    value=""
+                                    aria-label={`Add someone to ${task.title}`}
+                                    onChange={(event) => {
+                                      const userId = event.target.value;
+                                      if (!userId) return;
+                                      setMessage(store.addAssignment({ kind: "task", projectId: selected.id, taskId: task.id, userId, role: "assignee" }));
+                                    }}
+                                  >
+                                    <option value="">Add someone</option>
+                                    {openUsers.map((user) => (
+                                      <option key={user.id} value={user.id}>{user.name}</option>
+                                    ))}
+                                  </select>
+                                )}
+                              </div>
+                              <div className="drop-pane drop-points">
+                                <h3>Checkpoints</h3>
+                                {points.length === 0 && <p className="muted">No checkpoints on this task.</p>}
+                                <ul className="drop-points-list">
+                                  {points.map((item) => (
+                                    <li key={item.id} className={`state-${item.state}`}>
+                                      <span className="check-mark" />
+                                      <strong>{item.label}</strong>
+                                      <select
+                                        className="control tiny"
+                                        value={item.state}
+                                        aria-label={`${item.label} status`}
+                                        onChange={(event) => {
+                                          const state = event.target.value as "done" | "partial" | "open";
+                                          store.updateCheckpoint(item.id, { state });
+                                          toast(`${item.label} saved`);
+                                        }}
+                                      >
+                                        <option value="open">Not started</option>
+                                        <option value="partial">Partial</option>
+                                        <option value="done">Done</option>
+                                      </select>
+                                      {item.doneAt && <em>{formatWhen(item.doneAt)}</em>}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
+                  );
+                })}
+          </Table>
+        )}
+      </section>
+
+      {admin && <section className="panel">
+        <header className="panel-head">
+          <h2>Links</h2>
+          <span>A plain reading of who is connected</span>
         </header>
         <div className="filters">
           <label>
-            Kind
+            Show
             <select className="control" value={kindFilter} onChange={(event) => setKindFilter(event.target.value)}>
-              <option value="all">All links</option>
-              <option value="project">Project</option>
-              <option value="task">Task</option>
+              <option value="all">People and tasks</option>
+              <option value="project">People on projects</option>
+              <option value="task">People on tasks</option>
             </select>
           </label>
           <label className="check">
             <input type="checkbox" checked={showAll} onChange={(event) => setShowAll(event.target.checked)} />
-            Show every project
+            Every project
           </label>
         </div>
-        <div className="ledger-wrap">
-          <table className="ledger">
-            <thead>
-              <tr>
-                <th>Link</th>
-                <th>Kind</th>
-                <th>Project</th>
-                <th>Task</th>
-                <th>Person</th>
-                <th>Role</th>
-                <th>Since</th>
-              </tr>
-            </thead>
-            <tbody>
-              {ledger.map((item) => {
-                const task = data.tasks.find((entry) => entry.id === item.taskId);
-                return (
-                  <tr key={item.id}>
-                    <td>
-                      <IdChip id={item.id} />
-                    </td>
-                    <td>
-                      <Pill value={item.kind} />
-                    </td>
-                    <td>
-                      {data.projects.find((project) => project.id === item.projectId)?.name ?? "Missing project"}{" "}
-                      <IdChip id={item.projectId} />
-                    </td>
-                    <td>
-                      {item.taskId ? (
-                        <>
-                          {task?.title ?? "Missing task"} <IdChip id={item.taskId} />
-                        </>
-                      ) : (
-                        "—"
-                      )}
-                    </td>
-                    <td>
-                      {personName(data.users, item.userId)} <IdChip id={item.userId} />
-                    </td>
-                    <td>{label(item.role)}</td>
-                    <td>{formatDate(item.assignedAt)}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-          {ledger.length === 0 && <p className="empty">No links match.</p>}
-        </div>
-      </section>
+        {ledger.length === 0 && <p className="empty">Nothing matches.</p>}
+        <ul className="link-list">
+          {ledger.map((item) => {
+            const task = data.tasks.find((entry) => entry.id === item.taskId);
+            const project = data.projects.find((entry) => entry.id === item.projectId);
+            const who = personName(data.users, item.userId);
+            return (
+              <li key={item.id}>
+                <Avatar name={who} id={item.userId} />
+                <p>
+                  <strong>{who}</strong> {item.kind === "task" ? `is ${label(item.role)} on ${task?.title ?? "a missing task"}` : `is the ${label(item.role)} on ${project?.name ?? "a missing project"}`}
+                  <span className="muted">
+                    {" "}
+                    <IdChip id={item.id} /> · {formatDate(item.assignedAt)}
+                  </span>
+                </p>
+              </li>
+            );
+          })}
+        </ul>
+      </section>}
+      {pendingRemove && (
+        <Confirm
+          title="Remove person"
+          body={`Remove ${pendingRemove.name} from ${pendingRemove.from}?`}
+          confirmLabel="Remove"
+          onCancel={() => setPendingRemove(null)}
+          onConfirm={() => {
+            store.removeAssignment(pendingRemove.id);
+            setPendingRemove(null);
+          }}
+        />
+      )}
     </div>
   );
 }

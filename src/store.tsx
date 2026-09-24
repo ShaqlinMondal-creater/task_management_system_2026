@@ -2,11 +2,27 @@ import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { holdsTask } from "./access";
 import { checkpointsForProject } from "./checkpointWork";
-import { nextId, todayISO } from "./lib";
+import { nextId, nowStamp, todayISO } from "./lib";
 import type { Assignment, Checkpoint, FileName, Project, StoreData, Task, User } from "./types";
 
-const STORAGE_KEY = "northline.store.v7";
+const STORAGE_KEY = "northline.store.v8";
 const SESSION_KEY = "northline.session";
+const TOKEN_KEY = "northline.token";
+const IDLE_MS = 30 * 60 * 1000;
+
+function readSession(): { userId: string; exp: number } | "expired" | null {
+  const raw = localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(SESSION_KEY);
+  if (!raw) return null;
+  if (!raw.startsWith("{")) return { userId: raw, exp: Date.now() + IDLE_MS };
+  try {
+    const token = JSON.parse(raw) as { userId?: string; exp?: number };
+    if (!token.userId || !token.exp) return null;
+    if (token.exp < Date.now()) return "expired";
+    return { userId: token.userId, exp: token.exp };
+  } catch {
+    return null;
+  }
+}
 
 interface StoreApi {
   data: StoreData | null;
@@ -14,25 +30,60 @@ interface StoreApi {
   error: string | null;
   usingLocal: boolean;
   sessionUser: User | null;
-  login: (email: string, password: string) => string | null;
+  login: (email: string, password: string, remember?: boolean) => string | null;
   logout: () => void;
+  sessionNote: string | null;
+  clearSessionNote: () => void;
+  changePassword: (current: string, next: string) => string | null;
   resetSeed: () => Promise<void>;
   exportFile: (name: FileName) => void;
   addUser: (input: Omit<User, "id">) => string | null;
   updateUser: (id: string, patch: Partial<User>) => string | null;
   deleteUser: (id: string) => void;
-  addProject: (input: Omit<Project, "id">) => void;
-  updateProject: (id: string, patch: Partial<Project>) => void;
+  addProject: (input: Omit<Project, "id">, ownerName: string, memberIds?: string[]) => void;
+  updateProject: (id: string, patch: Partial<Project>, ownerName?: string, memberIds?: string[]) => void;
   deleteProject: (id: string) => void;
-  addTask: (input: Omit<Task, "id" | "createdAt" | "createdBy">, assigneeIds: string[]) => void;
+  addTask: (input: Omit<Task, "id" | "createdAt" | "createdBy">, assigneeIds: string[], role?: string) => void;
   updateTask: (id: string, patch: Partial<Task>, assigneeIds?: string[]) => void;
   deleteTask: (id: string) => void;
   addAssignment: (input: Omit<Assignment, "id" | "assignedAt">) => string | null;
   updateAssignment: (id: string, role: string) => void;
   removeAssignment: (id: string) => void;
+  addCheckpoint: (input: Omit<Checkpoint, "id" | "doneAt">) => void;
+  updateCheckpoint: (id: string, patch: Partial<Omit<Checkpoint, "id">>) => void;
 }
 
 const StoreContext = createContext<StoreApi | null>(null);
+
+function alignTaskStatuses(data: StoreData) {
+  const stamp = nowStamp();
+  let changed = false;
+  const tasks = data.tasks.map((task) => {
+    if (task.checkpointIds.length === 0) return task;
+    const owned = data.checkpoints.filter((item) => task.checkpointIds.includes(item.id));
+    if (owned.length !== task.checkpointIds.length) return task;
+    const allDone = owned.every((item) => item.state === "done");
+    if (allDone && (task.status !== "done" || task.priority !== "low")) {
+      changed = true;
+      return {
+        ...task,
+        status: "done" as const,
+        priority: "low" as const,
+        updatedAt: stamp,
+        doneAt: task.doneAt ?? stamp,
+      };
+    }
+    if (!allDone && task.status === "done") {
+      changed = true;
+      const reviewerTask = data.assignments.some(
+        (item) => item.kind === "task" && item.taskId === task.id && item.role === "reviewer",
+      );
+      return { ...task, status: reviewerTask ? ("review" as const) : ("doing" as const), updatedAt: stamp, doneAt: null };
+    }
+    return task;
+  });
+  return changed ? { ...data, tasks } : data;
+}
 
 function isStore(value: unknown): value is StoreData {
   if (!value || typeof value !== "object") return false;
@@ -91,6 +142,28 @@ function download(name: string, value: unknown) {
   URL.revokeObjectURL(url);
 }
 
+function resolveOwner(users: User[], ownerId: string, ownerName: string) {
+  const typed = ownerName.trim();
+  if (!typed) return { users, ownerId };
+  const byName = users.find((user) => user.name.toLowerCase() === typed.toLowerCase());
+  if (byName) return { users, ownerId: byName.id };
+  const id = nextId("u", users.map((user) => user.id));
+  const slug = typed.toLowerCase().replace(/[^a-z0-9]+/g, "") || "owner";
+  let email = `${slug}@northline.local`;
+  let n = 2;
+  while (users.some((user) => user.email.toLowerCase() === email)) {
+    email = `${slug}${n}@northline.local`;
+    n += 1;
+  }
+  return {
+    users: [
+      ...users,
+      { id, name: typed, email, password: "changeme", role: "member" as const, title: "Member", department: "Delivery", status: "active" as const },
+    ],
+    ownerId: id,
+  };
+}
+
 function withMembership(assignments: Assignment[], projectId: string, userId: string) {
   const exists = assignments.some(
     (item) => item.kind === "project" && item.projectId === projectId && item.userId === userId,
@@ -117,7 +190,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [usingLocal, setUsingLocal] = useState(false);
-  const [userId, setUserId] = useState<string | null>(() => sessionStorage.getItem(SESSION_KEY));
+  const [userId, setUserId] = useState<string | null>(() => {
+    const found = readSession();
+    return found && found !== "expired" ? found.userId : null;
+  });
+  const [sessionNote, setSessionNote] = useState<string | null>(() => (readSession() === "expired" ? "That session expired. Sign in again." : null));
 
   useEffect(() => {
     let cancel = false;
@@ -154,9 +231,42 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (data && userId && !data.users.some((user) => user.id === userId)) {
       sessionStorage.removeItem(SESSION_KEY);
+      localStorage.removeItem(TOKEN_KEY);
       setUserId(null);
+      setSessionNote("That session is no longer valid. Sign in again.");
     }
   }, [data, userId]);
+
+  useEffect(() => {
+    if (!userId) return;
+    let timer = 0;
+    const arm = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        sessionStorage.removeItem(SESSION_KEY);
+        localStorage.removeItem(TOKEN_KEY);
+        setUserId(null);
+        setSessionNote("You were signed out after 30 minutes of no activity.");
+      }, IDLE_MS);
+    };
+    arm();
+    window.addEventListener("pointerdown", arm);
+    window.addEventListener("keydown", arm);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("pointerdown", arm);
+      window.removeEventListener("keydown", arm);
+    };
+  }, [userId]);
+
+  useEffect(() => {
+    if (!data) return;
+    const next = alignTaskStatuses(data);
+    if (next === data) return;
+    setData(next);
+    setUsingLocal(true);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+  }, [data]);
 
   const commit = (next: StoreData) => {
     setData(next);
@@ -172,18 +282,37 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     error,
     usingLocal,
     sessionUser,
-    login: (email, password) => {
-      const user = data?.users.find(
+    sessionNote,
+    clearSessionNote: () => setSessionNote(null),
+    login: (email, password, remember = false) => {
+      if (!data) return "The desk is not ready. Try again in a moment.";
+      const user = data.users.find(
         (item) => item.email.toLowerCase() === email.trim().toLowerCase() && item.password === password,
       );
       if (!user) return "No account matches that email and password.";
-      sessionStorage.setItem(SESSION_KEY, user.id);
+      const token = JSON.stringify({ userId: user.id, exp: Date.now() + (remember ? 14 * 24 * 60 * 60 * 1000 : IDLE_MS) });
+      sessionStorage.removeItem(SESSION_KEY);
+      localStorage.removeItem(TOKEN_KEY);
+      if (remember) localStorage.setItem(TOKEN_KEY, token);
+      else sessionStorage.setItem(SESSION_KEY, token);
+      setSessionNote(null);
       setUserId(user.id);
       return null;
     },
     logout: () => {
       sessionStorage.removeItem(SESSION_KEY);
+      localStorage.removeItem(TOKEN_KEY);
       setUserId(null);
+    },
+    changePassword: (current, next) => {
+      if (!data || !sessionUser) return "Sign in before changing a password.";
+      if (sessionUser.password !== current) return "The current password is wrong.";
+      if (next.trim().length < 4) return "Use at least 4 characters.";
+      commit({
+        ...data,
+        users: data.users.map((user) => (user.id === sessionUser.id ? { ...user, password: next.trim() } : user)),
+      });
+      return null;
     },
     resetSeed: async () => {
       setLoading(true);
@@ -204,7 +333,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       download(name, data[name]);
     },
     addUser: (input) => {
-      if (!data || sessionUser?.role !== "admin") return "Only an admin can add people.";
+      if (!data) return "Ledger is not ready.";
+      if (sessionUser && sessionUser.role !== "admin") return "Only an admin can add people.";
+      if (!sessionUser && input.role !== "member") return "New accounts join as members.";
       const email = input.email.trim().toLowerCase();
       if (data.users.some((user) => user.email.toLowerCase() === email)) {
         return "That email is already on the ledger.";
@@ -216,7 +347,15 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       return null;
     },
     updateUser: (id, patch) => {
-      if (!data || !sessionUser) return "Ledger is not ready.";
+      if (!data) return "Ledger is not ready.";
+      if (!sessionUser && Object.keys(patch).some((key) => key !== "password")) return "Sign in to edit an account.";
+      if (!sessionUser) {
+        commit({
+          ...data,
+          users: data.users.map((user) => (user.id === id ? { ...user, password: patch.password ?? user.password } : user)),
+        });
+        return null;
+      }
       if (sessionUser.role !== "admin" && id !== sessionUser.id) return "You can only edit your own account.";
       const safe = sessionUser.role === "admin" ? patch : { ...patch, role: sessionUser.role };
       const email = safe.email?.trim().toLowerCase();
@@ -240,10 +379,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         assignments: data.assignments.filter((item) => item.userId !== id),
       });
     },
-    addProject: (input) => {
+    addProject: (input, ownerName, memberIds = []) => {
       if (!data || sessionUser?.role !== "admin") return;
+      const resolved = resolveOwner(data.users, input.ownerId, ownerName);
       const id = nextId("p", data.projects.map((project) => project.id));
-      const assignments = withMembership(
+      let assignments = withMembership(
         [
           ...data.assignments,
           {
@@ -251,28 +391,45 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             kind: "project" as const,
             projectId: id,
             taskId: null,
-            userId: input.ownerId,
+            userId: resolved.ownerId,
             role: "lead",
             assignedAt: todayISO(),
           },
         ],
         id,
-        input.ownerId,
+        resolved.ownerId,
       );
+      for (const userId of memberIds) {
+        if (userId !== resolved.ownerId) assignments = withMembership(assignments, id, userId);
+      }
       const checkpoints = [
         ...data.checkpoints,
         ...checkpointsForProject(id, data.checkpoints.map((item) => item.id)),
       ];
-      commit({ ...data, projects: [...data.projects, { ...input, id }], assignments, checkpoints });
-    },
-    updateProject: (id, patch) => {
-      if (!data || sessionUser?.role !== "admin") return;
-      const assignments =
-        patch.ownerId !== undefined ? withMembership(data.assignments, id, patch.ownerId) : data.assignments;
       commit({
         ...data,
+        users: resolved.users,
+        projects: [...data.projects, { ...input, id, ownerId: resolved.ownerId }],
         assignments,
-        projects: data.projects.map((project) => (project.id === id ? { ...project, ...patch } : project)),
+        checkpoints,
+      });
+    },
+    updateProject: (id, patch, ownerName, memberIds) => {
+      if (!data || sessionUser?.role !== "admin") return;
+      const current = data.projects.find((project) => project.id === id);
+      const resolved = resolveOwner(data.users, patch.ownerId ?? current?.ownerId ?? "", ownerName ?? "");
+      const ownerId = ownerName !== undefined ? resolved.ownerId : (patch.ownerId ?? current?.ownerId);
+      let assignments = ownerId ? withMembership(data.assignments, id, ownerId) : data.assignments;
+      if (memberIds && ownerId) {
+        const keep = new Set([ownerId, ...memberIds]);
+        assignments = assignments.filter((item) => item.kind !== "project" || item.projectId !== id || keep.has(item.userId));
+        for (const userId of memberIds) assignments = withMembership(assignments, id, userId);
+      }
+      commit({
+        ...data,
+        users: ownerName !== undefined ? resolved.users : data.users,
+        assignments,
+        projects: data.projects.map((project) => (project.id === id ? { ...project, ...patch, ownerId: ownerId ?? project.ownerId } : project)),
       });
     },
     deleteProject: (id) => {
@@ -285,7 +442,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         checkpoints: data.checkpoints.filter((item) => item.projectId !== id),
       });
     },
-    addTask: (input, assigneeIds) => {
+    addTask: (input, assigneeIds, role = "assignee") => {
       if (!data || !sessionUser || sessionUser.role === "reviewer") return;
       const allowedIds = sessionUser.role === "admin" ? assigneeIds : [sessionUser.id];
       const id = nextId("t", data.tasks.map((task) => task.id));
@@ -300,22 +457,17 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             projectId: input.projectId,
             taskId: id,
             userId,
-            role: "assignee",
+            role,
             assignedAt: todayISO(),
           },
         ];
       }
-      const checkpointIds = sessionUser.role === "admin" ? input.checkpointIds : [];
-      const chosen = new Set(checkpointIds);
+      const taken = new Set(data.tasks.flatMap((task) => task.checkpointIds));
+      const checkpointIds = sessionUser.role === "admin" ? input.checkpointIds.filter((item) => !taken.has(item)) : [];
       commit({
         ...data,
         assignments,
-        tasks: [
-          ...data.tasks.map((task) =>
-            chosen.size === 0 ? task : { ...task, checkpointIds: task.checkpointIds.filter((item) => !chosen.has(item)) },
-          ),
-          { ...input, checkpointIds, id, createdBy: sessionUser.id, createdAt: todayISO() },
-        ],
+        tasks: [...data.tasks, { ...input, checkpointIds, id, createdBy: sessionUser.id, createdAt: todayISO() }],
       });
     },
     updateTask: (id, patch, assigneeIds) => {
@@ -325,7 +477,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       if (sessionUser.role !== "admin" && !holdsTask(data.assignments, id, sessionUser.id)) return;
       const memberPatch = { ...patch };
       delete memberPatch.checkpointIds;
-      const nextPatch = sessionUser.role === "reviewer" ? { status: patch.status ?? current.status } : sessionUser.role === "admin" ? patch : memberPatch;
+      const nextPatch = sessionUser.role === "reviewer" ? { status: patch.status ?? current.status, comments: patch.comments ?? current.comments } : sessionUser.role === "admin" ? patch : memberPatch;
       const nextAssignees = sessionUser.role === "member" ? [sessionUser.id] : assigneeIds;
       const projectId = nextPatch.projectId ?? current.projectId;
       let assignments = data.assignments.map((item) => (item.taskId === id ? { ...item, projectId } : item));
@@ -353,14 +505,32 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           ];
         }
       }
-      const chosen = new Set(sessionUser.role === "admin" ? (patch.checkpointIds ?? []) : []);
+      const taken = new Set(data.tasks.filter((task) => task.id !== id).flatMap((task) => task.checkpointIds));
+      const chosen = patch.checkpointIds && sessionUser.role === "admin" ? patch.checkpointIds.filter((item) => !taken.has(item) || current.checkpointIds.includes(item)) : null;
+      const stamp = nowStamp();
+      const nextStatus = nextPatch.status ?? current.status;
+      const becameDone = nextStatus === "done" && current.status !== "done";
+      const leftDone = nextStatus !== "done" && current.status === "done";
+      const owned = new Set(current.checkpointIds);
       commit({
         ...data,
         assignments,
+        checkpoints: data.checkpoints.map((item) => {
+          if (!becameDone || !owned.has(item.id)) return item;
+          if (item.state === "done" && item.doneAt) return item;
+          return { ...item, state: "done" as const, doneAt: item.doneAt ?? stamp };
+        }),
         tasks: data.tasks.map((task) => {
-          if (task.id === id) return { ...task, ...nextPatch };
-          if (chosen.size === 0) return task;
-          return { ...task, checkpointIds: task.checkpointIds.filter((item) => !chosen.has(item)) };
+          if (task.id === id) {
+            return {
+              ...task,
+              ...nextPatch,
+              checkpointIds: chosen ?? task.checkpointIds,
+              updatedAt: stamp,
+              doneAt: becameDone ? stamp : leftDone ? null : task.doneAt ?? null,
+            };
+          }
+          return task;
         }),
       });
     },
@@ -410,6 +580,43 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         ...data,
         assignments: data.assignments.map((item) => (item.id === id ? { ...item, role } : item)),
       });
+    },
+    addCheckpoint: (input) => {
+      if (!data || sessionUser?.role !== "admin") return;
+      const id = nextId("c", data.checkpoints.map((item) => item.id));
+      commit({
+        ...data,
+        checkpoints: [
+          ...data.checkpoints,
+          {
+            ...input,
+            id,
+            doneAt: input.state === "done" ? nowStamp() : null,
+            details: (input.details ?? "").trim(),
+            link: (input.link ?? "").trim(),
+            photo: (input.photo ?? "").trim(),
+          },
+        ],
+      });
+    },
+    updateCheckpoint: (id, patch) => {
+      if (!data || !sessionUser) return;
+      const current = data.checkpoints.find((item) => item.id === id);
+      if (!current) return;
+      const mine = data.tasks.some((task) => task.checkpointIds.includes(id) && holdsTask(data.assignments, task.id, sessionUser.id));
+      const nextPatch = sessionUser.role === "admin" ? patch : mine && patch.state ? { state: patch.state } : null;
+      if (!nextPatch) return;
+      const checkpoints = data.checkpoints.map((item) => {
+        if (item.id !== id) return item;
+        const next = { ...item, ...nextPatch };
+        if (nextPatch.details !== undefined) next.details = nextPatch.details.trim();
+        if (nextPatch.link !== undefined) next.link = nextPatch.link.trim();
+        if (nextPatch.photo !== undefined) next.photo = nextPatch.photo.trim();
+        if (next.state === "done" && item.state !== "done") next.doneAt = nowStamp();
+        if (next.state !== "done") next.doneAt = null;
+        return next;
+      });
+      commit(alignTaskStatuses({ ...data, checkpoints }));
     },
     removeAssignment: (id) => {
       if (!data || sessionUser?.role !== "admin") return;
