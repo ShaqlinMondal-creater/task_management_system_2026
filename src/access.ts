@@ -1,10 +1,12 @@
 import type { Assignment, Project, StoreData, User } from "./types";
 
-export type ViewId = "desk" | "projects" | "tasks" | "people" | "assign" | "checks";
+export type ViewId = "desk" | "projects" | "tasks" | "people" | "assign" | "checks" | "admin";
 
 const NAV: Record<User["role"], ViewId[]> = {
-  admin: ["desk", "projects", "tasks", "people", "assign", "checks"],
+  admin: ["desk", "projects", "tasks", "people", "assign", "checks", "admin"],
+  manager: ["desk", "projects", "tasks", "people", "assign"],
   member: ["desk", "projects", "tasks", "people", "assign"],
+  viewer: ["desk", "projects", "tasks"],
   reviewer: ["desk", "tasks", "people", "assign"],
 };
 
@@ -13,7 +15,7 @@ export function viewsFor(role: User["role"]) {
 }
 
 export function scopeFor(data: StoreData, user: User) {
-  if (user.role === "admin") {
+  if (user.role === "admin" || user.role === "manager") {
     return {
       users: data.users,
       projects: data.projects,

@@ -3,6 +3,7 @@ import type { FormEvent } from "react";
 import { scopeFor } from "../access";
 import { Avatar, Field, Icon, IdChip, Pill } from "../components/Bits";
 import { Confirm, Modal } from "../components/Modal";
+import type { Task } from "../types";
 import { USER_ROLES, label, matches, taskLinks } from "../lib";
 import { useStore } from "../store";
 import type { Role, User, UserStatus } from "../types";
@@ -25,6 +26,7 @@ export function People({ query, intent, onIntent }: { query: string; intent?: "c
   const [dialog, setDialog] = useState<{ mode: "edit"; user: User } | { mode: "create" } | { mode: "delete"; user: User } | null>(null);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [profileId, setProfileId] = useState<string | null>(null);
 
   useEffect(() => {
     if (intent !== "invite" || sessionUser?.role !== "admin") return;
@@ -95,7 +97,7 @@ export function People({ query, intent, onIntent }: { query: string; intent?: "c
         </p>
         {admin && (
           <button type="button" className="btn primary" onClick={openCreate}>
-            <Icon name="plus" /> New person
+            <Icon name="plus" /> Invite member
           </button>
         )}
       </div>
@@ -122,8 +124,11 @@ export function People({ query, intent, onIntent }: { query: string; intent?: "c
                 <span className="muted">{openCount} open</span>
               </div>
               <div className="card-actions">
+                <button type="button" className="btn ghost small" onClick={() => setProfileId(user.id)}>
+                  Profile
+                </button>
                 <button type="button" className="btn ghost small" onClick={() => openEdit(user)}>
-                  Edit
+                  {admin ? "Assign role" : "Edit"}
                 </button>
                 {admin && (
                   <button
@@ -142,7 +147,7 @@ export function People({ query, intent, onIntent }: { query: string; intent?: "c
       </div>
 
       {dialog && dialog.mode !== "delete" && draft && (
-        <Modal title={dialog.mode === "edit" ? `Edit person · ${dialog.user.id}` : "New person"} onClose={() => setDialog(null)}>
+        <Modal title={dialog.mode === "edit" ? `Assign role · ${dialog.user.name}` : "Invite member"} onClose={() => setDialog(null)}>
           <form className="form-grid" onSubmit={save}>
             <Field label="Name">
               <input className="control" value={draft.name} onChange={(event) => setDraft({ ...draft, name: event.target.value })} required />
@@ -169,6 +174,7 @@ export function People({ query, intent, onIntent }: { query: string; intent?: "c
               <select className="control" value={draft.status} onChange={(event) => setDraft({ ...draft, status: event.target.value as UserStatus })}>
                 <option value="active">Active</option>
                 <option value="away">Away</option>
+                <option value="inactive">Inactive</option>
               </select>
             </Field>
             <Field label={dialog.mode === "edit" ? "New password" : "Password"} wide>
@@ -193,6 +199,14 @@ export function People({ query, intent, onIntent }: { query: string; intent?: "c
         </Modal>
       )}
 
+      {profileId && data.users.some((user) => user.id === profileId) && (
+        <MemberProfile
+          user={data.users.find((user) => user.id === profileId)!}
+          tasks={data.tasks.filter((task) => data.assignments.some((item) => item.kind === "task" && item.taskId === task.id && item.userId === profileId))}
+          onClose={() => setProfileId(null)}
+        />
+      )}
+
       {dialog?.mode === "delete" && (
         <Confirm
           title={`Remove ${dialog.user.name}`}
@@ -206,5 +220,48 @@ export function People({ query, intent, onIntent }: { query: string; intent?: "c
         />
       )}
     </div>
+  );
+}
+
+function MemberProfile({ user, tasks, onClose }: { user: User; tasks: Task[]; onClose: () => void }) {
+  const open = tasks.filter((task) => task.status !== "done").length;
+  const done = tasks.length - open;
+  const peak = Math.max(1, tasks.length);
+  return (
+    <Modal title={user.name} onClose={onClose}>
+      <div className="stack project-detail">
+        <p className="muted">{user.email}</p>
+        <div className="fact-grid">
+          <div><span>Role</span><strong>{label(user.role)}</strong></div>
+          <div><span>Title</span><strong>{user.title || "No title"}</strong></div>
+          <div><span>Department</span><strong>{user.department || "No department"}</strong></div>
+          <div><span>Status</span><strong>{label(user.status)}</strong></div>
+        </div>
+        <section>
+          <h3>Workload</h3>
+          <ul className="bars">
+            <li>
+              <span>Open</span>
+              <div className="bar"><span style={{ width: `${(open / peak) * 100}%`, background: "#2563eb" }} /></div>
+              <em>{open}</em>
+            </li>
+            <li>
+              <span>Done</span>
+              <div className="bar"><span style={{ width: `${(done / peak) * 100}%`, background: "#16a34a" }} /></div>
+              <em>{done}</em>
+            </li>
+          </ul>
+        </section>
+        <section>
+          <h3>Tasks</h3>
+          <ul className="line-list">
+            {tasks.length === 0 && <li>No tasks assigned.</li>}
+            {tasks.map((task) => (
+              <li key={task.id}><strong>{task.title}</strong><span>{label(task.status)} · {label(task.priority)}</span></li>
+            ))}
+          </ul>
+        </section>
+      </div>
+    </Modal>
   );
 }

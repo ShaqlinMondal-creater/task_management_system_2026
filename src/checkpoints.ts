@@ -173,11 +173,11 @@ export const CHECKPOINTS: CheckPhase[] = [
     groups: [
       {
         title: "Required",
-        items: [...items("open", ["List view", "Calendar"]), ...items("done", ["Kanban board"])],
+        items: items("done", ["List view", "Calendar", "Kanban board"]),
       },
       {
         title: "Advanced",
-        items: items("open", ["Timeline", "Gantt", "Table", "Workload"]),
+        items: items("done", ["Timeline", "Gantt", "Table", "Workload"]),
       },
     ],
   },
@@ -189,15 +189,13 @@ export const CHECKPOINTS: CheckPhase[] = [
     groups: [
       {
         title: "Search",
-        items: [
-          ...items("partial", ["Global task search", "Project search", "User search", "Search by title", "Search by description"]),
-        ],
+        items: items("done", ["Global task search", "Project search", "User search", "Search by title", "Search by description"]),
       },
       {
         title: "Filters and sort",
-        items: [
-          ...items("partial", ["Assignee", "Project"]),
-          ...items("open", [
+        items: items("done", [
+          "Assignee",
+          "Project",
           "Status",
           "Priority",
           "Due date",
@@ -215,8 +213,7 @@ export const CHECKPOINTS: CheckPhase[] = [
           "High priority",
           "Due this week",
           "Unassigned",
-          ]),
-        ],
+        ]),
       },
     ],
   },
@@ -229,13 +226,12 @@ export const CHECKPOINTS: CheckPhase[] = [
       {
         title: "Team",
         items: [
-          ...items("partial", ["Team list", "Assign role", "Member workload"]),
-          ...items("open", ["Invite member", "Remove member", "Member profile"]),
+          ...items("done", ["Team list", "Invite member", "Remove member", "Assign role", "Member profile", "Member workload"]),
         ],
       },
       {
         title: "Comments and activity",
-        items: items("open", ["Add comment", "Edit comment", "Delete comment", "Reply", "@mention", "Comment timestamps", "Activity stream"]),
+        items: items("done", ["Add comment", "Edit comment", "Delete comment", "Reply", "@mention", "Comment timestamps", "Activity stream"]),
       },
     ],
   },
@@ -247,19 +243,10 @@ export const CHECKPOINTS: CheckPhase[] = [
     groups: [
       {
         title: "In-app center",
-        items: items("open", [
-          "Task assigned",
-          "Task mentioned",
-          "Comment",
-          "Due soon",
-          "Overdue",
-          "Project invitation",
-          "Task completed",
-          "Status changed",
-          "Email notifications",
-          "Push notifications",
-          "WhatsApp integration",
-        ]),
+        items: [
+          ...items("done", ["Task assigned", "Task mentioned", "Comment", "Due soon", "Overdue", "Project invitation", "Task completed", "Status changed"]),
+          ...items("open", ["Email notifications", "Push notifications", "WhatsApp integration"]),
+        ],
       },
     ],
   },
@@ -271,14 +258,11 @@ export const CHECKPOINTS: CheckPhase[] = [
     groups: [
       {
         title: "Sections",
-        items: items("open", ["Admin dashboard", "Users", "Roles", "Projects", "Tasks", "Activity logs", "Settings", "System"]),
+        items: items("done", ["Admin dashboard", "Users", "Roles", "Projects", "Tasks", "Activity logs", "Settings", "System"]),
       },
       {
         title: "Users and roles",
-        items: [
-          ...items("partial", ["User list", "Search", "Create", "Edit", "Delete", "Assign role"]),
-          ...items("open", ["Filter", "Activate / deactivate", "Admin", "Manager", "Member", "Viewer"]),
-        ],
+        items: items("done", ["User list", "Search", "Filter", "Create", "Edit", "Activate / deactivate", "Delete", "Assign role", "Admin", "Manager", "Member", "Viewer"]),
       },
     ],
   },

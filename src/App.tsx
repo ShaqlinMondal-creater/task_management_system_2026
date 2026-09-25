@@ -5,12 +5,13 @@ import { Drawer, Dropdown, Tooltip } from "./components/System";
 import type { IconName } from "./components/Bits";
 import { scopeFor, viewsFor } from "./access";
 import type { ViewId } from "./access";
-import { formatDate, greeting, label, openTasks, personName } from "./lib";
+import { ago, greeting, isOverdue, label, openTasks, personName, taskLinks, todayISO } from "./lib";
 import { useStore } from "./store";
 import type { FileName } from "./types";
 import { StoreProvider } from "./store";
 import { ToastProvider, useToast } from "./toast";
 import { Assignments } from "./views/Assignments";
+import { Admin } from "./views/Admin";
 import { Checkpoints } from "./views/Checkpoints";
 import { Desk } from "./views/Desk";
 import { ChangePassword, Login } from "./views/Login";
@@ -19,7 +20,7 @@ import { Projects } from "./views/Projects";
 import { Tasks } from "./views/Tasks";
 
 const VIEW_KEY = "northline.view";
-const VIEWS: ViewId[] = ["desk", "projects", "tasks", "people", "assign", "checks"];
+const VIEWS: ViewId[] = ["desk", "projects", "tasks", "people", "assign", "checks", "admin"];
 
 function savedView(): ViewId {
   const saved = sessionStorage.getItem(VIEW_KEY);
@@ -33,6 +34,7 @@ const NAV: { id: ViewId; label: string; icon: IconName }[] = [
   { id: "people", label: "People", icon: "people" },
   { id: "assign", label: "Assignments", icon: "assign" },
   { id: "checks", label: "Checkpoints", icon: "check" },
+  { id: "admin", label: "Admin", icon: "alert" },
 ];
 
 function Shell() {
@@ -111,18 +113,62 @@ function Shell() {
     people: scoped.users.length,
     assign: scoped.assignments.length,
     checks: store.data.checkpoints.length,
+    admin: store.data.users.length,
   };
   const heading = active === "desk" ? `${greeting()}, ${user.name.split(" ")[0]}` : page?.label;
-  const notes = store.data.assignments
-    .filter((item) => item.kind === "task" && item.taskId && (user.role === "admin" || item.userId === user.id))
-    .slice()
-    .sort((a, b) => b.assignedAt.localeCompare(a.assignedAt))
-    .slice(0, 6)
-    .map((item) => {
-      const task = store.data?.tasks.find((entry) => entry.id === item.taskId);
-      const who = user.role === "admin" ? personName(store.data?.users ?? [], item.userId) : "You";
-      return { id: item.id, who, role: item.role, title: task?.title ?? item.taskId, when: item.assignedAt };
-    });
+  const data = store.data;
+  const mine = data.tasks.filter((task) => taskLinks(data.assignments, task.id).some((link) => link.userId === user.id));
+  const endSoon = shiftDay(todayISO(), 1);
+  const notes = [
+    ...data.assignments.filter((item) => item.kind === "task" && item.userId === user.id && item.taskId).map((item) => ({
+      id: `assign-${item.id}`,
+      when: item.assignedAt,
+      title: "Task assigned to you",
+      detail: data.tasks.find((task) => task.id === item.taskId)?.title ?? "Task",
+    })),
+    ...data.assignments.filter((item) => item.kind === "project" && item.userId === user.id && item.role !== "lead").map((item) => ({
+      id: `invite-${item.id}`,
+      when: item.assignedAt,
+      title: "Project invitation",
+      detail: data.projects.find((project) => project.id === item.projectId)?.name ?? "Project",
+    })),
+    ...data.tasks.flatMap((task) => (task.comments ?? []).filter((comment) => comment.userId !== user.id && comment.body.includes(`@${user.name}`)).map((comment) => ({
+      id: `mention-${comment.id}`,
+      when: comment.at,
+      title: `${personName(data.users, comment.userId)} mentioned you`,
+      detail: task.title,
+    }))),
+    ...mine.flatMap((task) => (task.comments ?? []).filter((comment) => comment.userId !== user.id && !comment.body.includes(`@${user.name}`)).map((comment) => ({
+      id: `comment-${comment.id}`,
+      when: comment.at,
+      title: `${personName(data.users, comment.userId)} added a comment`,
+      detail: task.title,
+    }))),
+    ...mine.filter((task) => task.status !== "done" && task.dueDate >= todayISO() && task.dueDate <= endSoon).map((task) => ({
+      id: `soon-${task.id}`,
+      when: task.dueDate,
+      title: task.dueDate === todayISO() ? "Task deadline today" : "Task deadline tomorrow",
+      detail: task.title,
+    })),
+    ...mine.filter((task) => isOverdue(task.dueDate, task.status)).map((task) => ({
+      id: `late-${task.id}`,
+      when: task.dueDate,
+      title: "Task is overdue",
+      detail: task.title,
+    })),
+    ...mine.filter((task) => task.status === "done").map((task) => ({
+      id: `done-${task.id}`,
+      when: task.doneAt || task.updatedAt || task.createdAt,
+      title: "Task completed",
+      detail: task.title,
+    })),
+    ...mine.flatMap((task) => (task.activity ?? []).filter((item) => item.text.includes("changed status") && !item.text.startsWith(user.name)).map((item) => ({
+      id: `status-${item.id}`,
+      when: item.at,
+      title: "Status changed",
+      detail: `${task.title} · ${item.text}`,
+    }))),
+  ].sort((a, b) => b.when.localeCompare(a.when)).slice(0, 12);
 
   function save(name: FileName) {
     store.exportFile(name);
@@ -214,21 +260,22 @@ function Shell() {
               </button>
               {notesOpen && (
                 <div className="menu notes">
-                  <p>Recent assignments</p>
-                  {notes.length === 0 && <p className="empty">No assignments yet.</p>}
+                  <p>Notifications</p>
+                  {notes.length === 0 && <p className="empty">No notifications yet.</p>}
                   {notes.map((item) => (
                     <button
                       key={item.id}
                       type="button"
                       onClick={() => {
+                        setNotesOpen(false);
                         openView("tasks");
-                        push(`Opened ${item.title}`);
                       }}
                     >
-                      <Icon name="assign" />
+                      <Icon name="bell" />
                       <span>
-                        <strong>{item.who}</strong> {item.role === "reviewer" ? "is reviewing" : "is assigned"} {item.title}
-                        <small>{formatDate(item.when)}</small>
+                        <strong>{item.title}</strong>
+                        {item.detail}
+                        <small>{ago(item.when)}</small>
                       </span>
                     </button>
                   ))}
@@ -310,6 +357,7 @@ function Shell() {
           {active === "people" && <People query={query} intent={intent} onIntent={() => setIntent(null)} />}
           {active === "assign" && <Assignments query={query} />}
           {active === "checks" && <Checkpoints query={query} />}
+          {active === "admin" && <Admin query={query} />}
         </div>
       </div>
       {passwordOpen && (
@@ -319,6 +367,13 @@ function Shell() {
       )}
     </div>
   );
+}
+
+function shiftDay(iso: string, days: number) {
+  const [year, month, day] = iso.split("-").map(Number);
+  const date = new Date(year, (month ?? 1) - 1, day ?? 1);
+  date.setDate(date.getDate() + days);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
 function ShellSkeleton() {

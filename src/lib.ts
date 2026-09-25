@@ -3,7 +3,7 @@ import type { Assignment, Task, User } from "./types";
 export const TASK_STATUSES = ["backlog", "todo", "doing", "review", "done"] as const;
 export const PROJECT_STATUSES = ["planned", "active", "paused", "done"] as const;
 export const PRIORITIES = ["low", "medium", "high", "urgent"] as const;
-export const USER_ROLES = ["admin", "member", "reviewer"] as const;
+export const USER_ROLES = ["admin", "manager", "member", "viewer", "reviewer"] as const;
 export const PROJECT_ROLES = ["lead", "member", "reviewer"] as const;
 export const TASK_ROLES = ["assignee", "reviewer"] as const;
 export const COLORS = ["#1e6b45", "#2a5f8a", "#c24e2a", "#8a5a2a", "#5c4d8a", "#1f6f78"];
@@ -22,8 +22,11 @@ const LABELS: Record<string, string> = {
   high: "High",
   urgent: "Urgent",
   admin: "Admin",
+  manager: "Manager",
   lead: "Lead",
   member: "Member",
+  viewer: "Viewer",
+  inactive: "Inactive",
   assignee: "Assignee",
   reviewer: "Reviewer",
   away: "Away",
@@ -56,6 +59,25 @@ export function nowStamp() {
   const d = new Date();
   const p = (n: number) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
+export function ago(iso: string) {
+  if (!iso) return "";
+  const hasTime = iso.includes("T");
+  const [date, time] = iso.split("T");
+  const [year, month, day] = date.split("-").map(Number);
+  const [hour, minute] = (time ?? "00:00").split(":").map(Number);
+  const then = new Date(year, (month ?? 1) - 1, day ?? 1, hour || 0, minute || 0);
+  const diff = Date.now() - then.getTime();
+  if (!hasTime) return formatDate(date);
+  const mins = Math.round(diff / 60000);
+  if (mins < 1) return "Just now";
+  if (mins < 60) return `${mins} min ago`;
+  const hours = Math.round(mins / 60);
+  if (hours < 24) return `${hours} hr ago`;
+  const days = Math.round(hours / 24);
+  if (days === 1) return "1 day ago";
+  return `${days} days ago`;
 }
 
 export function formatDate(iso: string) {

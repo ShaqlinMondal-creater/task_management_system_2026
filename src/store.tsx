@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { holdsTask } from "./access";
 import { checkpointsForProject } from "./checkpointWork";
-import { nextId, nowStamp, todayISO } from "./lib";
+import { label, nextId, nowStamp, personName, todayISO } from "./lib";
 import type { Assignment, Checkpoint, FileName, Project, StoreData, Task, User } from "./types";
 
 const STORAGE_KEY = "northline.store.v8";
@@ -443,7 +443,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       });
     },
     addTask: (input, assigneeIds, role = "assignee") => {
-      if (!data || !sessionUser || sessionUser.role === "reviewer") return;
+      if (!data || !sessionUser || sessionUser.role === "reviewer" || sessionUser.role === "viewer") return;
       const allowedIds = sessionUser.role === "admin" ? assigneeIds : [sessionUser.id];
       const id = nextId("t", data.tasks.map((task) => task.id));
       let assignments = data.assignments;
@@ -471,14 +471,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       });
     },
     updateTask: (id, patch, assigneeIds) => {
-      if (!data || !sessionUser) return;
+      if (!data || !sessionUser || sessionUser.role === "viewer") return;
       const current = data.tasks.find((task) => task.id === id);
       if (!current) return;
       if (sessionUser.role !== "admin" && !holdsTask(data.assignments, id, sessionUser.id)) return;
       const memberPatch = { ...patch };
       delete memberPatch.checkpointIds;
       const nextPatch = sessionUser.role === "reviewer" ? { status: patch.status ?? current.status, comments: patch.comments ?? current.comments } : sessionUser.role === "admin" ? patch : memberPatch;
-      const nextAssignees = sessionUser.role === "member" ? [sessionUser.id] : assigneeIds;
+      const nextAssignees = assigneeIds === undefined ? undefined : sessionUser.role === "member" ? [sessionUser.id] : assigneeIds;
       const projectId = nextPatch.projectId ?? current.projectId;
       let assignments = data.assignments.map((item) => (item.taskId === id ? { ...item, projectId } : item));
       if (nextAssignees) {
@@ -509,6 +509,20 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       const chosen = patch.checkpointIds && sessionUser.role === "admin" ? patch.checkpointIds.filter((item) => !taken.has(item) || current.checkpointIds.includes(item)) : null;
       const stamp = nowStamp();
       const nextStatus = nextPatch.status ?? current.status;
+      const events = [...(current.activity ?? [])];
+      const note = (text: string) => events.push({ id: nextId("e", events.map((item) => item.id)), at: stamp, text });
+      if (nextStatus !== current.status) note(`${sessionUser.name} changed status → ${label(nextStatus)}`);
+      if (nextPatch.dueDate && nextPatch.dueDate !== current.dueDate) note(`${sessionUser.name} changed the deadline to ${nextPatch.dueDate}`);
+      if (nextAssignees) {
+        const previousIds = data.assignments.filter((item) => item.kind === "task" && item.taskId === id).map((item) => item.userId);
+        const added = nextAssignees.filter((userId) => !previousIds.includes(userId));
+        if (added.length) note(`${sessionUser.name} assigned ${current.title} to ${added.map((userId) => personName(data.users, userId)).join(", ")}`);
+      }
+      const previousComments = current.comments ?? [];
+      const nextComments = nextPatch.comments ?? previousComments;
+      for (const item of nextComments.filter((comment) => !previousComments.some((commentItem) => commentItem.id === comment.id))) {
+        note(`${personName(data.users, item.userId)} added a comment`);
+      }
       const becameDone = nextStatus === "done" && current.status !== "done";
       const leftDone = nextStatus !== "done" && current.status === "done";
       const owned = new Set(current.checkpointIds);
@@ -526,6 +540,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
               ...task,
               ...nextPatch,
               checkpointIds: chosen ?? task.checkpointIds,
+              activity: events,
               updatedAt: stamp,
               doneAt: becameDone ? stamp : leftDone ? null : task.doneAt ?? null,
             };

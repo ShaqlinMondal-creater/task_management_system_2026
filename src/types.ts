@@ -1,5 +1,5 @@
-export type Role = "admin" | "member" | "reviewer";
-export type UserStatus = "active" | "away";
+export type Role = "admin" | "manager" | "member" | "viewer" | "reviewer";
+export type UserStatus = "active" | "away" | "inactive";
 export type ProjectStatus = "planned" | "active" | "paused" | "done";
 export type TaskStatus = "backlog" | "todo" | "doing" | "review" | "done";
 export type Priority = "low" | "medium" | "high" | "urgent";
@@ -67,6 +67,13 @@ export interface TaskComment {
   userId: string;
   body: string;
   at: string;
+  replyTo?: string | null;
+}
+
+export interface TaskActivity {
+  id: string;
+  at: string;
+  text: string;
 }
 
 export interface Task {
@@ -90,6 +97,7 @@ export interface Task {
   parentId?: string | null;
   customStatus?: string;
   comments?: TaskComment[];
+  activity?: TaskActivity[];
 }
 
 export interface Assignment {

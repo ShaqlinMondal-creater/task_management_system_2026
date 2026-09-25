@@ -4,8 +4,8 @@ import { scopeFor } from "../access";
 import { Avatar, Field, Icon, IdChip, Pill, SearchSelect } from "../components/Bits";
 import { CheckpointView } from "../components/CheckpointView";
 import { Confirm, Modal } from "../components/Modal";
-import { DatePicker, Drawer, MultiSelect } from "../components/System";
-import { PRIORITIES, TASK_STATUSES, formatDate, formatWhen, isOverdue, label, matches, nextId, nowStamp, personName, taskLinks } from "../lib";
+import { DatePicker, Drawer, MultiSelect, Table, Tabs } from "../components/System";
+import { PRIORITIES, TASK_STATUSES, formatDate, formatWhen, isOverdue, label, matches, nextId, nowStamp, personName, taskLinks, todayISO } from "../lib";
 import { useStore } from "../store";
 import { useToast } from "../toast";
 import type { Assignment, Checkpoint, Priority, Project, Task, TaskFile, TaskStatus, User } from "../types";
@@ -43,10 +43,27 @@ export function Tasks({ query, intent, onIntent }: { query: string; intent?: "cr
   const [viewing, setViewing] = useState<Checkpoint | null>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
   const [comment, setComment] = useState("");
+  const [mode, setMode] = useState<"list" | "board" | "calendar" | "timeline" | "gantt" | "table" | "workload">("board");
+  const [month, setMonth] = useState(() => new Date().toISOString().slice(0, 7));
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [priorityFilter, setPriorityFilter] = useState("all");
+  const [dueFilter, setDueFilter] = useState("");
+  const [createdFilter, setCreatedFilter] = useState("");
+  const [tagFilter, setTagFilter] = useState("");
+  const [creatorFilter, setCreatorFilter] = useState("all");
+  const [sortKey, setSortKey] = useState<"newest" | "oldest" | "due" | "priority" | "updated" | "alpha">("newest");
+  const [saved, setSaved] = useState<{ name: string; value: string }[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem("northline.taskFilters") || "[]");
+    } catch {
+      return [];
+    }
+  });
+  const [filterName, setFilterName] = useState("");
 
   useEffect(() => {
     if (!intent || !data || !sessionUser) return;
-    if (intent === "create-task" && sessionUser.role !== "reviewer") {
+    if (intent === "create-task" && sessionUser.role !== "reviewer" && sessionUser.role !== "viewer") {
       setDraft({
         title: "",
         description: "",
@@ -75,6 +92,7 @@ export function Tasks({ query, intent, onIntent }: { query: string; intent?: "cr
 
   const admin = sessionUser.role === "admin";
   const reviewer = sessionUser.role === "reviewer";
+  const viewer = sessionUser.role === "viewer";
   const scoped = scopeFor(data, sessionUser);
   const columns = reviewer ? (["review", "done"] as const) : TASK_STATUSES;
 
@@ -90,8 +108,44 @@ export function Tasks({ query, intent, onIntent }: { query: string; intent?: "cr
     }
     if (personFilter === "open" && people.length > 0) return false;
     if (personFilter !== "all" && personFilter !== "open" && !people.some((user) => user.id === personFilter)) return false;
-    return matches(query, [task.title, task.id, task.description, project?.name, project?.code, ...people.map((user) => user.name)]);
+    if (statusFilter !== "all" && task.status !== statusFilter) return false;
+    if (priorityFilter === "high+" && task.priority !== "high" && task.priority !== "urgent") return false;
+    if (priorityFilter !== "all" && priorityFilter !== "high+" && task.priority !== priorityFilter) return false;
+    if (dueFilter === "overdue" && !isOverdue(task.dueDate, task.status)) return false;
+    if (dueFilter === "week") {
+      const end = shiftDate(todayISO(), 7);
+      if (task.status === "done" || task.dueDate < todayISO() || task.dueDate > end) return false;
+    }
+    if (dueFilter && dueFilter !== "overdue" && dueFilter !== "week" && task.dueDate > dueFilter) return false;
+    if (createdFilter && task.createdAt.slice(0, 10) < createdFilter) return false;
+    if (tagFilter.trim() && !(task.tags ?? []).some((tag) => tag.toLowerCase().includes(tagFilter.trim().toLowerCase()))) return false;
+    if (creatorFilter !== "all" && task.createdBy !== creatorFilter) return false;
+    return matches(query, [task.title, task.id, task.description, task.customStatus, ...(task.tags ?? []), project?.name, project?.code, ...people.map((user) => user.name)]);
+  }).sort((a, b) => {
+    const rank: Record<Priority, number> = { urgent: 0, high: 1, medium: 2, low: 3 };
+    if (sortKey === "oldest") return a.createdAt.localeCompare(b.createdAt);
+    if (sortKey === "due") return a.dueDate.localeCompare(b.dueDate);
+    if (sortKey === "priority") return rank[a.priority] - rank[b.priority];
+    if (sortKey === "updated") return (b.updatedAt || b.createdAt).localeCompare(a.updatedAt || a.createdAt);
+    if (sortKey === "alpha") return a.title.localeCompare(b.title);
+    return b.createdAt.localeCompare(a.createdAt);
   });
+
+  const currentFilters = JSON.stringify({ projectFilter, personFilter, areaFilter, statusFilter, priorityFilter, dueFilter, createdFilter, tagFilter, creatorFilter, sortKey });
+  const applyFilters = (value: string) => {
+    const next = JSON.parse(value) as Record<string, string>;
+    setProjectFilter(next.projectFilter ?? "all");
+    setPersonFilter(next.personFilter ?? "all");
+    setAreaFilter((next.areaFilter as "all" | "Frontend" | "Backend") ?? "all");
+    setStatusFilter(next.statusFilter ?? "all");
+    setPriorityFilter(next.priorityFilter ?? "all");
+    setDueFilter(next.dueFilter ?? "");
+    setCreatedFilter(next.createdFilter ?? "");
+    setTagFilter(next.tagFilter ?? "");
+    setCreatorFilter(next.creatorFilter ?? "all");
+    setSortKey((next.sortKey as typeof sortKey) ?? "newest");
+  };
+  const clearFilters = () => applyFilters(JSON.stringify({}));
 
   const openCreate = (status: TaskStatus) => {
     setDraft({
@@ -192,7 +246,7 @@ export function Tasks({ query, intent, onIntent }: { query: string; intent?: "cr
               ? "Your review tasks. Each one holds the checkpoints the admin gave you."
               : "Your tasks only. Each one holds the checkpoints the admin gave you."}
         </p>
-        {!reviewer && (
+        {!reviewer && !viewer && (
           <button type="button" className="btn primary" onClick={() => openCreate("todo")} disabled={scoped.projects.length === 0}>
             <Icon name="plus" /> New task
           </button>
@@ -215,7 +269,7 @@ export function Tasks({ query, intent, onIntent }: { query: string; intent?: "cr
         )}
         {admin && (
           <label>
-            Person
+            Assignee
             <select className="control" value={personFilter} onChange={(event) => setPersonFilter(event.target.value)}>
               <option value="all">Anyone</option>
               <option value="open">Unassigned</option>
@@ -235,8 +289,105 @@ export function Tasks({ query, intent, onIntent }: { query: string; intent?: "cr
             <option value="Backend">Backend</option>
           </select>
         </label>
+        <label>
+          Status
+          <select className="control" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
+            <option value="all">All</option>
+            {columns.map((status) => <option key={status} value={status}>{label(status)}</option>)}
+          </select>
+        </label>
+        <label>
+          Priority
+          <select className="control" value={priorityFilter} onChange={(event) => setPriorityFilter(event.target.value)}>
+            <option value="all">All</option>
+            {PRIORITIES.map((priority) => <option key={priority} value={priority}>{label(priority)}</option>)}
+          </select>
+        </label>
+        <label>
+          Due by
+          <input className="control" type="date" value={dueFilter === "overdue" || dueFilter === "week" ? "" : dueFilter} onChange={(event) => setDueFilter(event.target.value)} />
+        </label>
+        <label>
+          Created from
+          <input className="control" type="date" value={createdFilter} onChange={(event) => setCreatedFilter(event.target.value)} />
+        </label>
+        <label>
+          Tags
+          <input className="control" value={tagFilter} placeholder="Tag" onChange={(event) => setTagFilter(event.target.value)} />
+        </label>
+        {admin && (
+          <label>
+            Creator
+            <select className="control" value={creatorFilter} onChange={(event) => setCreatorFilter(event.target.value)}>
+              <option value="all">Anyone</option>
+              {data.users.map((user) => <option key={user.id} value={user.id}>{user.name}</option>)}
+            </select>
+          </label>
+        )}
+        <label>
+          Sort
+          <select className="control" value={sortKey} onChange={(event) => setSortKey(event.target.value as typeof sortKey)}>
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="due">Due date</option>
+            <option value="priority">Priority</option>
+            <option value="updated">Updated</option>
+            <option value="alpha">Alphabetical</option>
+          </select>
+        </label>
       </div>
+      <div className="filter-presets">
+        <button type="button" className="btn ghost small" onClick={() => { clearFilters(); setPersonFilter(sessionUser.id); setDueFilter("overdue"); }}>My overdue tasks</button>
+        <button type="button" className="btn ghost small" onClick={() => { clearFilters(); setPriorityFilter("high+"); }}>High priority</button>
+        <button type="button" className="btn ghost small" onClick={() => { clearFilters(); setDueFilter("week"); }}>Due this week</button>
+        <button type="button" className="btn ghost small" onClick={() => { clearFilters(); setPersonFilter("open"); }}>Unassigned</button>
+        <button type="button" className="btn ghost small" onClick={clearFilters}>Clear</button>
+        <input className="control" value={filterName} placeholder="Filter name" onChange={(event) => setFilterName(event.target.value)} />
+        <button
+          type="button"
+          className="btn ghost small"
+          onClick={() => {
+            const name = filterName.trim();
+            if (!name) return;
+            const next = [...saved.filter((item) => item.name !== name), { name, value: currentFilters }];
+            setSaved(next);
+            localStorage.setItem("northline.taskFilters", JSON.stringify(next));
+            setFilterName("");
+          }}
+        >
+          Save filter
+        </button>
+        {saved.map((item) => (
+          <button key={item.name} type="button" className="btn ghost small" onClick={() => applyFilters(item.value)}>{item.name}</button>
+        ))}
+      </div>
+      <Tabs
+        value={mode}
+        onChange={(value) => setMode(value as typeof mode)}
+        options={[
+          { value: "list", label: "List" },
+          { value: "board", label: "Board" },
+          { value: "calendar", label: "Calendar" },
+          { value: "timeline", label: "Timeline" },
+          { value: "gantt", label: "Gantt" },
+          { value: "table", label: "Table" },
+          { value: "workload", label: "Workload" },
+        ]}
+      />
       {scoped.projects.length === 0 && <p className="empty">Add a project before creating tasks.</p>}
+      {mode !== "board" && (
+        <TaskModes
+          mode={mode}
+          tasks={visible}
+          month={month}
+          onMonth={setMonth}
+          projects={scoped.projects}
+          users={data.users}
+          assignments={scoped.assignments}
+          onOpen={setDetailId}
+        />
+      )}
+      {mode === "board" && (
       <div className="board-wrap">
         <div className="board">
           {columns.map((status) => {
@@ -255,7 +406,7 @@ export function Tasks({ query, intent, onIntent }: { query: string; intent?: "cr
                 <header>
                   <h2>{label(status)}</h2>
                   <span>{column.length}</span>
-                  {!reviewer && (
+                  {!reviewer && !viewer && (
                     <button type="button" className="icon-btn" aria-label={`Add ${label(status)} task`} onClick={() => openCreate(status)}>
                       +
                     </button>
@@ -341,6 +492,7 @@ export function Tasks({ query, intent, onIntent }: { query: string; intent?: "cr
           })}
         </div>
       </div>
+      )}
 
       {dialog && dialog.mode !== "delete" && draft && (
         <Modal
@@ -556,22 +708,18 @@ export function Tasks({ query, intent, onIntent }: { query: string; intent?: "cr
           checkpoints={data.checkpoints}
           assignments={data.assignments}
           tasks={data.tasks}
+          sessionUserId={sessionUser.id}
           comment={comment}
           onComment={setComment}
           onClose={() => { setDetailId(null); setComment(""); }}
           onEdit={() => {
             const task = data.tasks.find((item) => item.id === detailId);
             setDetailId(null);
-            if (task) openEdit(task);
+            if (task && sessionUser.role !== "viewer") openEdit(task);
           }}
-          onAddComment={() => {
+          onSaveComments={(comments) => {
             const task = data.tasks.find((item) => item.id === detailId);
-            const body = comment.trim();
-            if (!task || !body) return;
-            store.updateTask(task.id, {
-              comments: [...(task.comments ?? []), { id: nextId("m", (task.comments ?? []).map((item) => item.id)), userId: sessionUser.id, body, at: nowStamp() }],
-            });
-            setComment("");
+            if (task) store.updateTask(task.id, { comments });
           }}
         />
       )}
@@ -587,11 +735,12 @@ function TaskDetail({
   checkpoints,
   assignments,
   tasks,
+  sessionUserId,
   comment,
   onComment,
   onClose,
   onEdit,
-  onAddComment,
+  onSaveComments,
 }: {
   task: Task;
   users: User[];
@@ -599,22 +748,27 @@ function TaskDetail({
   checkpoints: Checkpoint[];
   assignments: Assignment[];
   tasks: Task[];
+  sessionUserId: string;
   comment: string;
   onComment: (value: string) => void;
   onClose: () => void;
   onEdit: () => void;
-  onAddComment: () => void;
+  onSaveComments: (comments: Task["comments"]) => void;
 }) {
+  const [replyTo, setReplyTo] = useState<string | null>(null);
+  const [editing, setEditing] = useState<string | null>(null);
   const project = projects.find((item) => item.id === task.projectId);
   const people = taskLinks(assignments, task.id);
   const parentTaskTitle = tasks.find((item) => item.id === task.parentId)?.title;
-  const activity = [
-    { id: "created", when: task.createdAt, text: `Created by ${personName(users, task.createdBy)}` },
-    ...people.map((link) => ({ id: link.id, when: link.assignedAt, text: `${personName(users, link.userId)} assigned · ${label(link.role)}` })),
-    ...(task.comments ?? []).map((item) => ({ id: item.id, when: item.at, text: `${personName(users, item.userId)} commented` })),
-    ...(task.updatedAt ? [{ id: "updated", when: task.updatedAt, text: "Task updated" }] : []),
-    ...(task.doneAt ? [{ id: "done", when: task.doneAt, text: "Marked done" }] : []),
-  ].sort((a, b) => b.when.localeCompare(a.when));
+  const mentionQuery = comment.match(/@([^\s@]*)$/)?.[1] ?? null;
+  const mentionPeople = mentionQuery === null ? [] : users.filter((user) => user.name.toLowerCase().includes(mentionQuery.toLowerCase())).slice(0, 5);
+  const activity = (task.activity && task.activity.length > 0
+    ? task.activity.map((item) => ({ id: item.id, when: item.at, text: item.text }))
+    : [
+        { id: "created", when: task.createdAt, text: `Created by ${personName(users, task.createdBy)}` },
+        ...people.map((link) => ({ id: link.id, when: link.assignedAt, text: `${personName(users, link.userId)} assigned · ${label(link.role)}` })),
+      ]
+  ).sort((a, b) => b.when.localeCompare(a.when));
 
   return (
     <Drawer title={task.title} onClose={onClose}>
@@ -658,13 +812,50 @@ function TaskDetail({
         <section>
           <h3>Comments</h3>
           <ul className="line-list">
-            {(task.comments ?? []).map((item) => (
-              <li key={item.id}><strong>{personName(users, item.userId)}</strong><span>{item.body} · {formatWhen(item.at)}</span></li>
-            ))}
+            {(task.comments ?? []).map((item) => {
+              const parent = (task.comments ?? []).find((entry) => entry.id === item.replyTo);
+              return (
+                <li key={item.id}>
+                  <strong>{personName(users, item.userId)}</strong>
+                  <span>{formatWhen(item.at)}</span>
+                  {parent && <span>Reply to {personName(users, parent.userId)}</span>}
+                  <p>{item.body}</p>
+                  <span className="check-actions">
+                    <button type="button" className="btn ghost small" onClick={() => { setReplyTo(item.id); setEditing(null); onComment(`@${personName(users, item.userId)} `); }}>Reply</button>
+                    {item.userId === sessionUserId && (
+                      <>
+                        <button type="button" className="btn ghost small" onClick={() => { setEditing(item.id); setReplyTo(null); onComment(item.body); }}>Edit</button>
+                        <button type="button" className="btn ghost small" onClick={() => onSaveComments((task.comments ?? []).filter((entry) => entry.id !== item.id && entry.replyTo !== item.id))}>Delete</button>
+                      </>
+                    )}
+                  </span>
+                </li>
+              );
+            })}
           </ul>
-          <form className="stack" onSubmit={(event) => { event.preventDefault(); onAddComment(); }}>
-            <textarea className="control" rows={2} value={comment} placeholder="Write a comment" onChange={(event) => onComment(event.target.value)} />
-            <button type="submit" className="btn primary small">Add comment</button>
+          <form className="stack" onSubmit={(event) => {
+            event.preventDefault();
+            const body = comment.trim();
+            if (!body) return;
+            const authorId = sessionUserId;
+            if (editing) {
+              onSaveComments((task.comments ?? []).map((item) => item.id === editing ? { ...item, body } : item));
+            } else {
+              onSaveComments([...(task.comments ?? []), { id: nextId("m", (task.comments ?? []).map((item) => item.id)), userId: authorId, body, at: nowStamp(), replyTo }]);
+            }
+            setEditing(null);
+            setReplyTo(null);
+            onComment("");
+          }}>
+            {mentionPeople.length > 0 && (
+              <div className="mention-list">
+                {mentionPeople.map((user) => (
+                  <button key={user.id} type="button" onClick={() => onComment(comment.replace(/@([^\s@]*)$/, `@${user.name} `))}>@{user.name}</button>
+                ))}
+              </div>
+            )}
+            <textarea className="control" rows={2} value={comment} placeholder="Write a comment, or type @ to mention someone" onChange={(event) => onComment(event.target.value)} />
+            <button type="submit" className="btn primary small">{editing ? "Save comment" : replyTo ? "Reply" : "Add comment"}</button>
           </form>
         </section>
         <section>
@@ -678,5 +869,153 @@ function TaskDetail({
         <button type="button" className="btn ghost" onClick={onEdit}>Edit task</button>
       </div>
     </Drawer>
+  );
+}
+
+function shiftDate(iso: string, days: number) {
+  const [year, month, day] = iso.split("-").map(Number);
+  const date = new Date(year, (month ?? 1) - 1, day ?? 1);
+  date.setDate(date.getDate() + days);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+function TaskModes({
+  mode,
+  tasks,
+  month,
+  onMonth,
+  projects,
+  users,
+  assignments,
+  onOpen,
+}: {
+  mode: "list" | "calendar" | "timeline" | "gantt" | "table" | "workload";
+  tasks: Task[];
+  month: string;
+  onMonth: (value: string) => void;
+  projects: Project[];
+  users: User[];
+  assignments: Assignment[];
+  onOpen: (id: string) => void;
+}) {
+  const names = (task: Task) => taskLinks(assignments, task.id).map((link) => personName(users, link.userId)).join(", ") || "Unassigned";
+  const projectName = (id: string) => {
+    const project = projects.find((item) => item.id === id);
+    return project ? `${project.code} · ${project.name}` : id;
+  };
+  if (tasks.length === 0) return <p className="empty">No tasks match that filter.</p>;
+
+  if (mode === "list") {
+    return (
+      <ul className="line-list task-list">
+        {tasks.map((task) => (
+          <li key={task.id}>
+            <button type="button" className="text-btn" onClick={() => onOpen(task.id)}>{task.title}</button>
+            <span>{label(task.status)} · {label(task.priority)} · {names(task)} · {formatDate(task.dueDate)}</span>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
+  if (mode === "table") {
+    return (
+      <Table head={["Task", "Status", "Priority", "Project", "Assignee", "Start", "Due"]}>
+        {tasks.map((task) => (
+          <tr key={task.id}>
+            <td><button type="button" className="text-btn" onClick={() => onOpen(task.id)}>{task.title}</button></td>
+            <td><Pill value={task.status} /></td>
+            <td><Pill value={task.priority} /></td>
+            <td>{projectName(task.projectId)}</td>
+            <td>{names(task)}</td>
+            <td>{task.startDate ? formatDate(task.startDate) : "—"}</td>
+            <td>{formatDate(task.dueDate)}</td>
+          </tr>
+        ))}
+      </Table>
+    );
+  }
+
+  if (mode === "workload") {
+    const rows = users.map((user) => ({
+      user,
+      open: tasks.filter((task) => task.status !== "done" && taskLinks(assignments, task.id).some((link) => link.userId === user.id)).length,
+      done: tasks.filter((task) => task.status === "done" && taskLinks(assignments, task.id).some((link) => link.userId === user.id)).length,
+    })).filter((row) => row.open + row.done > 0);
+    const peak = Math.max(1, ...rows.map((row) => row.open));
+    return (
+      <ul className="workload">
+        {rows.map((row) => (
+          <li key={row.user.id}>
+            <Avatar name={row.user.name} id={row.user.id} />
+            <div>
+              <strong>{row.user.name}</strong>
+              <div className="bar"><span style={{ width: `${(row.open / peak) * 100}%` }} /></div>
+            </div>
+            <em>{row.open} open · {row.done} done</em>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
+  if (mode === "calendar") {
+    const [year, mon] = month.split("-").map(Number);
+    const first = new Date(year, mon - 1, 1);
+    const pad = (first.getDay() + 6) % 7;
+    const count = new Date(year, mon, 0).getDate();
+    const cells: Array<string | null> = [...Array(pad).fill(null)];
+    for (let day = 1; day <= count; day += 1) cells.push(`${month}-${String(day).padStart(2, "0")}`);
+    const shift = (step: number) => {
+      const next = new Date(year, mon - 1 + step, 1);
+      onMonth(`${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, "0")}`);
+    };
+    return (
+      <div className="stack">
+        <div className="card-top">
+          <button type="button" className="btn ghost small" onClick={() => shift(-1)}>Previous</button>
+          <strong>{first.toLocaleDateString("en-GB", { month: "long", year: "numeric" })}</strong>
+          <button type="button" className="btn ghost small" onClick={() => shift(1)}>Next</button>
+        </div>
+        <div className="cal-grid">
+          {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => <span key={day} className="cal-head">{day}</span>)}
+          {cells.map((iso, index) => (
+            <div key={iso ?? `pad-${index}`} className="cal-cell">
+              {iso && <strong>{Number(iso.slice(8))}</strong>}
+              {iso && tasks.filter((task) => task.dueDate === iso).map((task) => (
+                <button key={task.id} type="button" className="cal-task" onClick={() => onOpen(task.id)}>{task.title}</button>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  const dates = tasks.flatMap((task) => [task.startDate || task.createdAt.slice(0, 10), task.dueDate]).sort();
+  const start = dates[0];
+  const end = dates[dates.length - 1];
+  const span = Math.max(1, (Date.parse(end) - Date.parse(start)) / 86400000);
+  const place = (iso: string) => Math.max(0, Math.min(100, ((Date.parse(iso) - Date.parse(start)) / 86400000 / span) * 100));
+  const rows = mode === "gantt" ? [...tasks].sort((a, b) => (a.parentId ? 1 : 0) - (b.parentId ? 1 : 0) || a.dueDate.localeCompare(b.dueDate)) : [...tasks].sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+  return (
+    <div className="stack">
+      <p className="muted">{formatDate(start)} – {formatDate(end)}</p>
+      <ul className="gantt">
+        {rows.map((task) => {
+          const from = place(task.startDate || task.createdAt.slice(0, 10));
+          const to = place(task.dueDate);
+          const project = projects.find((item) => item.id === task.projectId);
+          return (
+            <li key={task.id} className={task.parentId ? "gantt-child" : ""}>
+              <button type="button" className="text-btn" onClick={() => onOpen(task.id)}>{task.title}</button>
+              <div className="gantt-track">
+                <span style={{ left: `${from}%`, width: `${Math.max(2, to - from)}%`, background: project?.color ?? "#2563eb" }} />
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 }
