@@ -521,6 +521,16 @@ export function Projects({ query, intent, onIntent }: { query: string; intent?: 
         </Modal>
       )}
 
+      {flow && (
+        <Modal title={`Flow chart · ${flow.name}`} onClose={() => setFlow(null)}>
+          <ProjectFlow
+            project={flow}
+            tasks={data.tasks.filter((task) => task.projectId === flow.id)}
+            checkpoints={data.checkpoints.filter((item) => item.projectId === flow.id)}
+          />
+        </Modal>
+      )}
+
       {dialog?.mode === "delete" && (
         <Confirm
           title={`Remove ${dialog.project.name}`}
@@ -532,6 +542,79 @@ export function Projects({ query, intent, onIntent }: { query: string; intent?: 
             setDialog(null);
           }}
         />
+      )}
+    </div>
+  );
+}
+
+function ProjectFlow({ project, tasks, checkpoints }: { project: Project; tasks: Task[]; checkpoints: Checkpoint[] }) {
+  const roots = tasks.filter((task) => !task.parentId || !tasks.some((item) => item.id === task.parentId));
+  const loose = checkpoints.filter((item) => !tasks.some((task) => task.checkpointIds.includes(item.id)));
+  return (
+    <div className="flow-board">
+      <div className="flow-node project">
+        <strong>{project.name}</strong>
+        <span className="muted">{tasks.length} tasks · {checkpoints.length} checkpoints</span>
+      </div>
+      <div className="flow-stem" aria-hidden="true" />
+      {roots.length === 0 && <p className="empty">No tasks on this project yet.</p>}
+      <div className="flow-row">
+        {roots.map((task) => (
+          <FlowTask key={task.id} task={task} tasks={tasks} checkpoints={checkpoints} />
+        ))}
+      </div>
+      {loose.length > 0 && (
+        <>
+          <div className="flow-stem" aria-hidden="true" />
+          <div className="flow-node">
+            <strong>Not on a task</strong>
+            <span className="muted">{loose.length} checkpoints</span>
+          </div>
+          <div className="flow-stem" aria-hidden="true" />
+          <div className="flow-row">
+            {loose.slice(0, 24).map((item) => (
+              <div key={item.id} className={item.state === "done" ? "flow-node done" : "flow-node"}>
+                <strong>{item.label}</strong>
+                <span className="muted">{item.state === "done" ? "Done" : item.state === "partial" ? "Partial" : "Not started"}</span>
+              </div>
+            ))}
+            {loose.length > 24 && <div className="flow-node"><strong>+{loose.length - 24} more</strong></div>}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function FlowTask({ task, tasks, checkpoints }: { task: Task; tasks: Task[]; checkpoints: Checkpoint[] }) {
+  const children = tasks.filter((item) => item.parentId === task.id);
+  const points = checkpoints.filter((item) => task.checkpointIds.includes(item.id));
+  return (
+    <div className="flow-col">
+      <div className={task.status === "done" ? "flow-node task done" : "flow-node task"}>
+        <strong>{task.title}</strong>
+        <span className="muted">{label(task.status)} · {points.length} checkpoints</span>
+      </div>
+      {(points.length > 0 || children.length > 0) && <div className="flow-stem" aria-hidden="true" />}
+      {points.length > 0 && (
+        <div className="flow-points">
+          {points.map((item) => (
+            <div key={item.id} className={item.state === "done" ? "flow-node done" : "flow-node"}>
+              <strong>{item.label}</strong>
+              <span className="muted">{item.state === "done" ? "Done" : item.state === "partial" ? "Partial" : "Not started"}</span>
+            </div>
+          ))}
+        </div>
+      )}
+      {children.length > 0 && (
+        <>
+          <div className="flow-stem" aria-hidden="true" />
+          <div className="flow-row">
+            {children.map((child) => (
+              <FlowTask key={child.id} task={child} tasks={tasks} checkpoints={checkpoints} />
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
