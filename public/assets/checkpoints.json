@@ -1491,9 +1491,9 @@
     "phase": "7. Subtasks and dependencies",
     "group": "Subtasks",
     "label": "Create subtask",
-    "state": "open",
+    "state": "done",
     "role": "member",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:40"
   },
   {
     "id": "c137",
@@ -1502,9 +1502,9 @@
     "phase": "7. Subtasks and dependencies",
     "group": "Subtasks",
     "label": "Assign subtask",
-    "state": "open",
+    "state": "done",
     "role": "member",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:40"
   },
   {
     "id": "c138",
@@ -1513,9 +1513,9 @@
     "phase": "7. Subtasks and dependencies",
     "group": "Subtasks",
     "label": "Due date",
-    "state": "open",
+    "state": "done",
     "role": "member",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:40"
   },
   {
     "id": "c139",
@@ -1524,9 +1524,9 @@
     "phase": "7. Subtasks and dependencies",
     "group": "Subtasks",
     "label": "Status",
-    "state": "open",
+    "state": "done",
     "role": "member",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:40"
   },
   {
     "id": "c140",
@@ -1535,9 +1535,9 @@
     "phase": "7. Subtasks and dependencies",
     "group": "Subtasks",
     "label": "Priority",
-    "state": "open",
+    "state": "done",
     "role": "member",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:40"
   },
   {
     "id": "c141",
@@ -1546,9 +1546,9 @@
     "phase": "7. Subtasks and dependencies",
     "group": "Subtasks",
     "label": "Progress",
-    "state": "open",
+    "state": "done",
     "role": "member",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:40"
   },
   {
     "id": "c142",
@@ -1557,9 +1557,9 @@
     "phase": "7. Subtasks and dependencies",
     "group": "Subtasks",
     "label": "Nested tree",
-    "state": "open",
+    "state": "done",
     "role": "member",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:40"
   },
   {
     "id": "c143",
@@ -1568,9 +1568,9 @@
     "phase": "7. Subtasks and dependencies",
     "group": "Dependencies",
     "label": "Blocked by",
-    "state": "open",
+    "state": "done",
     "role": "member",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:40"
   },
   {
     "id": "c144",
@@ -1579,9 +1579,9 @@
     "phase": "7. Subtasks and dependencies",
     "group": "Dependencies",
     "label": "Blocks",
-    "state": "open",
+    "state": "done",
     "role": "member",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:40"
   },
   {
     "id": "c145",
@@ -1590,9 +1590,9 @@
     "phase": "7. Subtasks and dependencies",
     "group": "Dependencies",
     "label": "Related task",
-    "state": "open",
+    "state": "done",
     "role": "member",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:40"
   },
   {
     "id": "c146",
@@ -2426,9 +2426,9 @@
     "phase": "13. Profile and settings",
     "group": "Profile",
     "label": "Name",
-    "state": "open",
+    "state": "done",
     "role": "member",
-    "doneAt": null
+    "doneAt": "2026-09-25T10:25"
   },
   {
     "id": "c222",
@@ -2437,9 +2437,9 @@
     "phase": "13. Profile and settings",
     "group": "Profile",
     "label": "Profile image",
-    "state": "open",
+    "state": "done",
     "role": "member",
-    "doneAt": null
+    "doneAt": "2026-09-25T10:25"
   },
   {
     "id": "c223",
@@ -2448,9 +2448,9 @@
     "phase": "13. Profile and settings",
     "group": "Profile",
     "label": "Email",
-    "state": "open",
+    "state": "done",
     "role": "member",
-    "doneAt": null
+    "doneAt": "2026-09-25T10:25"
   },
   {
     "id": "c224",
@@ -2459,9 +2459,9 @@
     "phase": "13. Profile and settings",
     "group": "Profile",
     "label": "Mobile",
-    "state": "open",
+    "state": "done",
     "role": "member",
-    "doneAt": null
+    "doneAt": "2026-09-25T10:25"
   },
   {
     "id": "c225",
@@ -2470,9 +2470,9 @@
     "phase": "13. Profile and settings",
     "group": "Profile",
     "label": "Bio",
-    "state": "open",
+    "state": "done",
     "role": "member",
-    "doneAt": null
+    "doneAt": "2026-09-25T10:25"
   },
   {
     "id": "c226",
@@ -2481,9 +2481,9 @@
     "phase": "13. Profile and settings",
     "group": "Profile",
     "label": "Password",
-    "state": "open",
+    "state": "done",
     "role": "member",
-    "doneAt": null
+    "doneAt": "2026-09-25T10:25"
   },
   {
     "id": "c227",
@@ -2492,9 +2492,9 @@
     "phase": "13. Profile and settings",
     "group": "Settings",
     "label": "Account",
-    "state": "open",
+    "state": "done",
     "role": "member",
-    "doneAt": null
+    "doneAt": "2026-09-25T10:25"
   },
   {
     "id": "c228",
@@ -2503,9 +2503,9 @@
     "phase": "13. Profile and settings",
     "group": "Settings",
     "label": "Notifications",
-    "state": "open",
+    "state": "done",
     "role": "member",
-    "doneAt": null
+    "doneAt": "2026-09-25T10:25"
   },
   {
     "id": "c229",
@@ -2514,9 +2514,9 @@
     "phase": "13. Profile and settings",
     "group": "Settings",
     "label": "Appearance",
-    "state": "open",
+    "state": "done",
     "role": "member",
-    "doneAt": null
+    "doneAt": "2026-09-25T10:25"
   },
   {
     "id": "c230",
@@ -2525,9 +2525,9 @@
     "phase": "13. Profile and settings",
     "group": "Settings",
     "label": "Language",
-    "state": "open",
+    "state": "done",
     "role": "member",
-    "doneAt": null
+    "doneAt": "2026-09-25T10:25"
   },
   {
     "id": "c231",
@@ -2536,9 +2536,9 @@
     "phase": "13. Profile and settings",
     "group": "Settings",
     "label": "Timezone",
-    "state": "open",
+    "state": "done",
     "role": "member",
-    "doneAt": null
+    "doneAt": "2026-09-25T10:25"
   },
   {
     "id": "c232",
@@ -2547,9 +2547,9 @@
     "phase": "13. Profile and settings",
     "group": "Settings",
     "label": "Security",
-    "state": "open",
+    "state": "done",
     "role": "member",
-    "doneAt": null
+    "doneAt": "2026-09-25T10:25"
   },
   {
     "id": "c233",
@@ -2591,9 +2591,9 @@
     "phase": "14. Reporting",
     "group": "Analytics",
     "label": "Completion %",
-    "state": "open",
+    "state": "done",
     "role": "admin",
-    "doneAt": null
+    "doneAt": "2026-09-25T10:55"
   },
   {
     "id": "c237",
@@ -2602,9 +2602,9 @@
     "phase": "14. Reporting",
     "group": "Analytics",
     "label": "Total tasks",
-    "state": "open",
+    "state": "done",
     "role": "admin",
-    "doneAt": null
+    "doneAt": "2026-09-25T10:55"
   },
   {
     "id": "c238",
@@ -2613,9 +2613,9 @@
     "phase": "14. Reporting",
     "group": "Analytics",
     "label": "Completed",
-    "state": "open",
+    "state": "done",
     "role": "admin",
-    "doneAt": null
+    "doneAt": "2026-09-25T10:55"
   },
   {
     "id": "c239",
@@ -2624,9 +2624,9 @@
     "phase": "14. Reporting",
     "group": "Analytics",
     "label": "Pending",
-    "state": "open",
+    "state": "done",
     "role": "admin",
-    "doneAt": null
+    "doneAt": "2026-09-25T10:55"
   },
   {
     "id": "c240",
@@ -2635,9 +2635,9 @@
     "phase": "14. Reporting",
     "group": "Analytics",
     "label": "Overdue",
-    "state": "open",
+    "state": "done",
     "role": "admin",
-    "doneAt": null
+    "doneAt": "2026-09-25T10:55"
   },
   {
     "id": "c241",
@@ -2646,9 +2646,9 @@
     "phase": "14. Reporting",
     "group": "Analytics",
     "label": "Average completion time",
-    "state": "open",
+    "state": "done",
     "role": "admin",
-    "doneAt": null
+    "doneAt": "2026-09-25T10:55"
   },
   {
     "id": "c242",
@@ -2657,9 +2657,9 @@
     "phase": "14. Reporting",
     "group": "Analytics",
     "label": "Tasks per member",
-    "state": "open",
+    "state": "done",
     "role": "admin",
-    "doneAt": null
+    "doneAt": "2026-09-25T10:55"
   },
   {
     "id": "c243",
@@ -2668,9 +2668,9 @@
     "phase": "14. Reporting",
     "group": "Analytics",
     "label": "Completed per member",
-    "state": "open",
+    "state": "done",
     "role": "admin",
-    "doneAt": null
+    "doneAt": "2026-09-25T10:55"
   },
   {
     "id": "c244",
@@ -2679,9 +2679,9 @@
     "phase": "14. Reporting",
     "group": "Analytics",
     "label": "Overdue per member",
-    "state": "open",
+    "state": "done",
     "role": "admin",
-    "doneAt": null
+    "doneAt": "2026-09-25T10:55"
   },
   {
     "id": "c245",
@@ -2690,9 +2690,9 @@
     "phase": "14. Reporting",
     "group": "Analytics",
     "label": "Workload",
-    "state": "open",
+    "state": "done",
     "role": "admin",
-    "doneAt": null
+    "doneAt": "2026-09-25T10:55"
   },
   {
     "id": "c246",
@@ -2701,9 +2701,9 @@
     "phase": "14. Reporting",
     "group": "Analytics",
     "label": "Task completion chart",
-    "state": "open",
+    "state": "done",
     "role": "admin",
-    "doneAt": null
+    "doneAt": "2026-09-25T10:55"
   },
   {
     "id": "c247",
@@ -2712,9 +2712,9 @@
     "phase": "14. Reporting",
     "group": "Analytics",
     "label": "Task distribution",
-    "state": "open",
+    "state": "done",
     "role": "admin",
-    "doneAt": null
+    "doneAt": "2026-09-25T10:55"
   },
   {
     "id": "c248",
@@ -2723,9 +2723,9 @@
     "phase": "14. Reporting",
     "group": "Analytics",
     "label": "Project progress",
-    "state": "open",
+    "state": "done",
     "role": "admin",
-    "doneAt": null
+    "doneAt": "2026-09-25T10:55"
   },
   {
     "id": "c249",
@@ -2734,9 +2734,9 @@
     "phase": "14. Reporting",
     "group": "Analytics",
     "label": "Team workload chart",
-    "state": "open",
+    "state": "done",
     "role": "admin",
-    "doneAt": null
+    "doneAt": "2026-09-25T10:55"
   },
   {
     "id": "c250",
@@ -2745,9 +2745,9 @@
     "phase": "15. Quality checkpoint",
     "group": "Responsive, UX, performance",
     "label": "320px",
-    "state": "open",
+    "state": "done",
     "role": "reviewer",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:15"
   },
   {
     "id": "c251",
@@ -2756,9 +2756,9 @@
     "phase": "15. Quality checkpoint",
     "group": "Responsive, UX, performance",
     "label": "375px",
-    "state": "open",
+    "state": "done",
     "role": "reviewer",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:15"
   },
   {
     "id": "c252",
@@ -2767,9 +2767,9 @@
     "phase": "15. Quality checkpoint",
     "group": "Responsive, UX, performance",
     "label": "390px",
-    "state": "open",
+    "state": "done",
     "role": "reviewer",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:15"
   },
   {
     "id": "c253",
@@ -2778,9 +2778,9 @@
     "phase": "15. Quality checkpoint",
     "group": "Responsive, UX, performance",
     "label": "430px",
-    "state": "open",
+    "state": "done",
     "role": "reviewer",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:15"
   },
   {
     "id": "c254",
@@ -2789,9 +2789,9 @@
     "phase": "15. Quality checkpoint",
     "group": "Responsive, UX, performance",
     "label": "Tablet",
-    "state": "open",
+    "state": "done",
     "role": "reviewer",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:15"
   },
   {
     "id": "c255",
@@ -2800,9 +2800,9 @@
     "phase": "15. Quality checkpoint",
     "group": "Responsive, UX, performance",
     "label": "Laptop",
-    "state": "open",
+    "state": "done",
     "role": "reviewer",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:15"
   },
   {
     "id": "c256",
@@ -2811,9 +2811,9 @@
     "phase": "15. Quality checkpoint",
     "group": "Responsive, UX, performance",
     "label": "Desktop",
-    "state": "open",
+    "state": "done",
     "role": "reviewer",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:15"
   },
   {
     "id": "c257",
@@ -2822,9 +2822,9 @@
     "phase": "15. Quality checkpoint",
     "group": "Responsive, UX, performance",
     "label": "Large desktop",
-    "state": "open",
+    "state": "done",
     "role": "reviewer",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:15"
   },
   {
     "id": "c258",
@@ -2833,9 +2833,9 @@
     "phase": "15. Quality checkpoint",
     "group": "Responsive, UX, performance",
     "label": "No dead buttons",
-    "state": "open",
+    "state": "done",
     "role": "reviewer",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:15"
   },
   {
     "id": "c259",
@@ -2844,9 +2844,9 @@
     "phase": "15. Quality checkpoint",
     "group": "Responsive, UX, performance",
     "label": "No fake data",
-    "state": "open",
+    "state": "done",
     "role": "reviewer",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:15"
   },
   {
     "id": "c260",
@@ -2855,9 +2855,9 @@
     "phase": "15. Quality checkpoint",
     "group": "Responsive, UX, performance",
     "label": "No broken links",
-    "state": "open",
+    "state": "done",
     "role": "reviewer",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:15"
   },
   {
     "id": "c261",
@@ -2866,9 +2866,9 @@
     "phase": "15. Quality checkpoint",
     "group": "Responsive, UX, performance",
     "label": "Proper loading",
-    "state": "open",
+    "state": "done",
     "role": "reviewer",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:15"
   },
   {
     "id": "c262",
@@ -2877,9 +2877,9 @@
     "phase": "15. Quality checkpoint",
     "group": "Responsive, UX, performance",
     "label": "Proper errors",
-    "state": "open",
+    "state": "done",
     "role": "reviewer",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:15"
   },
   {
     "id": "c263",
@@ -2888,9 +2888,9 @@
     "phase": "15. Quality checkpoint",
     "group": "Responsive, UX, performance",
     "label": "Proper empty states",
-    "state": "open",
+    "state": "done",
     "role": "reviewer",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:15"
   },
   {
     "id": "c264",
@@ -2899,9 +2899,9 @@
     "phase": "15. Quality checkpoint",
     "group": "Responsive, UX, performance",
     "label": "Keyboard accessibility",
-    "state": "open",
+    "state": "done",
     "role": "reviewer",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:15"
   },
   {
     "id": "c265",
@@ -2910,9 +2910,9 @@
     "phase": "15. Quality checkpoint",
     "group": "Responsive, UX, performance",
     "label": "Focus states",
-    "state": "open",
+    "state": "done",
     "role": "reviewer",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:15"
   },
   {
     "id": "c266",
@@ -2921,9 +2921,9 @@
     "phase": "15. Quality checkpoint",
     "group": "Responsive, UX, performance",
     "label": "Confirmation before destructive actions",
-    "state": "open",
+    "state": "done",
     "role": "reviewer",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:15"
   },
   {
     "id": "c267",
@@ -2932,9 +2932,9 @@
     "phase": "15. Quality checkpoint",
     "group": "Responsive, UX, performance",
     "label": "Lazy loading",
-    "state": "open",
+    "state": "done",
     "role": "reviewer",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:15"
   },
   {
     "id": "c268",
@@ -2943,9 +2943,9 @@
     "phase": "15. Quality checkpoint",
     "group": "Responsive, UX, performance",
     "label": "Code splitting",
-    "state": "open",
+    "state": "done",
     "role": "reviewer",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:15"
   },
   {
     "id": "c269",
@@ -2954,9 +2954,9 @@
     "phase": "15. Quality checkpoint",
     "group": "Responsive, UX, performance",
     "label": "Image optimization",
-    "state": "open",
+    "state": "done",
     "role": "reviewer",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:15"
   },
   {
     "id": "c270",
@@ -2965,9 +2965,9 @@
     "phase": "15. Quality checkpoint",
     "group": "Responsive, UX, performance",
     "label": "API caching",
-    "state": "open",
+    "state": "done",
     "role": "reviewer",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:15"
   },
   {
     "id": "c271",
@@ -2976,9 +2976,9 @@
     "phase": "15. Quality checkpoint",
     "group": "Responsive, UX, performance",
     "label": "Debounced search",
-    "state": "open",
+    "state": "done",
     "role": "reviewer",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:15"
   },
   {
     "id": "c272",
@@ -2987,9 +2987,9 @@
     "phase": "15. Quality checkpoint",
     "group": "Responsive, UX, performance",
     "label": "Pagination / infinite scrolling",
-    "state": "open",
+    "state": "done",
     "role": "reviewer",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:15"
   },
   {
     "id": "c273",
@@ -2998,9 +2998,9 @@
     "phase": "15. Quality checkpoint",
     "group": "Responsive, UX, performance",
     "label": "Avoid unnecessary re-renders",
-    "state": "open",
+    "state": "done",
     "role": "reviewer",
-    "doneAt": null
+    "doneAt": "2026-09-25T11:15"
   },
   {
     "id": "c274",

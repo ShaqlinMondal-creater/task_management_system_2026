@@ -156,11 +156,11 @@ export const CHECKPOINTS: CheckPhase[] = [
     groups: [
       {
         title: "Subtasks",
-        items: items("open", ["Create subtask", "Assign subtask", "Due date", "Status", "Priority", "Progress", "Nested tree"]),
+        items: items("done", ["Create subtask", "Assign subtask", "Due date", "Status", "Priority", "Progress", "Nested tree"]),
       },
       {
         title: "Dependencies",
-        items: items("open", ["Blocked by", "Blocks", "Related task"]),
+        items: items("done", ["Blocked by", "Blocks", "Related task"]),
       },
     ],
   },
@@ -274,11 +274,14 @@ export const CHECKPOINTS: CheckPhase[] = [
     groups: [
       {
         title: "Profile",
-        items: items("open", ["Name", "Profile image", "Email", "Mobile", "Bio", "Password"]),
+        items: items("done", ["Name", "Profile image", "Email", "Mobile", "Bio", "Password"]),
       },
       {
         title: "Settings",
-        items: items("open", ["Account", "Notifications", "Appearance", "Language", "Timezone", "Security", "Dark / light mode", "Custom theme", "Two-factor authentication"]),
+        items: [
+          ...items("done", ["Account", "Notifications", "Appearance", "Language", "Timezone", "Security"]),
+          ...items("open", ["Dark / light mode", "Custom theme", "Two-factor authentication"]),
+        ],
       },
     ],
   },
@@ -290,7 +293,7 @@ export const CHECKPOINTS: CheckPhase[] = [
     groups: [
       {
         title: "Analytics",
-        items: items("open", [
+        items: items("done", [
           "Completion %",
           "Total tasks",
           "Completed",
@@ -317,7 +320,7 @@ export const CHECKPOINTS: CheckPhase[] = [
     groups: [
       {
         title: "Responsive, UX, performance",
-        items: items("open", [
+        items: items("done", [
           "320px",
           "375px",
           "390px",

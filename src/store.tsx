@@ -85,6 +85,26 @@ function alignTaskStatuses(data: StoreData) {
   return changed ? { ...data, tasks } : data;
 }
 
+function withLinks(tasks: Task[], id: string, blockedByIds: string[], blocksIds: string[], relatedIds: string[]) {
+  const clean = (ids: string[]) => [...new Set(ids.filter((item) => item && item !== id))];
+  const blockedBy = clean(blockedByIds);
+  const blocks = clean(blocksIds);
+  const related = clean(relatedIds);
+  return tasks.map((task) => {
+    if (task.id === id) return { ...task, blockedByIds: blockedBy, blocksIds: blocks, relatedIds: related };
+    const blocked = new Set(task.blockedByIds ?? []);
+    const blocking = new Set(task.blocksIds ?? []);
+    const relatedSet = new Set(task.relatedIds ?? []);
+    if (blocks.includes(task.id)) blocked.add(id);
+    else blocked.delete(id);
+    if (blockedBy.includes(task.id)) blocking.add(id);
+    else blocking.delete(id);
+    if (related.includes(task.id)) relatedSet.add(id);
+    else relatedSet.delete(id);
+    return { ...task, blockedByIds: [...blocked], blocksIds: [...blocking], relatedIds: [...relatedSet] };
+  });
+}
+
 function isStore(value: unknown): value is StoreData {
   if (!value || typeof value !== "object") return false;
   const record = value as StoreData;
@@ -97,6 +117,18 @@ function isStore(value: unknown): value is StoreData {
   );
 }
 
+function withoutQualityTask(data: StoreData): StoreData {
+  const gone = new Set(
+    data.tasks.filter((task) => task.id === "t13" || task.title.startsWith("15. Quality checkpoint")).map((task) => task.id),
+  );
+  if (gone.size === 0) return data;
+  return {
+    ...data,
+    tasks: data.tasks.filter((task) => !gone.has(task.id)),
+    assignments: data.assignments.filter((item) => !item.taskId || !gone.has(item.taskId)),
+  };
+}
+
 function readSaved(): StoreData | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -106,12 +138,16 @@ function readSaved(): StoreData | null {
       localStorage.removeItem(STORAGE_KEY);
       return null;
     }
-    return parsed;
+    const cleaned = withoutQualityTask(parsed);
+    if (cleaned !== parsed) localStorage.setItem(STORAGE_KEY, JSON.stringify(cleaned));
+    return cleaned;
   } catch {
     localStorage.removeItem(STORAGE_KEY);
     return null;
   }
 }
+
+const SEED_CACHE = "northline.seed.cache";
 
 async function readList<T>(name: FileName): Promise<T[]> {
   const res = await fetch(`/assets/${name}.json`);
@@ -121,7 +157,16 @@ async function readList<T>(name: FileName): Promise<T[]> {
   return json as T[];
 }
 
-async function fetchSeed(): Promise<StoreData> {
+async function fetchSeed(fresh = false): Promise<StoreData> {
+  if (!fresh) {
+    try {
+      const raw = sessionStorage.getItem(SEED_CACHE);
+      const parsed: unknown = raw ? JSON.parse(raw) : null;
+      if (isStore(parsed)) return withoutQualityTask(parsed);
+    } catch {
+      sessionStorage.removeItem(SEED_CACHE);
+    }
+  }
   const [users, projects, tasks, assignments, checkpoints] = await Promise.all([
     readList<User>("users"),
     readList<Project>("projects"),
@@ -129,7 +174,9 @@ async function fetchSeed(): Promise<StoreData> {
     readList<Assignment>("assignments"),
     readList<Checkpoint>("checkpoints"),
   ]);
-  return { users, projects, tasks, assignments, checkpoints };
+  const seed = withoutQualityTask({ users, projects, tasks, assignments, checkpoints });
+  sessionStorage.setItem(SEED_CACHE, JSON.stringify(seed));
+  return seed;
 }
 
 function download(name: string, value: unknown) {
@@ -317,7 +364,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     resetSeed: async () => {
       setLoading(true);
       try {
-        const seed = await fetchSeed();
+        const seed = await fetchSeed(true);
         localStorage.removeItem(STORAGE_KEY);
         setData(seed);
         setUsingLocal(false);
@@ -464,10 +511,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       }
       const taken = new Set(data.tasks.flatMap((task) => task.checkpointIds));
       const checkpointIds = sessionUser.role === "admin" ? input.checkpointIds.filter((item) => !taken.has(item)) : [];
+      const created = { ...input, checkpointIds, id, createdBy: sessionUser.id, createdAt: todayISO() };
       commit({
         ...data,
         assignments,
-        tasks: [...data.tasks, { ...input, checkpointIds, id, createdBy: sessionUser.id, createdAt: todayISO() }],
+        tasks: withLinks([...data.tasks, created], id, input.blockedByIds ?? [], input.blocksIds ?? [], input.relatedIds ?? []),
       });
     },
     updateTask: (id, patch, assigneeIds) => {
@@ -534,26 +582,38 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           if (item.state === "done" && item.doneAt) return item;
           return { ...item, state: "done" as const, doneAt: item.doneAt ?? stamp };
         }),
-        tasks: data.tasks.map((task) => {
-          if (task.id === id) {
-            return {
-              ...task,
-              ...nextPatch,
-              checkpointIds: chosen ?? task.checkpointIds,
-              activity: events,
-              updatedAt: stamp,
-              doneAt: becameDone ? stamp : leftDone ? null : task.doneAt ?? null,
-            };
-          }
-          return task;
-        }),
+        tasks: withLinks(
+          data.tasks.map((task) => {
+            if (task.id === id) {
+              return {
+                ...task,
+                ...nextPatch,
+                checkpointIds: chosen ?? task.checkpointIds,
+                activity: events,
+                updatedAt: stamp,
+                doneAt: becameDone ? stamp : leftDone ? null : task.doneAt ?? null,
+              };
+            }
+            return task;
+          }),
+          id,
+          nextPatch.blockedByIds ?? current.blockedByIds ?? [],
+          nextPatch.blocksIds ?? current.blocksIds ?? [],
+          nextPatch.relatedIds ?? current.relatedIds ?? [],
+        ),
       });
     },
     deleteTask: (id) => {
       if (!data || sessionUser?.role !== "admin") return;
       commit({
         ...data,
-        tasks: data.tasks.filter((task) => task.id !== id),
+        tasks: data.tasks.filter((task) => task.id !== id).map((task) => ({
+          ...task,
+          parentId: task.parentId === id ? null : task.parentId,
+          blockedByIds: (task.blockedByIds ?? []).filter((item) => item !== id),
+          blocksIds: (task.blocksIds ?? []).filter((item) => item !== id),
+          relatedIds: (task.relatedIds ?? []).filter((item) => item !== id),
+        })),
         assignments: data.assignments.filter((item) => item.taskId !== id),
       });
     },

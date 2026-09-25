@@ -4,7 +4,7 @@ import { scopeFor } from "../access";
 import { Avatar, Field, Icon, IdChip, Pill, SearchSelect } from "../components/Bits";
 import { CheckpointView } from "../components/CheckpointView";
 import { Confirm, Modal } from "../components/Modal";
-import { DatePicker, Drawer, MultiSelect, Table, Tabs } from "../components/System";
+import { DatePicker, Drawer, MultiSelect, Pagination, Table, Tabs } from "../components/System";
 import { PRIORITIES, TASK_STATUSES, formatDate, formatWhen, isOverdue, label, matches, nextId, nowStamp, personName, taskLinks, todayISO } from "../lib";
 import { useStore } from "../store";
 import { useToast } from "../toast";
@@ -24,6 +24,9 @@ type Draft = {
   estimate: string;
   actual: string;
   parentId: string;
+  blockedByIds: string[];
+  blocksIds: string[];
+  relatedIds: string[];
   customStatus: string;
   attachments: TaskFile[];
 };
@@ -43,7 +46,7 @@ export function Tasks({ query, intent, onIntent }: { query: string; intent?: "cr
   const [viewing, setViewing] = useState<Checkpoint | null>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
   const [comment, setComment] = useState("");
-  const [mode, setMode] = useState<"list" | "board" | "calendar" | "timeline" | "gantt" | "table" | "workload">("board");
+  const [mode, setMode] = useState<"list" | "board" | "calendar" | "timeline" | "gantt" | "table" | "workload" | "tree">("board");
   const [month, setMonth] = useState(() => new Date().toISOString().slice(0, 7));
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
@@ -78,6 +81,9 @@ export function Tasks({ query, intent, onIntent }: { query: string; intent?: "cr
         estimate: "",
         actual: "",
         parentId: "",
+        blockedByIds: [],
+        blocksIds: [],
+        relatedIds: [],
         customStatus: "",
         attachments: [],
       });
@@ -162,6 +168,9 @@ export function Tasks({ query, intent, onIntent }: { query: string; intent?: "cr
       estimate: "",
       actual: "",
       parentId: "",
+      blockedByIds: [],
+      blocksIds: [],
+      relatedIds: [],
       customStatus: "",
       attachments: [],
     });
@@ -184,6 +193,9 @@ export function Tasks({ query, intent, onIntent }: { query: string; intent?: "cr
       estimate: task.estimate ?? "",
       actual: task.actual ?? "",
       parentId: task.parentId ?? "",
+      blockedByIds: task.blockedByIds ?? [],
+      blocksIds: task.blocksIds ?? [],
+      relatedIds: task.relatedIds ?? [],
       customStatus: task.customStatus ?? "",
       attachments: task.attachments ?? [],
     });
@@ -211,6 +223,9 @@ export function Tasks({ query, intent, onIntent }: { query: string; intent?: "cr
       estimate: draft.estimate.trim(),
       actual: draft.actual.trim(),
       parentId: draft.parentId || null,
+      blockedByIds: draft.blockedByIds,
+      blocksIds: draft.blocksIds,
+      relatedIds: draft.relatedIds,
       customStatus: draft.customStatus.trim(),
       attachments: draft.attachments.filter((item) => item.name.trim() || item.url.trim()),
     };
@@ -366,6 +381,7 @@ export function Tasks({ query, intent, onIntent }: { query: string; intent?: "cr
         onChange={(value) => setMode(value as typeof mode)}
         options={[
           { value: "list", label: "List" },
+          { value: "tree", label: "Tree" },
           { value: "board", label: "Board" },
           { value: "calendar", label: "Calendar" },
           { value: "timeline", label: "Timeline" },
@@ -558,6 +574,30 @@ export function Tasks({ query, intent, onIntent }: { query: string; intent?: "cr
                   <option key={task.id} value={task.id}>{task.title}</option>
                 ))}
               </select>
+            </Field>
+            <Field label="Blocked by" wide>
+              <MultiSelect
+                label="Blocked by"
+                values={draft.blockedByIds}
+                onChange={(blockedByIds) => setDraft({ ...draft, blockedByIds })}
+                options={data.tasks.filter((task) => task.projectId === draft.projectId && (dialog.mode !== "edit" || task.id !== dialog.task.id)).map((task) => ({ value: task.id, label: task.title }))}
+              />
+            </Field>
+            <Field label="Blocks" wide>
+              <MultiSelect
+                label="Blocks"
+                values={draft.blocksIds}
+                onChange={(blocksIds) => setDraft({ ...draft, blocksIds })}
+                options={data.tasks.filter((task) => task.projectId === draft.projectId && (dialog.mode !== "edit" || task.id !== dialog.task.id)).map((task) => ({ value: task.id, label: task.title }))}
+              />
+            </Field>
+            <Field label="Related task" wide>
+              <MultiSelect
+                label="Related task"
+                values={draft.relatedIds}
+                onChange={(relatedIds) => setDraft({ ...draft, relatedIds })}
+                options={data.tasks.filter((task) => task.projectId === draft.projectId && (dialog.mode !== "edit" || task.id !== dialog.task.id)).map((task) => ({ value: task.id, label: task.title }))}
+              />
             </Field>
             <Field label="Attachments" wide>
               <div className="stack">
@@ -789,8 +829,26 @@ function TaskDetail({
           <div><span>Estimate</span><strong>{task.estimate || "Not set"}</strong></div>
           <div><span>Actual</span><strong>{task.actual || "Not set"}</strong></div>
           <div><span>Parent</span><strong>{parentTaskTitle || "None"}</strong></div>
+          <div><span>Progress</span><strong>{childProgress(tasks, task.id)}</strong></div>
         </div>
         {(task.tags ?? []).length > 0 && <p className="muted">{task.tags?.join(" · ")}</p>}
+        <section>
+          <h3>Subtasks</h3>
+          <ul className="line-list">
+            {tasks.filter((item) => item.parentId === task.id).length === 0 && <li>No subtasks.</li>}
+            {tasks.filter((item) => item.parentId === task.id).map((item) => (
+              <li key={item.id}><strong>{item.title}</strong><span>{label(item.status)} · {childProgress(tasks, item.id)}</span></li>
+            ))}
+          </ul>
+        </section>
+        <section>
+          <h3>Dependencies</h3>
+          <ul className="line-list">
+            <li><strong>Blocked by</strong><span>{namesFor(tasks, task.blockedByIds)}</span></li>
+            <li><strong>Blocks</strong><span>{namesFor(tasks, task.blocksIds)}</span></li>
+            <li><strong>Related task</strong><span>{namesFor(tasks, task.relatedIds)}</span></li>
+          </ul>
+        </section>
         <section>
           <h3>Checklist</h3>
           <ul className="line-list">
@@ -879,6 +937,39 @@ function shiftDate(iso: string, days: number) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
+function childProgress(tasks: Task[], parentId: string) {
+  const children = tasks.filter((item) => item.parentId === parentId);
+  if (children.length === 0) return "No subtasks";
+  const done = children.filter((item) => item.status === "done").length;
+  return `${done} of ${children.length} subtasks done`;
+}
+
+function namesFor(tasks: Task[], ids?: string[]) {
+  const names = (ids ?? []).map((id) => tasks.find((item) => item.id === id)?.title).filter(Boolean);
+  return names.length ? names.join(", ") : "None";
+}
+
+function TaskBranch({ task, tasks, onOpen }: { task: Task; tasks: Task[]; onOpen: (id: string) => void }) {
+  const [open, setOpen] = useState(true);
+  const children = tasks.filter((item) => item.parentId === task.id);
+  return (
+    <li>
+      <div className="tree-row">
+        {children.length > 0 && (
+          <button type="button" className="btn ghost small" aria-expanded={open} onClick={() => setOpen((value) => !value)}>{open ? "Hide" : "Open"}</button>
+        )}
+        <button type="button" className="text-btn" onClick={() => onOpen(task.id)}>{task.title}</button>
+        <span>{label(task.status)}{children.length > 0 ? ` · ${childProgress(tasks, task.id)}` : ""}</span>
+      </div>
+      {open && children.length > 0 && (
+        <ul className="tree-children">
+          {children.map((child) => <TaskBranch key={child.id} task={child} tasks={tasks} onOpen={onOpen} />)}
+        </ul>
+      )}
+    </li>
+  );
+}
+
 function TaskModes({
   mode,
   tasks,
@@ -889,7 +980,7 @@ function TaskModes({
   assignments,
   onOpen,
 }: {
-  mode: "list" | "calendar" | "timeline" | "gantt" | "table" | "workload";
+  mode: "list" | "tree" | "calendar" | "timeline" | "gantt" | "table" | "workload";
   tasks: Task[];
   month: string;
   onMonth: (value: string) => void;
@@ -898,6 +989,7 @@ function TaskModes({
   assignments: Assignment[];
   onOpen: (id: string) => void;
 }) {
+  const [page, setPage] = useState(1);
   const names = (task: Task) => taskLinks(assignments, task.id).map((link) => personName(users, link.userId)).join(", ") || "Unassigned";
   const projectName = (id: string) => {
     const project = projects.find((item) => item.id === id);
@@ -905,23 +997,41 @@ function TaskModes({
   };
   if (tasks.length === 0) return <p className="empty">No tasks match that filter.</p>;
 
+  const paged = mode === "list" || mode === "table";
+  const pages = paged ? Math.max(1, Math.ceil(tasks.length / 8)) : 1;
+  const current = Math.min(page, pages);
+  const slice = paged ? tasks.slice((current - 1) * 8, current * 8) : tasks;
+
+  if (mode === "tree") {
+    const roots = tasks.filter((task) => !task.parentId || !tasks.some((item) => item.id === task.parentId));
+    return (
+      <ul className="task-tree">
+        {roots.map((task) => <TaskBranch key={task.id} task={task} tasks={tasks} onOpen={onOpen} />)}
+      </ul>
+    );
+  }
+
   if (mode === "list") {
     return (
+      <div className="stack">
       <ul className="line-list task-list">
-        {tasks.map((task) => (
+        {slice.map((task) => (
           <li key={task.id}>
             <button type="button" className="text-btn" onClick={() => onOpen(task.id)}>{task.title}</button>
             <span>{label(task.status)} · {label(task.priority)} · {names(task)} · {formatDate(task.dueDate)}</span>
           </li>
         ))}
       </ul>
+      <Pagination page={current} pages={pages} onPage={setPage} />
+      </div>
     );
   }
 
   if (mode === "table") {
     return (
+      <div className="stack">
       <Table head={["Task", "Status", "Priority", "Project", "Assignee", "Start", "Due"]}>
-        {tasks.map((task) => (
+        {slice.map((task) => (
           <tr key={task.id}>
             <td><button type="button" className="text-btn" onClick={() => onOpen(task.id)}>{task.title}</button></td>
             <td><Pill value={task.status} /></td>
@@ -933,6 +1043,8 @@ function TaskModes({
           </tr>
         ))}
       </Table>
+      <Pagination page={current} pages={pages} onPage={setPage} />
+      </div>
     );
   }
 

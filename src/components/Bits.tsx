@@ -19,7 +19,8 @@ export type IconName =
   | "alert"
   | "bell"
   | "menu"
-  | "chevron";
+  | "chevron"
+  | "chart";
 
 const ICONS: Record<IconName, ReactNode> = {
   desk: (
@@ -118,6 +119,14 @@ const ICONS: Record<IconName, ReactNode> = {
     </>
   ),
   chevron: <path d="M6 9l6 6 6-6" />,
+  chart: (
+    <>
+      <path d="M4 19V10" />
+      <path d="M10 19V5" />
+      <path d="M16 19v-7" />
+      <path d="M3 19h18" />
+    </>
+  ),
 };
 
 export function Icon({ name }: { name: IconName }) {
@@ -140,9 +149,11 @@ export function Loader({ label }: { label: string }) {
   );
 }
 
-export function Avatar({ name, id }: { name: string; id: string }) {
+export function Avatar({ name, id, photo, large }: { name: string; id: string; photo?: string; large?: boolean }) {
+  const className = large ? "avatar lg" : "avatar";
+  if (photo) return <img className={className} src={photo} alt="" title={name} />;
   return (
-    <span className="avatar" style={{ background: `hsl(${hue(id)} 42% 42%)` }} title={name}>
+    <span className={className} style={{ background: `hsl(${hue(id)} 42% 42%)` }} title={name}>
       {initials(name) || "?"}
     </span>
   );

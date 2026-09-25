@@ -109,7 +109,7 @@ export function People({ query, intent, onIntent }: { query: string; intent?: "c
           return (
             <article key={user.id} className="person-card">
               <div className="card-top">
-                <Avatar name={user.name} id={user.id} />
+                <Avatar name={user.name} id={user.id} photo={user.photo} />
                 <div>
                   <h3>
                     {user.name} <IdChip id={user.id} />
@@ -230,7 +230,14 @@ function MemberProfile({ user, tasks, onClose }: { user: User; tasks: Task[]; on
   return (
     <Modal title={user.name} onClose={onClose}>
       <div className="stack project-detail">
-        <p className="muted">{user.email}</p>
+        <div className="photo-row">
+          <Avatar name={user.name} id={user.id} photo={user.photo} large />
+          <div>
+            <p className="muted">{user.email}</p>
+            {user.mobile && <p className="muted">{user.mobile}</p>}
+            {user.bio && <p>{user.bio}</p>}
+          </div>
+        </div>
         <div className="fact-grid">
           <div><span>Role</span><strong>{label(user.role)}</strong></div>
           <div><span>Title</span><strong>{user.title || "No title"}</strong></div>

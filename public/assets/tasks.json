@@ -239,42 +239,5 @@
       "c234",
       "c235"
     ]
-  },
-  {
-    "id": "t13",
-    "title": "15. Quality checkpoint · Responsive, UX, performance",
-    "description": "24 checkpoints from the project list.",
-    "projectId": "p01",
-    "status": "review",
-    "priority": "medium",
-    "dueDate": "2026-11-20",
-    "createdBy": "u01",
-    "createdAt": "2026-09-23",
-    "checkpointIds": [
-      "c250",
-      "c251",
-      "c252",
-      "c253",
-      "c254",
-      "c255",
-      "c256",
-      "c257",
-      "c258",
-      "c259",
-      "c260",
-      "c261",
-      "c262",
-      "c263",
-      "c264",
-      "c265",
-      "c266",
-      "c267",
-      "c268",
-      "c269",
-      "c270",
-      "c271",
-      "c272",
-      "c273"
-    ]
   }
 ]

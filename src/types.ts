@@ -4,6 +4,14 @@ export type ProjectStatus = "planned" | "active" | "paused" | "done";
 export type TaskStatus = "backlog" | "todo" | "doing" | "review" | "done";
 export type Priority = "low" | "medium" | "high" | "urgent";
 export type AssignmentKind = "project" | "task";
+export type NoticeKind = "assigned" | "mention" | "comment" | "due" | "overdue" | "invite" | "completed" | "status";
+
+export interface UserSettings {
+  notices?: Partial<Record<NoticeKind, boolean>>;
+  density?: "comfortable" | "compact";
+  language?: "en" | "hi";
+  timezone?: string;
+}
 
 export interface User {
   id: string;
@@ -11,6 +19,9 @@ export interface User {
   email: string;
   password: string;
   mobile?: string;
+  bio?: string;
+  photo?: string;
+  settings?: UserSettings;
   role: Role;
   title: string;
   department: string;
@@ -95,6 +106,9 @@ export interface Task {
   estimate?: string;
   actual?: string;
   parentId?: string | null;
+  blockedByIds?: string[];
+  blocksIds?: string[];
+  relatedIds?: string[];
   customStatus?: string;
   comments?: TaskComment[];
   activity?: TaskActivity[];

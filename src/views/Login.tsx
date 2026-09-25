@@ -213,7 +213,7 @@ export function Login() {
   );
 }
 
-export function ChangePassword({ onClose }: { onClose: () => void }) {
+export function ChangePassword({ onDone, onCancel }: { onDone: () => void; onCancel?: () => void }) {
   const store = useStore();
   const [current, setCurrent] = useState("");
   const [next, setNext] = useState("");
@@ -228,8 +228,15 @@ export function ChangePassword({ onClose }: { onClose: () => void }) {
       return;
     }
     const message = store.changePassword(current, next);
-    if (message) setError(message);
-    else onClose();
+    if (message) {
+      setError(message);
+      return;
+    }
+    setCurrent("");
+    setNext("");
+    setConfirm("");
+    setError(null);
+    onDone();
   };
 
   return (
@@ -240,7 +247,7 @@ export function ChangePassword({ onClose }: { onClose: () => void }) {
       <label className="check"><input type="checkbox" checked={show} onChange={(event) => setShow(event.target.checked)} /> Show passwords</label>
       {error && <p className="form-error">{error}</p>}
       <div className="form-actions">
-        <button type="button" className="btn ghost" onClick={onClose}>Cancel</button>
+        {onCancel && <button type="button" className="btn ghost" onClick={onCancel}>Cancel</button>}
         <button type="submit" className="btn primary">Change password</button>
       </div>
     </form>

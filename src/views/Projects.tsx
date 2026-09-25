@@ -50,6 +50,7 @@ export function Projects({ query, intent, onIntent }: { query: string; intent?: 
   const [ownerText, setOwnerText] = useState("");
   const [ownerOpen, setOwnerOpen] = useState(false);
   const [panel, setPanel] = useState<{ project: Project; tab: (typeof DETAIL_TABS)[number] } | null>(null);
+  const [flow, setFlow] = useState<Project | null>(null);
   const [noteDraft, setNoteDraft] = useState("");
   const [memberIds, setMemberIds] = useState<string[]>([]);
   const [layout, setLayout] = useState<"cards" | "table">("cards");
@@ -194,6 +195,9 @@ export function Projects({ query, intent, onIntent }: { query: string; intent?: 
                 <td>{formatDate(project.startDate)}</td>
                 <td>{formatDate(project.dueDate)}</td>
                 <td>
+                  <button type="button" className="btn ghost small" onClick={() => setFlow(project)}>
+                    Flow chart
+                  </button>
                   <button type="button" className="btn ghost small" onClick={() => { setNoteDraft(project.notes ?? ""); setPanel({ project, tab: "Overview" }); }}>
                     Open
                   </button>
@@ -261,6 +265,9 @@ export function Projects({ query, intent, onIntent }: { query: string; intent?: 
                     Remove
                   </button>
                 )}
+                <button type="button" className="btn ghost small" onClick={() => setFlow(project)}>
+                  Flow chart
+                </button>
                 <button type="button" className="btn ghost small" onClick={() => { setNoteDraft(project.notes ?? ""); setPanel({ project, tab: "Overview" }); }}>
                   Open
                 </button>

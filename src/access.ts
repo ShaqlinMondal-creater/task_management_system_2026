@@ -1,13 +1,13 @@
 import type { Assignment, Project, StoreData, User } from "./types";
 
-export type ViewId = "desk" | "projects" | "tasks" | "people" | "assign" | "checks" | "admin";
+export type ViewId = "desk" | "projects" | "tasks" | "people" | "assign" | "checks" | "admin" | "settings" | "reports";
 
 const NAV: Record<User["role"], ViewId[]> = {
-  admin: ["desk", "projects", "tasks", "people", "assign", "checks", "admin"],
-  manager: ["desk", "projects", "tasks", "people", "assign"],
-  member: ["desk", "projects", "tasks", "people", "assign"],
-  viewer: ["desk", "projects", "tasks"],
-  reviewer: ["desk", "tasks", "people", "assign"],
+  admin: ["desk", "projects", "tasks", "people", "assign", "checks", "admin", "settings", "reports"],
+  manager: ["desk", "projects", "tasks", "people", "assign", "settings", "reports"],
+  member: ["desk", "projects", "tasks", "people", "assign", "settings"],
+  viewer: ["desk", "projects", "tasks", "settings"],
+  reviewer: ["desk", "tasks", "people", "assign", "settings"],
 };
 
 export function viewsFor(role: User["role"]) {

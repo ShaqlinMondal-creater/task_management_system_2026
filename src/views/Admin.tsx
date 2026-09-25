@@ -38,6 +38,7 @@ export function Admin({ query }: { query: string }) {
   const [dialog, setDialog] = useState<{ mode: "create" } | { mode: "edit"; user: User } | { mode: "delete"; user: User } | null>(null);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [seedAsk, setSeedAsk] = useState(false);
 
   if (!data || !sessionUser || sessionUser.role !== "admin") return null;
 
@@ -200,7 +201,7 @@ export function Admin({ query }: { query: string }) {
         <div className="stack">
           <p className="muted">{store.usingLocal ? "This browser is using the working copy." : "This browser is using the seed files."}</p>
           <p className="muted">Seed files: users.json, projects.json, tasks.json, assignments.json, checkpoints.json.</p>
-          <button type="button" className="btn ghost" onClick={() => void store.resetSeed()}>Reload seed</button>
+          <button type="button" className="btn ghost" onClick={() => setSeedAsk(true)}>Reload seed</button>
         </div>
       )}
       {dialog && dialog.mode !== "delete" && draft && (
@@ -242,6 +243,18 @@ export function Admin({ query }: { query: string }) {
           onConfirm={() => {
             store.deleteUser(dialog.user.id);
             setDialog(null);
+          }}
+        />
+      )}
+      {seedAsk && (
+        <Confirm
+          title="Reload seed"
+          body="This replaces the working copy in this browser with the files in public/assets."
+          confirmLabel="Reload seed"
+          onCancel={() => setSeedAsk(false)}
+          onConfirm={() => {
+            setSeedAsk(false);
+            void store.resetSeed();
           }}
         />
       )}

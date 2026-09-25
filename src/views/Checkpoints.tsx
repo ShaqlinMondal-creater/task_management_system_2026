@@ -5,7 +5,7 @@ import { Field, Icon, SearchSelect } from "../components/Bits";
 import { Button, Card, Input, Pagination, Select, Tabs } from "../components/System";
 import { CheckpointView } from "../components/CheckpointView";
 import { Modal } from "../components/Modal";
-import { formatWhen, label, matches, personName, taskLinks, todayISO } from "../lib";
+import { fitImage, formatWhen, label, matches, personName, taskLinks, todayISO } from "../lib";
 import { useStore } from "../store";
 import { useToast } from "../toast";
 import type { Checkpoint, Role } from "../types";
@@ -211,17 +211,14 @@ export function Checkpoints({ query }: { query: string }) {
       setError("Choose an image file.");
       return;
     }
-    const reader = new FileReader();
-    reader.onload = () => {
-      const photo = String(reader.result ?? "");
+    void fitImage(file).then((photo) => {
       if (photo.length > PHOTO_LIMIT) {
         setError("That photo is too large. Use a smaller image.");
         return;
       }
       setError(null);
       setDraft({ ...draft, photo });
-    };
-    reader.readAsDataURL(file);
+    }).catch((err: unknown) => setError(err instanceof Error ? err.message : "That photo could not be saved."));
   };
 
   const save = (event: FormEvent) => {

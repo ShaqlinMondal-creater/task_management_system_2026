@@ -214,6 +214,11 @@ body {
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.06);
+  width: 100%;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
 }
 .main { min-width: 0; }
 .topbar {
@@ -363,6 +368,19 @@ body {
 .legend i { width: 10px; height: 10px; border-radius: 99px; }
 .legend em, .bars em { font-style: normal; font-weight: 800; }
 .bars { display: flex; flex-direction: column; gap: 10px; }
+.modal:has(.flow-board) { width: min(1100px, 100%); }
+.flow-board { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: min(100%, 720px); }
+.flow-node { border: 1px solid var(--line); border-radius: 14px; padding: 8px 10px; background: white; min-width: 140px; max-width: 220px; }
+.flow-node strong { display: block; }
+.flow-node.project { background: #eff6ff; border-color: #bfdbfe; }
+.flow-node.task { background: #f8fafc; }
+.flow-node.done { background: #f0fdf4; border-color: #bbf7d0; }
+.flow-stem { width: 2px; height: 16px; background: #cbd5e1; }
+.flow-row { display: flex; gap: 14px; align-items: flex-start; overflow-x: auto; width: 100%; padding-bottom: 8px; }
+.flow-col { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: none; }
+.flow-points { display: flex; flex-direction: column; gap: 6px; align-items: center; }
+.tree-children { margin-left: 18px; }
+.tree-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .stack-bar { display: flex; }
 .stack-bar span { border-radius: 0; }
 .stack-bar span:first-child { border-radius: 999px 0 0 999px; }
@@ -452,7 +470,7 @@ body {
 .filter-presets { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .filter-presets .control { max-width: 180px; }
 .check-filters .control { min-width: 168px; }
-.tabs { display: flex; gap: 6px; align-items: end; }
+.tabs { display: flex; gap: 6px; align-items: end; flex-wrap: wrap; }
 .tabs button { border: 1px solid var(--line); background: white; border-radius: 999px; padding: 7px 12px; font-weight: 700; color: var(--ink-soft); }
 .tabs button.on { background: var(--accent); color: white; border-color: transparent; }
 .tip { position: relative; display: inline-flex; }
@@ -552,7 +570,18 @@ body {
   font-size: 11px;
   letter-spacing: 0.03em;
   flex: none;
+  object-fit: cover;
 }
+.avatar.lg { width: 72px; height: 72px; font-size: 22px; }
+.app.compact .content { padding: 4px 18px 28px; }
+.app.compact .panel { padding: 10px 12px 12px; }
+.app.compact .topbar h1 { font-size: 24px; }
+.app.compact .person-card, .app.compact .project-card, .app.compact .metric, .app.compact .task-card { padding: 10px; }
+.photo-row { display: flex; gap: 14px; align-items: center; }
+.choice-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.choice-row button.on { background: var(--accent); color: white; border-color: transparent; }
+.notice-list { display: grid; gap: 8px; }
+.notice-list label { display: flex; gap: 8px; align-items: center; font-weight: 650; }
 .idchip {
   display: inline-flex;
   align-items: center;
@@ -800,7 +829,13 @@ textarea.control { resize: vertical; }
   .form-grid, .checks, .demo-grid, .member-list li, .assign-people li, .cred-row { grid-template-columns: 1fr; }
 }
 
+@media (min-width: 1400px) {
+  .content { max-width: 1280px; }
+}
+
 @media (max-width: 760px) {
+  .app { grid-template-columns: 1fr; }
+  .rail { display: none; }
   .nav-toggle { display: inline-grid; }
   .login-panel, .topbar, .content { padding-left: 16px; padding-right: 16px; }
   .banner, .error-banner { margin-left: 16px; margin-right: 16px; }
@@ -808,6 +843,16 @@ textarea.control { resize: vertical; }
   .top-actions, .search-wrap { width: 100%; }
   .search { width: 100%; }
   .profile-name { display: none; }
+}
+
+@media (max-width: 430px) {
+  .content, .topbar, .login-panel { padding-left: 12px; padding-right: 12px; }
+  .banner, .error-banner { margin-left: 12px; margin-right: 12px; }
+  .topbar h1 { font-size: 24px; }
+  .metric { padding: 12px; }
+  .metric strong { font-size: 26px; }
+  .metrics, .fact-grid, .story-stats, .check-metrics { grid-template-columns: 1fr 1fr; }
+  .quick-actions .btn { flex: 1; }
 }
 
 .check-metrics { grid-template-columns: repeat(4, 1fr); }

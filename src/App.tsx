@@ -1,26 +1,30 @@
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Avatar, Icon, Mark } from "./components/Bits";
-import { Modal } from "./components/Modal";
+import { Confirm } from "./components/Modal";
 import { Drawer, Dropdown, Tooltip } from "./components/System";
 import type { IconName } from "./components/Bits";
 import { scopeFor, viewsFor } from "./access";
 import type { ViewId } from "./access";
 import { ago, greeting, isOverdue, label, openTasks, personName, taskLinks, todayISO } from "./lib";
 import { useStore } from "./store";
-import type { FileName } from "./types";
+import type { FileName, NoticeKind } from "./types";
 import { StoreProvider } from "./store";
 import { ToastProvider, useToast } from "./toast";
-import { Assignments } from "./views/Assignments";
-import { Admin } from "./views/Admin";
-import { Checkpoints } from "./views/Checkpoints";
-import { Desk } from "./views/Desk";
-import { ChangePassword, Login } from "./views/Login";
-import { People } from "./views/People";
-import { Projects } from "./views/Projects";
-import { Tasks } from "./views/Tasks";
+import { Login } from "./views/Login";
+import type { ProfileTab } from "./views/Settings";
+
+const Assignments = lazy(() => import("./views/Assignments").then((m) => ({ default: m.Assignments })));
+const Admin = lazy(() => import("./views/Admin").then((m) => ({ default: m.Admin })));
+const Checkpoints = lazy(() => import("./views/Checkpoints").then((m) => ({ default: m.Checkpoints })));
+const Desk = lazy(() => import("./views/Desk").then((m) => ({ default: m.Desk })));
+const People = lazy(() => import("./views/People").then((m) => ({ default: m.People })));
+const Projects = lazy(() => import("./views/Projects").then((m) => ({ default: m.Projects })));
+const Reports = lazy(() => import("./views/Reports").then((m) => ({ default: m.Reports })));
+const Settings = lazy(() => import("./views/Settings").then((m) => ({ default: m.Settings })));
+const Tasks = lazy(() => import("./views/Tasks").then((m) => ({ default: m.Tasks })));
 
 const VIEW_KEY = "northline.view";
-const VIEWS: ViewId[] = ["desk", "projects", "tasks", "people", "assign", "checks", "admin"];
+const VIEWS: ViewId[] = ["desk", "projects", "tasks", "people", "assign", "checks", "admin", "settings", "reports"];
 
 function savedView(): ViewId {
   const saved = sessionStorage.getItem(VIEW_KEY);
@@ -31,6 +35,7 @@ const NAV: { id: ViewId; label: string; icon: IconName }[] = [
   { id: "desk", label: "Dashboard", icon: "desk" },
   { id: "projects", label: "Projects", icon: "projects" },
   { id: "tasks", label: "Tasks", icon: "tasks" },
+  { id: "reports", label: "Reports", icon: "chart" },
   { id: "people", label: "People", icon: "people" },
   { id: "assign", label: "Assignments", icon: "assign" },
   { id: "checks", label: "Checkpoints", icon: "check" },
@@ -42,13 +47,20 @@ function Shell() {
   const [view, setView] = useState<ViewId>(savedView);
   const [intent, setIntent] = useState<"create-task" | "create-project" | "invite" | "my-tasks" | null>(null);
   const [query, setQuery] = useState("");
+  const [liveQuery, setLiveQuery] = useState("");
+  const [seedAsk, setSeedAsk] = useState(false);
   const [drawer, setDrawer] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [notesOpen, setNotesOpen] = useState(false);
-  const [passwordOpen, setPasswordOpen] = useState(false);
+  const [settingsTab, setSettingsTab] = useState<ProfileTab>("account");
   const profileRef = useRef<HTMLElement>(null);
   const notesRef = useRef<HTMLDivElement>(null);
   const push = useToast();
+
+  function openSettings(tab: ProfileTab = "account") {
+    setSettingsTab(tab);
+    openView("settings");
+  }
 
   function openView(next: ViewId, nextIntent: "create-task" | "create-project" | "invite" | "my-tasks" | null = null) {
     setView(next);
@@ -58,6 +70,15 @@ function Shell() {
     setProfileOpen(false);
     setNotesOpen(false);
   }
+
+  useEffect(() => {
+    document.documentElement.lang = store.sessionUser?.settings?.language === "hi" ? "hi" : "en";
+  }, [store.sessionUser?.settings?.language]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setLiveQuery(query), 250);
+    return () => window.clearTimeout(timer);
+  }, [query]);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -114,61 +135,71 @@ function Shell() {
     assign: scoped.assignments.length,
     checks: store.data.checkpoints.length,
     admin: store.data.users.length,
+    settings: 0,
+    reports: scoped.tasks.filter((task) => isOverdue(task.dueDate, task.status)).length,
   };
-  const heading = active === "desk" ? `${greeting()}, ${user.name.split(" ")[0]}` : page?.label;
+  const heading = active === "desk" ? `${greeting()}, ${user.name.split(" ")[0]}` : active === "settings" ? "Profile" : page?.label;
   const data = store.data;
   const mine = data.tasks.filter((task) => taskLinks(data.assignments, task.id).some((link) => link.userId === user.id));
   const endSoon = shiftDay(todayISO(), 1);
   const notes = [
     ...data.assignments.filter((item) => item.kind === "task" && item.userId === user.id && item.taskId).map((item) => ({
       id: `assign-${item.id}`,
+      kind: "assigned" as NoticeKind,
       when: item.assignedAt,
       title: "Task assigned to you",
       detail: data.tasks.find((task) => task.id === item.taskId)?.title ?? "Task",
     })),
     ...data.assignments.filter((item) => item.kind === "project" && item.userId === user.id && item.role !== "lead").map((item) => ({
       id: `invite-${item.id}`,
+      kind: "invite" as NoticeKind,
       when: item.assignedAt,
       title: "Project invitation",
       detail: data.projects.find((project) => project.id === item.projectId)?.name ?? "Project",
     })),
     ...data.tasks.flatMap((task) => (task.comments ?? []).filter((comment) => comment.userId !== user.id && comment.body.includes(`@${user.name}`)).map((comment) => ({
       id: `mention-${comment.id}`,
+      kind: "mention" as NoticeKind,
       when: comment.at,
       title: `${personName(data.users, comment.userId)} mentioned you`,
       detail: task.title,
     }))),
     ...mine.flatMap((task) => (task.comments ?? []).filter((comment) => comment.userId !== user.id && !comment.body.includes(`@${user.name}`)).map((comment) => ({
       id: `comment-${comment.id}`,
+      kind: "comment" as NoticeKind,
       when: comment.at,
       title: `${personName(data.users, comment.userId)} added a comment`,
       detail: task.title,
     }))),
     ...mine.filter((task) => task.status !== "done" && task.dueDate >= todayISO() && task.dueDate <= endSoon).map((task) => ({
       id: `soon-${task.id}`,
+      kind: "due" as NoticeKind,
       when: task.dueDate,
       title: task.dueDate === todayISO() ? "Task deadline today" : "Task deadline tomorrow",
       detail: task.title,
     })),
     ...mine.filter((task) => isOverdue(task.dueDate, task.status)).map((task) => ({
       id: `late-${task.id}`,
+      kind: "overdue" as NoticeKind,
       when: task.dueDate,
       title: "Task is overdue",
       detail: task.title,
     })),
     ...mine.filter((task) => task.status === "done").map((task) => ({
       id: `done-${task.id}`,
+      kind: "completed" as NoticeKind,
       when: task.doneAt || task.updatedAt || task.createdAt,
       title: "Task completed",
       detail: task.title,
     })),
     ...mine.flatMap((task) => (task.activity ?? []).filter((item) => item.text.includes("changed status") && !item.text.startsWith(user.name)).map((item) => ({
       id: `status-${item.id}`,
+      kind: "status" as NoticeKind,
       when: item.at,
       title: "Status changed",
       detail: `${task.title} · ${item.text}`,
     }))),
-  ].sort((a, b) => b.when.localeCompare(a.when)).slice(0, 12);
+  ].filter((item) => user.settings?.notices?.[item.kind] !== false).sort((a, b) => b.when.localeCompare(a.when)).slice(0, 12);
 
   function save(name: FileName) {
     store.exportFile(name);
@@ -185,7 +216,7 @@ function Shell() {
     ));
 
   return (
-    <div className="app">
+    <div className={user.settings?.density === "compact" ? "app compact" : "app"}>
       <aside className="rail">
         <div className="brand">
           <Mark />
@@ -195,13 +226,13 @@ function Shell() {
           </div>
         </div>
         <nav className="nav" aria-label="Desk">{renderNav()}</nav>
-        <div className="rail-user">
-          <Avatar name={user.name} id={user.id} />
+        <button type="button" className="rail-user" onClick={() => openSettings("account")}>
+          <Avatar name={user.name} id={user.id} photo={user.photo} />
           <div>
             <strong>{user.name}</strong>
             <span>{label(user.role)}</span>
           </div>
-        </div>
+        </button>
       </aside>
       {drawer && (
         <Drawer title="Navigation" onClose={() => setDrawer(false)}>
@@ -228,7 +259,7 @@ function Shell() {
               <nav className="crumbs" aria-label="Breadcrumb">
                 <span>Northline</span>
                 <span aria-hidden="true">/</span>
-                <span aria-current="page">{page?.label ?? "Dashboard"}</span>
+                <span aria-current="page">{active === "settings" ? "Profile" : page?.label ?? "Dashboard"}</span>
               </nav>
               <h1>{heading}</h1>
             </div>
@@ -292,9 +323,7 @@ function Shell() {
                 <button type="button" onClick={() => save("checkpoints")}><Icon name="download" /> checkpoints.json</button>
                 <button
                   type="button"
-                  onClick={() => {
-                    void store.resetSeed().then(() => push("Seed reloaded"));
-                  }}
+                  onClick={() => setSeedAsk(true)}
                 >
                   <Icon name="refresh" /> Reload seed
                 </button>
@@ -310,17 +339,19 @@ function Shell() {
                 setProfileOpen(open);
                 if (open) setNotesOpen(false);
               }}
-              label={<><Avatar name={user.name} id={user.id} /><span className="profile-name">{user.name.split(" ")[0]}</span></>}
+              label={<><Avatar name={user.name} id={user.id} photo={user.photo} /><span className="profile-name">{user.name.split(" ")[0]}</span></>}
             >
               <p>
                 <strong>{user.name}</strong>
                 {user.email}
+                {user.mobile && <small>{user.mobile}</small>}
+                {user.bio && <small>{user.bio}</small>}
                 <small>{label(user.role)}</small>
               </p>
-              <button type="button" onClick={() => openView("people")}>
+              <button type="button" onClick={() => openSettings("account")}>
                 <Icon name="people" /> Your account
               </button>
-              <button type="button" onClick={() => setPasswordOpen(true)}>
+              <button type="button" onClick={() => openSettings("security")}>
                 <Icon name="check" /> Change password
               </button>
               <button
@@ -351,19 +382,30 @@ function Shell() {
           <p className="banner">This browser is using your working copy. The files in public/assets are still the original seed.</p>
         )}
         <div className="content">
-          {active === "desk" && <Desk query={query} onOpen={openView} />}
-          {active === "projects" && <Projects query={query} intent={intent} onIntent={() => setIntent(null)} />}
-          {active === "tasks" && <Tasks query={query} intent={intent} onIntent={() => setIntent(null)} />}
-          {active === "people" && <People query={query} intent={intent} onIntent={() => setIntent(null)} />}
-          {active === "assign" && <Assignments query={query} />}
-          {active === "checks" && <Checkpoints query={query} />}
-          {active === "admin" && <Admin query={query} />}
+          <Suspense fallback={<p className="empty">Opening this page…</p>}>
+            {active === "desk" && <Desk query={liveQuery} onOpen={openView} />}
+            {active === "projects" && <Projects query={liveQuery} intent={intent} onIntent={() => setIntent(null)} />}
+            {active === "tasks" && <Tasks query={liveQuery} intent={intent} onIntent={() => setIntent(null)} />}
+            {active === "people" && <People query={liveQuery} intent={intent} onIntent={() => setIntent(null)} />}
+            {active === "assign" && <Assignments query={liveQuery} />}
+            {active === "checks" && <Checkpoints query={liveQuery} />}
+            {active === "admin" && <Admin query={liveQuery} />}
+            {active === "reports" && <Reports query={liveQuery} />}
+            {active === "settings" && <Settings key={user.id} tab={settingsTab} onTab={setSettingsTab} />}
+          </Suspense>
         </div>
       </div>
-      {passwordOpen && (
-        <Modal title="Change password" onClose={() => setPasswordOpen(false)}>
-          <ChangePassword onClose={() => setPasswordOpen(false)} />
-        </Modal>
+      {seedAsk && (
+        <Confirm
+          title="Reload seed"
+          body="This replaces the working copy in this browser with the files in public/assets."
+          confirmLabel="Reload seed"
+          onCancel={() => setSeedAsk(false)}
+          onConfirm={() => {
+            setSeedAsk(false);
+            void store.resetSeed().then(() => push("Seed reloaded"));
+          }}
+        />
       )}
     </div>
   );
