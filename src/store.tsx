@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
+import { apiEnabled, fetchDesk, saveDesk } from "./api";
 import { holdsTask } from "./access";
 import { label, nextId, nowStamp, personName, todayISO } from "./lib";
 import type { Assignment, Checkpoint, FileName, Project, StoreData, Task, User } from "./types";
@@ -242,6 +243,17 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       }, delay);
     };
 
+    if (apiEnabled()) {
+      fetchDesk()
+        .then((seed) => finish(withoutQualityTask(seed), false, null))
+        .catch((err: unknown) => {
+          finish(null, false, err instanceof Error ? err.message : "Could not load the API.");
+        });
+      return () => {
+        cancel = true;
+      };
+    }
+
     const saved = readSaved();
     if (saved) {
       finish(saved, true, null);
@@ -295,13 +307,18 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (!data) return;
     const next = alignTaskStatuses(data);
     if (next === data) return;
-    setData(next);
-    setUsingLocal(true);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    commit(next);
   }, [data]);
 
   const commit = (next: StoreData) => {
     setData(next);
+    if (apiEnabled()) {
+      setUsingLocal(false);
+      void saveDesk(next).catch((err: unknown) => {
+        setError(err instanceof Error ? err.message : "Could not save to the API.");
+      });
+      return;
+    }
     setUsingLocal(true);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
   };
@@ -349,13 +366,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     resetSeed: async () => {
       setLoading(true);
       try {
-        const seed = await fetchSeed(true);
+        const seed = apiEnabled() ? withoutQualityTask(await fetchDesk()) : await fetchSeed(true);
         localStorage.removeItem(STORAGE_KEY);
         setData(seed);
         setUsingLocal(false);
         setError(null);
       } catch (err: unknown) {
-        setError(err instanceof Error ? err.message : "Could not reload the seed files.");
+        setError(err instanceof Error ? err.message : "Could not reload the desk data.");
       } finally {
         setLoading(false);
       }

@@ -314,8 +314,8 @@ function Shell() {
               )}
             </div>
             {user.role === "admin" && (
-              <Dropdown label={<><Icon name="download" /> {store.usingLocal ? "Working copy" : "JSON files"}</>}>
-                <p>Edits stay in this browser. Download a file and replace the matching one in public/assets, then reload the seed.</p>
+              <Dropdown label={<><Icon name="download" /> {store.usingLocal ? "Working copy" : "API desk"}</>}>
+                <p>{store.usingLocal ? "Edits stay in this browser. Download a file and replace the matching one in public/assets, then reload the seed." : "Edits save to the Northline API. Download a snapshot if you want a local JSON copy."}</p>
                 <button type="button" onClick={() => save("users")}><Icon name="download" /> users.json</button>
                 <button type="button" onClick={() => save("projects")}><Icon name="download" /> projects.json</button>
                 <button type="button" onClick={() => save("tasks")}><Icon name="download" /> tasks.json</button>
