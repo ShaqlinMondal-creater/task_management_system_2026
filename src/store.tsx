@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { holdsTask } from "./access";
-import { checkpointsForProject } from "./checkpointWork";
 import { label, nextId, nowStamp, personName, todayISO } from "./lib";
 import type { Assignment, Checkpoint, FileName, Project, StoreData, Task, User } from "./types";
 
@@ -194,21 +193,7 @@ function resolveOwner(users: User[], ownerId: string, ownerName: string) {
   if (!typed) return { users, ownerId };
   const byName = users.find((user) => user.name.toLowerCase() === typed.toLowerCase());
   if (byName) return { users, ownerId: byName.id };
-  const id = nextId("u", users.map((user) => user.id));
-  const slug = typed.toLowerCase().replace(/[^a-z0-9]+/g, "") || "owner";
-  let email = `${slug}@northline.local`;
-  let n = 2;
-  while (users.some((user) => user.email.toLowerCase() === email)) {
-    email = `${slug}${n}@northline.local`;
-    n += 1;
-  }
-  return {
-    users: [
-      ...users,
-      { id, name: typed, email, password: "Northline#Join26", role: "member" as const, title: "Member", department: "Delivery", status: "active" as const },
-    ],
-    ownerId: id,
-  };
+  return { users, ownerId };
 }
 
 function withMembership(assignments: Assignment[], projectId: string, userId: string) {
@@ -449,16 +434,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       for (const userId of memberIds) {
         if (userId !== resolved.ownerId) assignments = withMembership(assignments, id, userId);
       }
-      const checkpoints = [
-        ...data.checkpoints,
-        ...checkpointsForProject(id, data.checkpoints.map((item) => item.id)),
-      ];
       commit({
         ...data,
         users: resolved.users,
         projects: [...data.projects, { ...input, id, ownerId: resolved.ownerId }],
         assignments,
-        checkpoints,
       });
     },
     updateProject: (id, patch, ownerName, memberIds) => {

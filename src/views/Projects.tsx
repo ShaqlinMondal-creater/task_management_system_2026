@@ -122,6 +122,11 @@ export function Projects({ query, intent, onIntent }: { query: string; intent?: 
       setError("Name, code, owner, and due date are required.");
       return;
     }
+    const owner = data.users.find((user) => user.name.toLowerCase() === ownerText.trim().toLowerCase());
+    if (!owner) {
+      setError("Pick an existing person for the owner. Invite them from People first.");
+      return;
+    }
     const credentials = credentialsOf(draft)
       .map((item) => ({
         ...item,
@@ -135,7 +140,7 @@ export function Projects({ query, intent, onIntent }: { query: string; intent?: 
       setError("Each credential needs a label, or clear the row.");
       return;
     }
-    const next = { ...draft, name: draft.name.trim(), code: draft.code.trim().toUpperCase(), credentials };
+    const next = { ...draft, name: draft.name.trim(), code: draft.code.trim().toUpperCase(), credentials, ownerId: owner.id };
     if (dialog?.mode === "edit") store.updateProject(dialog.project.id, next, ownerText, memberIds);
     else store.addProject(next, ownerText, memberIds);
     setDialog(null);
@@ -351,7 +356,7 @@ export function Projects({ query, intent, onIntent }: { query: string; intent?: 
                 <input
                   className="control"
                   value={ownerText}
-                  placeholder="Search a name, or type a new one"
+                  placeholder="Search an existing person"
                   onFocus={() => setOwnerOpen(true)}
                   onChange={(event) => {
                     setOwnerText(event.target.value);
@@ -378,12 +383,8 @@ export function Projects({ query, intent, onIntent }: { query: string; intent?: 
                           </button>
                         </li>
                       ))}
-                    {ownerText.trim() && !data.users.some((user) => user.name.toLowerCase() === ownerText.trim().toLowerCase()) && (
-                      <li>
-                        <button type="button" onMouseDown={(event) => event.preventDefault()}>
-                          Save “{ownerText.trim()}” as a new owner
-                        </button>
-                      </li>
+                    {ownerText.trim() && !data.users.some((user) => user.name.toLowerCase().includes(ownerText.trim().toLowerCase())) && (
+                      <li><span className="muted">No match. Invite them from People first.</span></li>
                     )}
                   </ul>
                 )}
