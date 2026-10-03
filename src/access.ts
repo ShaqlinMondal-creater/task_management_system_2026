@@ -6,6 +6,7 @@ const NAV: Record<User["role"], ViewId[]> = {
   admin: ["desk", "projects", "tasks", "people", "assign", "checks", "admin", "settings", "reports"],
   manager: ["desk", "projects", "tasks", "people", "assign", "settings", "reports"],
   member: ["desk", "projects", "tasks", "people", "assign", "settings"],
+  client: ["desk", "projects", "tasks", "settings"],
   viewer: ["desk", "projects", "tasks", "settings"],
   reviewer: ["desk", "tasks", "people", "assign", "settings"],
 };

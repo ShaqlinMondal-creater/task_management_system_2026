@@ -143,6 +143,86 @@ export async function updateConstraints(patch: Partial<ConstraintsMap>): Promise
   return json.constraints;
 }
 
+export type TableInfo = {
+  name: string;
+  file: string;
+  shape: "array" | "object" | "unknown";
+  rows: number;
+};
+
+export type TableDetail = {
+  name: string;
+  file: string;
+  shape: "array" | "object";
+  columns: string[];
+  rows: Record<string, unknown>[];
+};
+
+export async function fetchTables(): Promise<TableInfo[]> {
+  const res = await apiFetch("/api/tables/all");
+  if (!res.ok) throw new Error(await readError(res, "Could not list tables."));
+  const json: unknown = await res.json();
+  if (!Array.isArray(json)) throw new Error("Tables list must be an array.");
+  return json as TableInfo[];
+}
+
+export async function fetchTableDetail(name: string): Promise<TableDetail> {
+  const res = await apiFetch(`/api/tables/detail/${encodeURIComponent(name)}`);
+  if (!res.ok) throw new Error(await readError(res, `Could not load table ${name}.`));
+  return (await res.json()) as TableDetail;
+}
+
+export async function updateTableCell(
+  name: string,
+  input: { rowId: string; column: string; value: unknown },
+): Promise<TableDetail> {
+  const res = await apiFetch(`/api/tables/cell/${encodeURIComponent(name)}`, {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) throw new Error(await readError(res, `Could not update ${name}.`));
+  return (await res.json()) as TableDetail;
+}
+
+export type TablesStatus = {
+  hasUsers: boolean;
+  needsImport: boolean;
+  files: string[];
+};
+
+export async function fetchTablesStatus(): Promise<TablesStatus> {
+  if (!BASE) throw new Error("VITE_API_URL is not set.");
+  const res = await fetch(`${BASE}/api/tables/status`);
+  if (!res.ok) throw new Error(await readError(res, "Could not check table status."));
+  return (await res.json()) as TablesStatus;
+}
+
+export async function importTableFiles(files: Record<string, unknown>) {
+  const res = await apiFetch("/api/tables/import", {
+    method: "POST",
+    body: JSON.stringify({ files }),
+  });
+  if (!res.ok) throw new Error(await readError(res, "Could not import JSON."));
+  return (await res.json()) as { ok: boolean; written: string[]; status: TablesStatus };
+}
+
+/** Read browser FileList of *.json into { users: [...], ... }. */
+export async function readJsonFileList(list: FileList | File[]): Promise<Record<string, unknown>> {
+  const files: Record<string, unknown> = {};
+  for (const file of Array.from(list)) {
+    const name = file.name.replace(/\.json$/i, "").trim();
+    if (!name) continue;
+    const text = await file.text();
+    try {
+      files[name] = JSON.parse(text) as unknown;
+    } catch {
+      throw new Error(`${file.name} is not valid JSON.`);
+    }
+  }
+  if (!Object.keys(files).length) throw new Error("Choose at least one .json file.");
+  return files;
+}
+
 export async function apiLogin(email: string, password: string) {
   const res = await fetch(`${BASE}/api/auth/login`, {
     method: "POST",

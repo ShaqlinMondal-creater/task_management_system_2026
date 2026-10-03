@@ -118,7 +118,7 @@ export function Tasks({ query, intent, onIntent }: { query: string; intent?: "cr
 
   const admin = sessionUser.role === "admin";
   const reviewer = sessionUser.role === "reviewer";
-  const viewer = sessionUser.role === "viewer";
+  const viewer = sessionUser.role === "viewer" || sessionUser.role === "client";
   const scoped = scopeFor(data, sessionUser);
   const columns = reviewer ? (["review", "done"] as const) : TASK_STATUSES;
 

@@ -62,6 +62,7 @@ interface StoreApi {
   usingLocal: boolean;
   sessionUser: User | null;
   ensureLoaded: (...names: FileName[]) => Promise<void>;
+  refreshCollection: (...names: FileName[]) => Promise<void>;
   ensureDashboard: () => Promise<void>;
   ensureReports: (projectId?: string) => Promise<void>;
   login: (email: string, password: string, remember?: boolean) => Promise<string | null>;
@@ -223,12 +224,40 @@ function download(name: string, value: unknown) {
   URL.revokeObjectURL(url);
 }
 
+function clientEmail(name: string, users: User[], id: string) {
+  const slug = name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ".")
+    .replace(/^\.+|\.+$/g, "")
+    .slice(0, 40) || id;
+  let email = `${slug}@client.local`;
+  let n = 1;
+  while (users.some((user) => user.email.toLowerCase() === email)) {
+    email = `${slug}${n}@client.local`;
+    n += 1;
+  }
+  return email;
+}
+
+/** Resolve owner by name; create a Client person when the name is new. */
 function resolveOwner(users: User[], ownerId: string, ownerName: string) {
   const typed = ownerName.trim();
   if (!typed) return { users, ownerId };
   const byName = users.find((user) => user.name.toLowerCase() === typed.toLowerCase());
   if (byName) return { users, ownerId: byName.id };
-  return { users, ownerId };
+
+  const id = nextId("u", users.map((user) => user.id));
+  const created: User = {
+    id,
+    name: typed,
+    email: clientEmail(typed, users, id),
+    password: "Client#1",
+    role: "client",
+    title: "Client",
+    department: "Client",
+    status: "active",
+  };
+  return { users: [...users, created], ownerId: id };
 }
 
 function withMembership(assignments: Assignment[], projectId: string, userId: string) {
@@ -317,6 +346,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       setPageLoading(false);
     }
   }, [failAuthLoad]);
+
+  const refreshCollection = useCallback(async (...names: FileName[]) => {
+    for (const name of names) loadedRef.current.delete(name);
+    await ensureLoaded(...names);
+  }, [ensureLoaded]);
 
   const ensureDashboard = useCallback(async () => {
     if (!apiEnabled() || !getApiToken()) return;
@@ -534,6 +568,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     usingLocal,
     sessionUser,
     ensureLoaded,
+    refreshCollection,
     ensureDashboard,
     ensureReports,
     sessionNote,
@@ -731,7 +766,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       });
     },
     addTask: (input, assigneeIds, role = "assignee") => {
-      if (!data || !sessionUser || sessionUser.role === "reviewer" || sessionUser.role === "viewer") return;
+      if (!data || !sessionUser || sessionUser.role === "reviewer" || sessionUser.role === "viewer" || sessionUser.role === "client") return;
       const allowedIds = sessionUser.role === "admin" ? assigneeIds : [sessionUser.id];
       const id = nextId("t", data.tasks.map((task) => task.id));
       let assignments = data.assignments;
@@ -760,7 +795,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       });
     },
     updateTask: (id, patch, assigneeIds) => {
-      if (!data || !sessionUser || sessionUser.role === "viewer") return;
+      if (!data || !sessionUser || sessionUser.role === "viewer" || sessionUser.role === "client") return;
       const current = data.tasks.find((task) => task.id === id);
       if (!current) return;
       if (sessionUser.role !== "admin" && !holdsTask(data.assignments, id, sessionUser.id)) return;

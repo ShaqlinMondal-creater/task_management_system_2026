@@ -3,7 +3,7 @@ import type { Assignment, Task, User } from "./types";
 export const TASK_STATUSES = ["backlog", "todo", "doing", "review", "done"] as const;
 export const PROJECT_STATUSES = ["planned", "active", "paused", "done"] as const;
 export const PRIORITIES = ["low", "medium", "high", "urgent"] as const;
-export const USER_ROLES = ["admin", "manager", "member", "viewer", "reviewer"] as const;
+export const USER_ROLES = ["admin", "manager", "member", "client", "viewer", "reviewer"] as const;
 export const PROJECT_ROLES = ["lead", "member", "reviewer"] as const;
 export const TASK_ROLES = ["assignee", "reviewer"] as const;
 export const COLORS = ["#1e6b45", "#2a5f8a", "#c24e2a", "#8a5a2a", "#5c4d8a", "#1f6f78"];
@@ -25,6 +25,7 @@ const LABELS: Record<string, string> = {
   manager: "Manager",
   lead: "Lead",
   member: "Member",
+  client: "Client",
   viewer: "Viewer",
   inactive: "Inactive",
   assignee: "Assignee",

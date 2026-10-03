@@ -8,12 +8,14 @@ import { USER_ROLES, formatDate, isOverdue, label, matches, personName } from ".
 import { useStore } from "../store";
 import { useToast } from "../toast";
 import type { Role, User, UserStatus } from "../types";
+import { JsonTables } from "./JsonTables";
 
-const SECTIONS = ["Dashboard", "Users", "Roles", "Projects", "Tasks", "Activity", "Settings", "System"] as const;
+const SECTIONS = ["Dashboard", "Users", "Roles", "Projects", "Tasks", "Activity", "Tables", "Settings", "System"] as const;
 const ROLE_NOTES = [
   { role: "Admin", note: "Full desk, users, roles, settings, and system." },
   { role: "Manager", note: "Sees every project, task, and person. Cannot open Admin or delete the desk." },
   { role: "Member", note: "Works on tasks assigned to them." },
+  { role: "Client", note: "Project client / owner. Created when a new name is used on a project. Can view their projects, not edit the desk." },
   { role: "Viewer", note: "Can open projects and tasks, and cannot change them." },
   { role: "Reviewer", note: "Already on the desk. Reviews tasks and marks them done." },
 ];
@@ -206,6 +208,7 @@ export function Admin({ query }: { query: string }) {
           ))}
         </ul>
       )}
+      {section === "Tables" && <JsonTables />}
       {section === "Settings" && (
         <div className="project-detail stack">
           <div className="fact-grid">

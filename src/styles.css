@@ -679,6 +679,37 @@ body {
 .ledger { width: 100%; border-collapse: collapse; font-size: 14px; }
 .ledger th { text-align: left; font-weight: 500; color: var(--muted); font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; }
 .ledger th, .ledger td { padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.json-tables .json-table-wrap { max-height: min(70vh, 720px); overflow: auto; border: 1px solid var(--line); border-radius: 12px; background: white; }
+.json-ledger th, .json-ledger td { white-space: nowrap; max-width: 280px; }
+.json-cell {
+  display: block;
+  width: 100%;
+  min-width: 72px;
+  max-width: 280px;
+  margin: 0;
+  padding: 4px 6px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: text;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.json-cell:hover, .json-cell:focus-visible {
+  border-color: var(--line);
+  background: color-mix(in srgb, var(--accent) 8%, white);
+}
+.json-cell-input {
+  min-width: 120px;
+  width: 100%;
+  max-width: 320px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px;
+}
 .empty { color: var(--muted); padding: 8px 0; }
 
 .modal-back {

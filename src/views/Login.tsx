@@ -1,6 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import { apiEnabled, apiForgot, apiPasswordUpdate, apiRegister } from "../api";
+import {
+  apiEnabled,
+  apiForgot,
+  apiPasswordUpdate,
+  apiRegister,
+  fetchTablesStatus,
+  importTableFiles,
+  readJsonFileList,
+} from "../api";
 import { Icon, Mark } from "../components/Bits";
 import { useStore } from "../store";
 
@@ -22,6 +30,15 @@ export function Login() {
   const [sentCode, setSentCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [needsImport, setNeedsImport] = useState(false);
+  const [importNote, setImportNote] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!apiEnabled()) return;
+    void fetchTablesStatus()
+      .then((status) => setNeedsImport(status.needsImport))
+      .catch(() => setNeedsImport(false));
+  }, []);
 
   if (!data) return null;
 
@@ -145,6 +162,41 @@ export function Login() {
         </div>
       </section>
       <section className="login-panel">
+        {needsImport && mode === "signin" && (
+          <div className="panel-card stack">
+            <h2>Import JSON</h2>
+            <p className="muted">This API has no users yet. Choose your `users.json` (and other desk files) to restore the desk, then sign in.</p>
+            <label className="field">
+              <span>JSON files</span>
+              <input
+                className="control"
+                type="file"
+                accept=".json,application/json"
+                multiple
+                disabled={busy}
+                onChange={(event) => {
+                  const list = event.target.files;
+                  if (!list?.length) return;
+                  setBusy(true);
+                  setError(null);
+                  setImportNote(null);
+                  void readJsonFileList(list)
+                    .then((files) => importTableFiles(files))
+                    .then((result) => {
+                      setNeedsImport(result.status.needsImport);
+                      setImportNote(`Imported: ${result.written.map((name) => `${name}.json`).join(", ")}`);
+                    })
+                    .catch((err: unknown) => setError(err instanceof Error ? err.message : "Import failed."))
+                    .finally(() => {
+                      setBusy(false);
+                      event.target.value = "";
+                    });
+                }}
+              />
+            </label>
+            {importNote && <p className="muted">{importNote}</p>}
+          </div>
+        )}
         <form className="panel-card" onSubmit={onSubmit}>
           <h2>{title}</h2>
           {store.sessionNote && mode === "signin" && <p className="form-error">{store.sessionNote}</p>}

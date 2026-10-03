@@ -1,4 +1,4 @@
-export type Role = "admin" | "manager" | "member" | "viewer" | "reviewer";
+export type Role = "admin" | "manager" | "member" | "client" | "viewer" | "reviewer";
 export type UserStatus = "active" | "away" | "inactive";
 export type ProjectStatus = "planned" | "active" | "paused" | "done";
 export type TaskStatus = "backlog" | "todo" | "doing" | "review" | "done";
