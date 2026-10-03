@@ -13,7 +13,7 @@ export function Login() {
   const store = useStore();
   const { data, login } = store;
   const [mode, setMode] = useState<Mode>("signin");
-  const [email, setEmail] = useState("shaqlin@northline.local");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
@@ -132,7 +132,7 @@ export function Login() {
         <div className="story-copy">
           <p className="eyebrow light">Task desk</p>
           <h1>People, projects, and the tasks between them.</h1>
-          <p>Sign in with someone from the user list, or register a member. This desk has no mail server, so a verification code is shown on the form.</p>
+          <p>Sign in with your email and password, or register a member. This desk has no mail server, so a verification code is shown on the form.</p>
         </div>
         <div className="story-stats">
           <div><strong>{data.users.length}</strong><span>People</span></div>
@@ -194,20 +194,6 @@ export function Login() {
             {mode === "signin" && <button type="button" className="text-btn" onClick={() => { setMode("register"); setError(null); }}>Create an account</button>}
           </p>
         </form>
-        {mode === "signin" && (
-          <div className="demo-block">
-            <p className="eyebrow">Desk accounts</p>
-            <div className="demo-grid">
-              {data.users.map((user) => (
-                <button key={user.id} type="button" className="demo-card" onClick={() => setError(login(user.email, user.password, remember))}>
-                  <strong>{user.name}</strong>
-                  <span>{user.title}</span>
-                  <span className="demo-meta">{user.email}<br />{user.password}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
       </section>
     </div>
   );

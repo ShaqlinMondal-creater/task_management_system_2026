@@ -5,7 +5,7 @@ import { checkpointsForProject } from "./checkpointWork";
 import { label, nextId, nowStamp, personName, todayISO } from "./lib";
 import type { Assignment, Checkpoint, FileName, Project, StoreData, Task, User } from "./types";
 
-const STORAGE_KEY = "northline.store.v8";
+const STORAGE_KEY = "northline.store.v9";
 const SESSION_KEY = "northline.session";
 const TOKEN_KEY = "northline.token";
 const IDLE_MS = 30 * 60 * 1000;
@@ -205,7 +205,7 @@ function resolveOwner(users: User[], ownerId: string, ownerName: string) {
   return {
     users: [
       ...users,
-      { id, name: typed, email, password: "changeme", role: "member" as const, title: "Member", department: "Delivery", status: "active" as const },
+      { id, name: typed, email, password: "Northline#Join26", role: "member" as const, title: "Member", department: "Delivery", status: "active" as const },
     ],
     ownerId: id,
   };
