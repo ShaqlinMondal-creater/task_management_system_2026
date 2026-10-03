@@ -1,13 +1,10 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
+import { apiEnabled, apiForgot, apiPasswordUpdate } from "../api";
 import { Icon, Mark } from "../components/Bits";
 import { useStore } from "../store";
 
-type Mode = "signin" | "register" | "forgot" | "code" | "reset";
-
-function codeFor() {
-  return String(Math.floor(100000 + Math.random() * 900000));
-}
+type Mode = "signin" | "forgot" | "code" | "reset";
 
 export function Login() {
   const store = useStore();
@@ -17,10 +14,7 @@ export function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
-  const [name, setName] = useState("");
-  const [mobile, setMobile] = useState("");
   const [confirm, setConfirm] = useState("");
-  const [terms, setTerms] = useState(false);
   const [code, setCode] = useState("");
   const [sentCode, setSentCode] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -31,76 +25,40 @@ export function Login() {
   const fail = (message: string | null) => {
     setBusy(false);
     setError(message);
-    return message;
   };
 
-  const run = (work: () => string | null) => {
+  const run = (work: () => Promise<string | null>) => {
     setError(null);
     setBusy(true);
-    window.setTimeout(() => fail(work()), 400);
+    void work()
+      .then((message) => fail(message))
+      .catch((err: unknown) => fail(err instanceof Error ? err.message : "Something went wrong."));
   };
 
   const submitSignIn = (event: FormEvent) => {
     event.preventDefault();
-    if (!email.trim().includes("@")) {
-      setError("Enter a valid email.");
-      return;
-    }
-    if (password.length < 4) {
-      setError("Password must be at least 4 characters.");
-      return;
-    }
-    run(() => login(email, password, remember));
-  };
-
-  const submitRegister = (event: FormEvent) => {
-    event.preventDefault();
-    if (name.trim().length < 2) return setError("Enter your name.");
+    if (!apiEnabled()) return setError("Set VITE_API_URL to sign in.");
     if (!email.trim().includes("@")) return setError("Enter a valid email.");
-    if (!/^[0-9]{8,15}$/.test(mobile.trim())) return setError("Enter a mobile number, digits only.");
     if (password.length < 4) return setError("Password must be at least 4 characters.");
-    if (password !== confirm) return setError("The passwords do not match.");
-    if (!terms) return setError("Accept the terms to create an account.");
-    if (data.users.some((user) => user.email.toLowerCase() === email.trim().toLowerCase())) return setError("That email is already registered.");
-    const next = codeFor();
-    setSentCode(next);
-    setCode("");
-    setMode("code");
-    setError(null);
+    run(() => login(email, password, remember));
   };
 
   const submitForgot = (event: FormEvent) => {
     event.preventDefault();
-    const user = data.users.find((item) => item.email.toLowerCase() === email.trim().toLowerCase());
-    if (!user) return setError("No account uses that email.");
-    setName("");
-    const next = codeFor();
-    setSentCode(next);
-    setCode("");
-    setMode("code");
-    setError(null);
+    if (!apiEnabled()) return setError("Set VITE_API_URL to reset a password.");
+    if (!email.trim().includes("@")) return setError("Enter a valid email.");
+    run(async () => {
+      const result = await apiForgot(email.trim());
+      setSentCode(result.code);
+      setCode("");
+      setMode("code");
+      return null;
+    });
   };
 
   const submitCode = (event: FormEvent) => {
     event.preventDefault();
     if (code.trim() !== sentCode) return setError("That code does not match.");
-    if (mode === "code" && name.trim()) {
-      const message = store.addUser({
-        name: name.trim(),
-        email: email.trim(),
-        mobile: mobile.trim(),
-        password,
-        role: "member",
-        title: "Member",
-        department: "Delivery",
-        status: "active",
-      });
-      if (message) return setError(message);
-      setPassword("");
-      setMode("signin");
-      setError(null);
-      return;
-    }
     setPassword("");
     setConfirm("");
     setMode("reset");
@@ -109,18 +67,23 @@ export function Login() {
 
   const submitReset = (event: FormEvent) => {
     event.preventDefault();
+    if (!apiEnabled()) return setError("Set VITE_API_URL to reset a password.");
     if (password.length < 4) return setError("Password must be at least 4 characters.");
     if (password !== confirm) return setError("The passwords do not match.");
-    const user = data.users.find((item) => item.email.toLowerCase() === email.trim().toLowerCase());
-    if (!user) return setError("That account is missing.");
-    const message = store.updateUser(user.id, { password });
-    if (message) return setError(message);
-    setMode("signin");
-    setPassword("");
-    setError(null);
+    run(async () => {
+      await apiPasswordUpdate(email.trim(), sentCode, password);
+      setMode("signin");
+      setPassword("");
+      setConfirm("");
+      return null;
+    });
   };
 
-  const title = mode === "register" ? "Create account" : mode === "forgot" || mode === "code" ? "Reset password" : mode === "reset" ? "Choose a new password" : "Sign in";
+  const title =
+    mode === "forgot" || mode === "code" ? "Reset password" : mode === "reset" ? "Choose a new password" : "Sign in";
+
+  const onSubmit =
+    mode === "signin" ? submitSignIn : mode === "forgot" ? submitForgot : mode === "code" ? submitCode : submitReset;
 
   return (
     <div className="login">
@@ -132,44 +95,55 @@ export function Login() {
         <div className="story-copy">
           <p className="eyebrow light">Task desk</p>
           <h1>People, projects, and the tasks between them.</h1>
-          <p>Sign in with your email and password, or register a member. This desk has no mail server, so a verification code is shown on the form.</p>
+          <p>Sign in with your desk account. Forgot password shows a verification code here — this desk has no mail server.</p>
         </div>
         <div className="story-stats">
-          <div><strong>{data.users.length}</strong><span>People</span></div>
-          <div><strong>{data.projects.length}</strong><span>Projects</span></div>
-          <div><strong>{data.tasks.length}</strong><span>Tasks</span></div>
-          <div><strong>{data.assignments.length}</strong><span>Links</span></div>
+          <div><strong>{data.users.length || "—"}</strong><span>People</span></div>
+          <div><strong>{data.projects.length || "—"}</strong><span>Projects</span></div>
+          <div><strong>{data.tasks.length || "—"}</strong><span>Tasks</span></div>
+          <div><strong>{data.assignments.length || "—"}</strong><span>Links</span></div>
         </div>
       </section>
       <section className="login-panel">
-        <form className="panel-card" onSubmit={mode === "signin" ? submitSignIn : mode === "register" ? submitRegister : mode === "forgot" ? submitForgot : mode === "code" ? submitCode : submitReset}>
+        <form className="panel-card" onSubmit={onSubmit}>
           <h2>{title}</h2>
           {store.sessionNote && mode === "signin" && <p className="form-error">{store.sessionNote}</p>}
-          {mode === "register" && (
-            <label className="field"><span>Name</span><input className="control" value={name} onChange={(event) => setName(event.target.value)} /></label>
-          )}
           {mode !== "reset" && (
-            <label className="field"><span>Email</span><input className="control" type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="username" /></label>
+            <label className="field">
+              <span>Email</span>
+              <input className="control" type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="username" />
+            </label>
           )}
-          {mode === "register" && (
-            <label className="field"><span>Mobile</span><input className="control" inputMode="numeric" value={mobile} onChange={(event) => setMobile(event.target.value)} placeholder="Digits only" /></label>
-          )}
-          {(mode === "signin" || mode === "register" || mode === "reset") && (
+          {(mode === "signin" || mode === "reset") && (
             <label className="field">
               <span>Password</span>
               <span className="secret-row">
-                <input className="control" type={showPassword ? "text" : "password"} value={password} onChange={(event) => setPassword(event.target.value)} autoComplete={mode === "signin" ? "current-password" : "new-password"} />
-                <button type="button" className="btn ghost small" onClick={() => setShowPassword((open) => !open)}>{showPassword ? "Hide" : "Show"}</button>
+                <input
+                  className="control"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  autoComplete={mode === "signin" ? "current-password" : "new-password"}
+                />
+                <button type="button" className="btn ghost small" onClick={() => setShowPassword((open) => !open)}>
+                  {showPassword ? "Hide" : "Show"}
+                </button>
               </span>
             </label>
           )}
-          {(mode === "register" || mode === "reset") && (
-            <label className="field"><span>Confirm password</span><input className="control" type={showPassword ? "text" : "password"} value={confirm} onChange={(event) => setConfirm(event.target.value)} /></label>
+          {mode === "reset" && (
+            <label className="field">
+              <span>Confirm password</span>
+              <input className="control" type={showPassword ? "text" : "password"} value={confirm} onChange={(event) => setConfirm(event.target.value)} />
+            </label>
           )}
           {mode === "code" && (
             <>
               <p className="muted">This desk cannot send email. Your code is <strong>{sentCode}</strong>.</p>
-              <label className="field"><span>Verification code</span><input className="control" value={code} onChange={(event) => setCode(event.target.value)} inputMode="numeric" /></label>
+              <label className="field">
+                <span>Verification code</span>
+                <input className="control" value={code} onChange={(event) => setCode(event.target.value)} inputMode="numeric" />
+              </label>
             </>
           )}
           {mode === "signin" && (
@@ -178,20 +152,30 @@ export function Login() {
               Remember me
             </label>
           )}
-          {mode === "register" && (
-            <label className="check">
-              <input type="checkbox" checked={terms} onChange={(event) => setTerms(event.target.checked)} />
-              I accept the terms for this desk
-            </label>
-          )}
           {error && <p className="form-error" role="alert">{error}</p>}
           <button className="btn primary" type="submit" disabled={busy}>
-            <Icon name="enter" /> {busy ? "Please wait…" : mode === "signin" ? "Enter the desk" : mode === "code" ? "Verify code" : mode === "reset" ? "Save password" : mode === "forgot" ? "Send code" : "Create account"}
+            <Icon name="enter" />{" "}
+            {busy
+              ? "Please wait…"
+              : mode === "signin"
+                ? "Enter the desk"
+                : mode === "code"
+                  ? "Verify code"
+                  : mode === "reset"
+                    ? "Save password"
+                    : "Send code"}
           </button>
           <p className="auth-links">
-            {mode !== "signin" && <button type="button" className="text-btn" onClick={() => { setMode("signin"); setError(null); }}>Back to sign in</button>}
-            {mode === "signin" && <button type="button" className="text-btn" onClick={() => { setMode("forgot"); setError(null); }}>Forgot password</button>}
-            {mode === "signin" && <button type="button" className="text-btn" onClick={() => { setMode("register"); setError(null); }}>Create an account</button>}
+            {mode !== "signin" && (
+              <button type="button" className="text-btn" onClick={() => { setMode("signin"); setError(null); }}>
+                Back to sign in
+              </button>
+            )}
+            {mode === "signin" && (
+              <button type="button" className="text-btn" onClick={() => { setMode("forgot"); setError(null); }}>
+                Forgot password
+              </button>
+            )}
           </p>
         </form>
       </section>
@@ -206,6 +190,7 @@ export function ChangePassword({ onDone, onCancel }: { onDone: () => void; onCan
   const [confirm, setConfirm] = useState("");
   const [show, setShow] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
@@ -213,16 +198,20 @@ export function ChangePassword({ onDone, onCancel }: { onDone: () => void; onCan
       setError("The new passwords do not match.");
       return;
     }
-    const message = store.changePassword(current, next);
-    if (message) {
-      setError(message);
-      return;
-    }
-    setCurrent("");
-    setNext("");
-    setConfirm("");
+    setBusy(true);
     setError(null);
-    onDone();
+    void store.changePassword(current, next).then((message) => {
+      setBusy(false);
+      if (message) {
+        setError(message);
+        return;
+      }
+      setCurrent("");
+      setNext("");
+      setConfirm("");
+      setError(null);
+      onDone();
+    });
   };
 
   return (
@@ -231,10 +220,10 @@ export function ChangePassword({ onDone, onCancel }: { onDone: () => void; onCan
       <label className="field"><span>New password</span><input className="control" type={show ? "text" : "password"} value={next} onChange={(event) => setNext(event.target.value)} /></label>
       <label className="field"><span>Confirm password</span><input className="control" type={show ? "text" : "password"} value={confirm} onChange={(event) => setConfirm(event.target.value)} /></label>
       <label className="check"><input type="checkbox" checked={show} onChange={(event) => setShow(event.target.checked)} /> Show passwords</label>
-      {error && <p className="form-error">{error}</p>}
+      {error && <p className="form-error" role="alert">{error}</p>}
       <div className="form-actions">
         {onCancel && <button type="button" className="btn ghost" onClick={onCancel}>Cancel</button>}
-        <button type="submit" className="btn primary">Change password</button>
+        <button type="submit" className="btn primary" disabled={busy}>{busy ? "Please wait…" : "Change password"}</button>
       </div>
     </form>
   );

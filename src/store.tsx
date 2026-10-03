@@ -1,6 +1,17 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import { apiEnabled, fetchDesk, saveDesk } from "./api";
+import {
+  apiEnabled,
+  apiLogin,
+  apiLogout,
+  apiPasswordChange,
+  clearApiToken,
+  emptyDesk,
+  fetchDesk,
+  getApiToken,
+  saveDesk,
+  setApiToken,
+} from "./api";
 import { holdsTask } from "./access";
 import { label, nextId, nowStamp, personName, todayISO } from "./lib";
 import type { Assignment, Checkpoint, FileName, Project, StoreData, Task, User } from "./types";
@@ -24,17 +35,33 @@ function readSession(): { userId: string; exp: number } | "expired" | null {
   }
 }
 
+function bootSession(): { userId: string | null; note: string | null } {
+  const found = readSession();
+  if (found === "expired") {
+    clearApiToken();
+    sessionStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem(TOKEN_KEY);
+    return { userId: null, note: "That session expired. Sign in again." };
+  }
+  if (found && apiEnabled() && !getApiToken()) {
+    sessionStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem(TOKEN_KEY);
+    return { userId: null, note: "Sign in again to continue." };
+  }
+  return { userId: found ? found.userId : null, note: null };
+}
+
 interface StoreApi {
   data: StoreData | null;
   loading: boolean;
   error: string | null;
   usingLocal: boolean;
   sessionUser: User | null;
-  login: (email: string, password: string, remember?: boolean) => string | null;
+  login: (email: string, password: string, remember?: boolean) => Promise<string | null>;
   logout: () => void;
   sessionNote: string | null;
   clearSessionNote: () => void;
-  changePassword: (current: string, next: string) => string | null;
+  changePassword: (current: string, next: string) => Promise<string | null>;
   resetSeed: () => Promise<void>;
   exportFile: (name: FileName) => void;
   addUser: (input: Omit<User, "id">) => string | null;
@@ -223,11 +250,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [usingLocal, setUsingLocal] = useState(false);
-  const [userId, setUserId] = useState<string | null>(() => {
-    const found = readSession();
-    return found && found !== "expired" ? found.userId : null;
-  });
-  const [sessionNote, setSessionNote] = useState<string | null>(() => (readSession() === "expired" ? "That session expired. Sign in again." : null));
+  const [userId, setUserId] = useState<string | null>(() => bootSession().userId);
+  const [sessionNote, setSessionNote] = useState<string | null>(() => bootSession().note);
 
   useEffect(() => {
     let cancel = false;
@@ -244,10 +268,20 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     };
 
     if (apiEnabled()) {
+      if (!getApiToken()) {
+        finish(emptyDesk(), false, null);
+        return () => {
+          cancel = true;
+        };
+      }
       fetchDesk()
         .then((seed) => finish(withoutQualityTask(seed), false, null))
         .catch((err: unknown) => {
-          finish(null, false, err instanceof Error ? err.message : "Could not load the API.");
+          clearApiToken();
+          sessionStorage.removeItem(SESSION_KEY);
+          localStorage.removeItem(TOKEN_KEY);
+          finish(emptyDesk(), false, null);
+          if (!cancel) setSessionNote(err instanceof Error ? err.message : "Could not load the API. Sign in again.");
         });
       return () => {
         cancel = true;
@@ -287,9 +321,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     const arm = () => {
       window.clearTimeout(timer);
       timer = window.setTimeout(() => {
+        void apiLogout();
         sessionStorage.removeItem(SESSION_KEY);
         localStorage.removeItem(TOKEN_KEY);
         setUserId(null);
+        if (apiEnabled()) setData(emptyDesk());
         setSessionNote("You were signed out after 30 minutes of no activity.");
       }, IDLE_MS);
     };
@@ -333,39 +369,58 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     sessionUser,
     sessionNote,
     clearSessionNote: () => setSessionNote(null),
-    login: (email, password, remember = false) => {
-      if (!data) return "The desk is not ready. Try again in a moment.";
-      const user = data.users.find(
-        (item) => item.email.toLowerCase() === email.trim().toLowerCase() && item.password === password,
-      );
-      if (!user) return "No account matches that email and password.";
-      const token = JSON.stringify({ userId: user.id, exp: Date.now() + (remember ? 14 * 24 * 60 * 60 * 1000 : IDLE_MS) });
-      sessionStorage.removeItem(SESSION_KEY);
-      localStorage.removeItem(TOKEN_KEY);
-      if (remember) localStorage.setItem(TOKEN_KEY, token);
-      else sessionStorage.setItem(SESSION_KEY, token);
-      setSessionNote(null);
-      setUserId(user.id);
-      return null;
+    login: async (email, password, remember = false) => {
+      if (!apiEnabled()) return "Set VITE_API_URL to sign in.";
+      try {
+        const result = await apiLogin(email.trim(), password);
+        setApiToken(result.token, remember);
+        const session = JSON.stringify({
+          userId: result.user.id,
+          exp: Date.now() + (remember ? 14 * 24 * 60 * 60 * 1000 : IDLE_MS),
+        });
+        sessionStorage.removeItem(SESSION_KEY);
+        localStorage.removeItem(TOKEN_KEY);
+        if (remember) localStorage.setItem(TOKEN_KEY, session);
+        else sessionStorage.setItem(SESSION_KEY, session);
+        const desk = withoutQualityTask(await fetchDesk());
+        setData(desk);
+        setUsingLocal(false);
+        setError(null);
+        setSessionNote(null);
+        setUserId(result.user.id);
+        return null;
+      } catch (err: unknown) {
+        clearApiToken();
+        return err instanceof Error ? err.message : "Could not sign in.";
+      }
     },
     logout: () => {
+      void apiLogout();
       sessionStorage.removeItem(SESSION_KEY);
       localStorage.removeItem(TOKEN_KEY);
       setUserId(null);
+      if (apiEnabled()) setData(emptyDesk());
     },
-    changePassword: (current, next) => {
-      if (!data || !sessionUser) return "Sign in before changing a password.";
-      if (sessionUser.password !== current) return "The current password is wrong.";
+    changePassword: async (current, next) => {
+      if (!sessionUser) return "Sign in before changing a password.";
+      if (!apiEnabled()) return "Set VITE_API_URL to change a password.";
       if (next.trim().length < 4) return "Use at least 4 characters.";
-      commit({
-        ...data,
-        users: data.users.map((user) => (user.id === sessionUser.id ? { ...user, password: next.trim() } : user)),
-      });
-      return null;
+      try {
+        await apiPasswordChange(current, next.trim());
+        return null;
+      } catch (err: unknown) {
+        return err instanceof Error ? err.message : "Could not change password.";
+      }
     },
     resetSeed: async () => {
       setLoading(true);
       try {
+        if (apiEnabled() && !getApiToken()) {
+          setData(emptyDesk());
+          setUsingLocal(false);
+          setError(null);
+          return;
+        }
         const seed = apiEnabled() ? withoutQualityTask(await fetchDesk()) : await fetchSeed(true);
         localStorage.removeItem(STORAGE_KEY);
         setData(seed);
@@ -383,8 +438,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     },
     addUser: (input) => {
       if (!data) return "Ledger is not ready.";
-      if (sessionUser && sessionUser.role !== "admin") return "Only an admin can add people.";
-      if (!sessionUser && input.role !== "member") return "New accounts join as members.";
+      if (!sessionUser || sessionUser.role !== "admin") return "Only an admin can add people.";
       const email = input.email.trim().toLowerCase();
       if (data.users.some((user) => user.email.toLowerCase() === email)) {
         return "That email is already on the ledger.";
@@ -397,14 +451,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     },
     updateUser: (id, patch) => {
       if (!data) return "Ledger is not ready.";
-      if (!sessionUser && Object.keys(patch).some((key) => key !== "password")) return "Sign in to edit an account.";
-      if (!sessionUser) {
-        commit({
-          ...data,
-          users: data.users.map((user) => (user.id === id ? { ...user, password: patch.password ?? user.password } : user)),
-        });
-        return null;
-      }
+      if (!sessionUser) return "Sign in to edit an account.";
       if (sessionUser.role !== "admin" && id !== sessionUser.id) return "You can only edit your own account.";
       const safe = sessionUser.role === "admin" ? patch : { ...patch, role: sessionUser.role };
       const email = safe.email?.trim().toLowerCase();
