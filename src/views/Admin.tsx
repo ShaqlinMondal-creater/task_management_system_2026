@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
+import { apiEnabled, fetchConstraints, updateConstraints, type ConstraintsMap } from "../api";
 import { Field, Icon, IdChip, Pill } from "../components/Bits";
 import { Confirm, Modal } from "../components/Modal";
 import { Table, Tabs } from "../components/System";
 import { USER_ROLES, formatDate, isOverdue, label, matches, personName } from "../lib";
 import { useStore } from "../store";
+import { useToast } from "../toast";
 import type { Role, User, UserStatus } from "../types";
 
 const SECTIONS = ["Dashboard", "Users", "Roles", "Projects", "Tasks", "Activity", "Settings", "System"] as const;
@@ -30,6 +32,7 @@ const blank = (): Draft => ({
 
 export function Admin({ query }: { query: string }) {
   const store = useStore();
+  const push = useToast();
   const { data, sessionUser } = store;
   const [section, setSection] = useState<(typeof SECTIONS)[number]>("Dashboard");
   const [roleFilter, setRoleFilter] = useState("all");
@@ -39,6 +42,21 @@ export function Admin({ query }: { query: string }) {
   const [draft, setDraft] = useState<Draft | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [seedAsk, setSeedAsk] = useState(false);
+  const [constraints, setConstraints] = useState<ConstraintsMap | null>(null);
+  const [constraintDraft, setConstraintDraft] = useState("");
+  const [constraintKey, setConstraintKey] = useState<keyof ConstraintsMap>("roles");
+  const [constraintBusy, setConstraintBusy] = useState(false);
+
+  useEffect(() => {
+    if (!apiEnabled() || section !== "Settings") return;
+    void fetchConstraints()
+      .then((next) => {
+        setConstraints(next);
+        setConstraintDraft(next.roles.join(", "));
+        setConstraintKey("roles");
+      })
+      .catch((err: unknown) => setError(err instanceof Error ? err.message : "Could not load constraints."));
+  }, [section]);
 
   if (!data || !sessionUser || sessionUser.role !== "admin") return null;
 
@@ -63,7 +81,8 @@ export function Admin({ query }: { query: string }) {
       setError("Name and email are required.");
       return;
     }
-    if (dialog?.mode === "create" && draft.password.trim().length < 4) {
+    const password = (draft.password ?? "").trim();
+    if (dialog?.mode === "create" && password.length < 4) {
       setError("Password needs at least 4 characters.");
       return;
     }
@@ -76,8 +95,8 @@ export function Admin({ query }: { query: string }) {
       status: draft.status,
     };
     const message = dialog?.mode === "edit"
-      ? store.updateUser(dialog.user.id, draft.password.trim() ? { ...base, password: draft.password.trim() } : base)
-      : store.addUser({ ...base, password: draft.password.trim() });
+      ? store.updateUser(dialog.user.id, password ? { ...base, password } : base)
+      : store.addUser({ ...base, password });
     if (message) {
       setError(message);
       return;
@@ -188,13 +207,65 @@ export function Admin({ query }: { query: string }) {
         </ul>
       )}
       {section === "Settings" && (
-        <div className="project-detail">
+        <div className="project-detail stack">
           <div className="fact-grid">
             <div><span>Signed in</span><strong>{sessionUser.name}</strong></div>
             <div><span>Role</span><strong>{label(sessionUser.role)}</strong></div>
             <div><span>Idle sign-out</span><strong>30 minutes</strong></div>
             <div><span>Remember me</span><strong>14 days</strong></div>
           </div>
+          {apiEnabled() && (
+            <section className="panel">
+              <header className="panel-head">
+                <h2>Constraint lists</h2>
+                <span>Admin only · saved on the API</span>
+              </header>
+              {!constraints && <p className="muted">Loading constraints…</p>}
+              {constraints && (
+                <form
+                  className="stack"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    const values = constraintDraft.split(",").map((item) => item.trim()).filter(Boolean);
+                    if (!values.length) {
+                      setError("Enter at least one value.");
+                      return;
+                    }
+                    setConstraintBusy(true);
+                    void updateConstraints({ [constraintKey]: values })
+                      .then((next) => {
+                        setConstraints(next);
+                        setConstraintDraft(next[constraintKey].join(", "));
+                        setError(null);
+                        push("Constraints updated");
+                      })
+                      .catch((err: unknown) => setError(err instanceof Error ? err.message : "Could not update constraints."))
+                      .finally(() => setConstraintBusy(false));
+                  }}
+                >
+                  <Field label="List">
+                    <select
+                      className="control"
+                      value={constraintKey}
+                      onChange={(event) => {
+                        const key = event.target.value as keyof ConstraintsMap;
+                        setConstraintKey(key);
+                        setConstraintDraft(constraints[key].join(", "));
+                      }}
+                    >
+                      {(Object.keys(constraints) as (keyof ConstraintsMap)[]).map((key) => (
+                        <option key={key} value={key}>{key}</option>
+                      ))}
+                    </select>
+                  </Field>
+                  <Field label="Values (comma separated)" wide>
+                    <textarea className="control" rows={3} value={constraintDraft} onChange={(event) => setConstraintDraft(event.target.value)} />
+                  </Field>
+                  <button type="submit" className="btn primary" disabled={constraintBusy}>{constraintBusy ? "Saving…" : "Save list"}</button>
+                </form>
+              )}
+            </section>
+          )}
         </div>
       )}
       {section === "System" && (
@@ -224,7 +295,7 @@ export function Admin({ query }: { query: string }) {
             <Field label="Title"><input className="control" value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} /></Field>
             <Field label="Department"><input className="control" value={draft.department} onChange={(event) => setDraft({ ...draft, department: event.target.value })} /></Field>
             <Field label={dialog.mode === "edit" ? "New password" : "Password"} wide>
-              <input className="control" value={draft.password} placeholder={dialog.mode === "edit" ? "Leave blank to keep it" : "At least 4 characters"} onChange={(event) => setDraft({ ...draft, password: event.target.value })} />
+              <input className="control" value={draft.password ?? ""} placeholder={dialog.mode === "edit" ? "Leave blank to keep it" : "At least 4 characters"} onChange={(event) => setDraft({ ...draft, password: event.target.value })} />
             </Field>
             {error && <p className="form-error wide">{error}</p>}
             <div className="form-actions wide">

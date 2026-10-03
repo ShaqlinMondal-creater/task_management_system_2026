@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { DragEvent, FormEvent } from "react";
+import { apiEnabled, fetchDetail } from "../api";
 import { scopeFor } from "../access";
 import { Avatar, Field, Icon, IdChip, Pill, SearchSelect } from "../components/Bits";
 import { CheckpointView } from "../components/CheckpointView";
@@ -63,6 +64,25 @@ export function Tasks({ query, intent, onIntent }: { query: string; intent?: "cr
     }
   });
   const [filterName, setFilterName] = useState("");
+  const [detailExtra, setDetailExtra] = useState<Record<string, unknown> | null>(null);
+
+  useEffect(() => {
+    if (!detailId || !apiEnabled()) {
+      setDetailExtra(null);
+      return;
+    }
+    let cancel = false;
+    void fetchDetail<Task & { relations?: Record<string, unknown> }>("tasks", detailId)
+      .then((row) => {
+        if (!cancel) setDetailExtra(row.relations ?? null);
+      })
+      .catch(() => {
+        if (!cancel) setDetailExtra(null);
+      });
+    return () => {
+      cancel = true;
+    };
+  }, [detailId]);
 
   useEffect(() => {
     if (!intent || !data || !sessionUser) return;
@@ -751,10 +771,12 @@ export function Tasks({ query, intent, onIntent }: { query: string; intent?: "cr
           sessionUserId={sessionUser.id}
           comment={comment}
           onComment={setComment}
-          onClose={() => { setDetailId(null); setComment(""); }}
+          relations={detailExtra}
+          onClose={() => { setDetailId(null); setComment(""); setDetailExtra(null); }}
           onEdit={() => {
             const task = data.tasks.find((item) => item.id === detailId);
             setDetailId(null);
+            setDetailExtra(null);
             if (task && sessionUser.role !== "viewer") openEdit(task);
           }}
           onSaveComments={(comments) => {
@@ -778,6 +800,7 @@ function TaskDetail({
   sessionUserId,
   comment,
   onComment,
+  relations,
   onClose,
   onEdit,
   onSaveComments,
@@ -791,6 +814,7 @@ function TaskDetail({
   sessionUserId: string;
   comment: string;
   onComment: (value: string) => void;
+  relations?: Record<string, unknown> | null;
   onClose: () => void;
   onEdit: () => void;
   onSaveComments: (comments: Task["comments"]) => void;
@@ -810,6 +834,8 @@ function TaskDetail({
       ]
   ).sort((a, b) => b.when.localeCompare(a.when));
 
+  const childCount = Array.isArray(relations?.children) ? relations.children.length : 0;
+
   return (
     <Drawer title={task.title} onClose={onClose}>
       <div className="stack task-detail">
@@ -817,6 +843,13 @@ function TaskDetail({
           <h2>{task.title}</h2>
           <button type="button" className="btn ghost small" onClick={onClose}>Close</button>
         </div>
+        {relations && (
+          <p className="muted">
+            Detail loaded from API
+            {childCount ? ` · ${childCount} subtask${childCount === 1 ? "" : "s"}` : ""}
+            {Array.isArray(relations.assignmentIds) ? ` · ${relations.assignmentIds.length} assignment links` : ""}
+          </p>
+        )}
         <p>{task.description || "No description."}</p>
         <div className="fact-grid">
           <div><span>Status</span><strong>{label(task.status)}{task.customStatus ? ` · ${task.customStatus}` : ""}</strong></div>

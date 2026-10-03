@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { apiEnabled, fetchNotifications, type NoticeItem } from "./api";
 import { Avatar, Icon, Mark } from "./components/Bits";
 import { Confirm } from "./components/Modal";
 import { Drawer, Dropdown, Tooltip } from "./components/System";
@@ -12,6 +13,7 @@ import { StoreProvider } from "./store";
 import { ToastProvider, useToast } from "./toast";
 import { Login } from "./views/Login";
 import type { ProfileTab } from "./views/Settings";
+import { VIEW_COLLECTIONS } from "./viewData";
 
 const Assignments = lazy(() => import("./views/Assignments").then((m) => ({ default: m.Assignments })));
 const Admin = lazy(() => import("./views/Admin").then((m) => ({ default: m.Admin })));
@@ -53,6 +55,7 @@ function Shell() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [notesOpen, setNotesOpen] = useState(false);
   const [settingsTab, setSettingsTab] = useState<ProfileTab>("account");
+  const [apiNotes, setApiNotes] = useState<NoticeItem[] | null>(null);
   const profileRef = useRef<HTMLElement>(null);
   const notesRef = useRef<HTMLDivElement>(null);
   const push = useToast();
@@ -74,6 +77,30 @@ function Shell() {
   useEffect(() => {
     document.documentElement.lang = store.sessionUser?.settings?.language === "hi" ? "hi" : "en";
   }, [store.sessionUser?.settings?.language]);
+
+  const allowedPreview = store.sessionUser ? viewsFor(store.sessionUser.role) : [];
+  const activePreview = store.sessionUser && allowedPreview.includes(view) ? view : "desk";
+
+  useEffect(() => {
+    if (!store.sessionUser) return;
+    if (activePreview === "desk") {
+      void store.ensureDashboard();
+      return;
+    }
+    if (activePreview === "reports") {
+      void store.ensureReports();
+      return;
+    }
+    void store.ensureLoaded(...VIEW_COLLECTIONS[activePreview]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- stable loaders; avoid re-fetch loops
+  }, [store.sessionUser?.id, activePreview]);
+
+  useEffect(() => {
+    if (!apiEnabled() || !store.sessionUser || !notesOpen) return;
+    void fetchNotifications()
+      .then(setApiNotes)
+      .catch(() => setApiNotes([]));
+  }, [store.sessionUser?.id, notesOpen]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setLiveQuery(query), 250);
@@ -142,7 +169,7 @@ function Shell() {
   const data = store.data;
   const mine = data.tasks.filter((task) => taskLinks(data.assignments, task.id).some((link) => link.userId === user.id));
   const endSoon = shiftDay(todayISO(), 1);
-  const notes = [
+  const localNotes = [
     ...data.assignments.filter((item) => item.kind === "task" && item.userId === user.id && item.taskId).map((item) => ({
       id: `assign-${item.id}`,
       kind: "assigned" as NoticeKind,
@@ -199,7 +226,20 @@ function Shell() {
       title: "Status changed",
       detail: `${task.title} · ${item.text}`,
     }))),
-  ].filter((item) => user.settings?.notices?.[item.kind] !== false).sort((a, b) => b.when.localeCompare(a.when)).slice(0, 12);
+  ];
+  const notes = (apiEnabled() && apiNotes
+    ? apiNotes.map((item) => ({
+        id: item.id,
+        kind: item.kind as NoticeKind,
+        when: item.when,
+        title: item.title,
+        detail: item.detail,
+      }))
+    : localNotes
+  )
+    .filter((item) => user.settings?.notices?.[item.kind] !== false)
+    .sort((a, b) => b.when.localeCompare(a.when))
+    .slice(0, 12);
 
   function save(name: FileName) {
     store.exportFile(name);
@@ -382,17 +422,21 @@ function Shell() {
           <p className="banner">This browser is using your working copy. The files in public/assets are still the original seed.</p>
         )}
         <div className="content">
-          <Suspense fallback={<p className="empty">Opening this page…</p>}>
-            {active === "desk" && <Desk query={liveQuery} onOpen={openView} />}
-            {active === "projects" && <Projects query={liveQuery} intent={intent} onIntent={() => setIntent(null)} />}
-            {active === "tasks" && <Tasks query={liveQuery} intent={intent} onIntent={() => setIntent(null)} />}
-            {active === "people" && <People query={liveQuery} intent={intent} onIntent={() => setIntent(null)} />}
-            {active === "assign" && <Assignments query={liveQuery} />}
-            {active === "checks" && <Checkpoints query={liveQuery} />}
-            {active === "admin" && <Admin query={liveQuery} />}
-            {active === "reports" && <Reports query={liveQuery} />}
-            {active === "settings" && <Settings key={user.id} tab={settingsTab} onTab={setSettingsTab} />}
-          </Suspense>
+          {store.pageLoading ? (
+            <p className="empty">Loading this page…</p>
+          ) : (
+            <Suspense fallback={<p className="empty">Opening this page…</p>}>
+              {active === "desk" && <Desk query={liveQuery} onOpen={openView} />}
+              {active === "projects" && <Projects query={liveQuery} intent={intent} onIntent={() => setIntent(null)} />}
+              {active === "tasks" && <Tasks query={liveQuery} intent={intent} onIntent={() => setIntent(null)} />}
+              {active === "people" && <People query={liveQuery} intent={intent} onIntent={() => setIntent(null)} />}
+              {active === "assign" && <Assignments query={liveQuery} />}
+              {active === "checks" && <Checkpoints query={liveQuery} />}
+              {active === "admin" && <Admin query={liveQuery} />}
+              {active === "reports" && <Reports query={liveQuery} />}
+              {active === "settings" && <Settings key={user.id} tab={settingsTab} onTab={setSettingsTab} />}
+            </Suspense>
+          )}
         </div>
       </div>
       {seedAsk && (

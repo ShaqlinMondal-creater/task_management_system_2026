@@ -62,7 +62,8 @@ export function People({ query, intent, onIntent }: { query: string; intent?: "c
       setError("Name and email are required.");
       return;
     }
-    if (dialog?.mode === "create" && draft.password.trim().length < 4) {
+    const password = (draft.password ?? "").trim();
+    if (dialog?.mode === "create" && password.length < 4) {
       setError("Give the new person a password of at least 4 characters.");
       return;
     }
@@ -76,8 +77,8 @@ export function People({ query, intent, onIntent }: { query: string; intent?: "c
     };
     const message =
       dialog?.mode === "edit"
-        ? store.updateUser(dialog.user.id, draft.password.trim() ? { ...base, password: draft.password.trim() } : base)
-        : store.addUser({ ...base, password: draft.password.trim() });
+        ? store.updateUser(dialog.user.id, password ? { ...base, password } : base)
+        : store.addUser({ ...base, password });
     if (message) {
       setError(message);
       return;
@@ -181,7 +182,7 @@ export function People({ query, intent, onIntent }: { query: string; intent?: "c
               <input
                 className="control"
                 type="text"
-                value={draft.password}
+                value={draft.password ?? ""}
                 placeholder={dialog.mode === "edit" ? "Leave blank to keep the current password" : "At least 4 characters"}
                 onChange={(event) => setDraft({ ...draft, password: event.target.value })}
               />

@@ -1,4 +1,4 @@
-import type { Assignment, Checkpoint, FileName, Project, StoreData, Task, User } from "./types";
+import type { FileName, StoreData, User } from "./types";
 
 const BASE = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, "") ?? "";
 const API_TOKEN_KEY = "northline.apiToken";
@@ -52,7 +52,7 @@ async function apiFetch(path: string, init: RequestInit = {}) {
   return res;
 }
 
-async function readAll<T>(name: FileName): Promise<T[]> {
+export async function fetchCollection<T>(name: FileName): Promise<T[]> {
   const res = await apiFetch(`/api/${name}/all`);
   if (!res.ok) throw new Error(await readError(res, `Could not load ${name} from the API.`));
   const json: unknown = await res.json();
@@ -60,37 +60,87 @@ async function readAll<T>(name: FileName): Promise<T[]> {
   return json as T[];
 }
 
-type Row = { id: string };
-
-async function deleteMissing(name: FileName, nextRows: Row[]) {
-  const current = await readAll<Row>(name);
-  const nextIds = new Set(nextRows.map((row) => row.id));
-  for (const row of current) {
-    if (nextIds.has(row.id)) continue;
-    const res = await apiFetch(`/api/${name}/delete/${row.id}`, { method: "DELETE" });
-    if (!res.ok && res.status !== 404) throw new Error(await readError(res, `Could not delete ${name}/${row.id}.`));
-  }
+export async function fetchDetail<T extends { id: string }>(name: FileName, id: string): Promise<T> {
+  const res = await apiFetch(`/api/${name}/detail/${id}`);
+  if (!res.ok) throw new Error(await readError(res, `Could not load ${name}/${id}.`));
+  return (await res.json()) as T;
 }
 
-async function upsertRows(name: FileName, nextRows: Row[]) {
-  const current = await readAll<Row>(name);
-  const currentById = new Map(current.map((row) => [row.id, row]));
-  for (const row of nextRows) {
-    if (!currentById.has(row.id)) {
-      const res = await apiFetch(`/api/${name}/create`, {
-        method: "POST",
-        body: JSON.stringify(row),
-      });
-      if (!res.ok) throw new Error(await readError(res, `Could not create ${name}/${row.id}.`));
-      continue;
-    }
-    if (JSON.stringify(currentById.get(row.id)) === JSON.stringify(row)) continue;
-    const res = await apiFetch(`/api/${name}/update/${row.id}`, {
-      method: "POST",
-      body: JSON.stringify(row),
-    });
-    if (!res.ok) throw new Error(await readError(res, `Could not update ${name}/${row.id}.`));
-  }
+export async function apiCreate<T extends { id: string }>(name: FileName, row: T): Promise<T> {
+  const res = await apiFetch(`/api/${name}/create`, { method: "POST", body: JSON.stringify(row) });
+  if (!res.ok) throw new Error(await readError(res, `Could not create ${name}.`));
+  return (await res.json()) as T;
+}
+
+export async function apiUpdate<T extends { id: string }>(name: FileName, id: string, row: Partial<T> & { id?: string }): Promise<T> {
+  const res = await apiFetch(`/api/${name}/update/${id}`, { method: "POST", body: JSON.stringify(row) });
+  if (!res.ok) throw new Error(await readError(res, `Could not update ${name}/${id}.`));
+  return (await res.json()) as T;
+}
+
+export async function apiDelete(name: FileName, id: string): Promise<void> {
+  const res = await apiFetch(`/api/${name}/delete/${id}`, { method: "DELETE" });
+  if (!res.ok && res.status !== 404) throw new Error(await readError(res, `Could not delete ${name}/${id}.`));
+}
+
+export type DashboardSummary = {
+  metrics: Record<string, number>;
+  desk: StoreData;
+};
+
+export async function fetchDashboardSummary(): Promise<DashboardSummary> {
+  const res = await apiFetch("/api/dashboard/summary");
+  if (!res.ok) throw new Error(await readError(res, "Could not load the dashboard."));
+  return (await res.json()) as DashboardSummary;
+}
+
+export async function fetchReportsSummary(projectId = "all"): Promise<DashboardSummary> {
+  const q = projectId && projectId !== "all" ? `?projectId=${encodeURIComponent(projectId)}` : "";
+  const res = await apiFetch(`/api/reports/summary${q}`);
+  if (!res.ok) throw new Error(await readError(res, "Could not load reports."));
+  return (await res.json()) as DashboardSummary;
+}
+
+export type NoticeItem = {
+  id: string;
+  kind: string;
+  when: string;
+  title: string;
+  detail: string;
+};
+
+export async function fetchNotifications(): Promise<NoticeItem[]> {
+  const res = await apiFetch("/api/notifications/all");
+  if (!res.ok) throw new Error(await readError(res, "Could not load notifications."));
+  const json = (await res.json()) as { notices?: NoticeItem[] };
+  return Array.isArray(json.notices) ? json.notices : [];
+}
+
+export type ConstraintsMap = {
+  roles: string[];
+  userStatuses: string[];
+  projectStatuses: string[];
+  taskStatuses: string[];
+  priorities: string[];
+  assignmentKinds: string[];
+  checkpointStates: string[];
+  checkpointAreas: string[];
+};
+
+export async function fetchConstraints(): Promise<ConstraintsMap> {
+  const res = await apiFetch("/api/auth/constraints");
+  if (!res.ok) throw new Error(await readError(res, "Could not load constraints."));
+  return (await res.json()) as ConstraintsMap;
+}
+
+export async function updateConstraints(patch: Partial<ConstraintsMap>): Promise<ConstraintsMap> {
+  const res = await apiFetch("/api/auth/constraint-update", {
+    method: "POST",
+    body: JSON.stringify(patch),
+  });
+  if (!res.ok) throw new Error(await readError(res, "Could not update constraints."));
+  const json = (await res.json()) as { constraints: ConstraintsMap };
+  return json.constraints;
 }
 
 export async function apiLogin(email: string, password: string) {
@@ -101,6 +151,16 @@ export async function apiLogin(email: string, password: string) {
   });
   if (!res.ok) throw new Error(await readError(res, "Could not sign in."));
   return (await res.json()) as { user: User; token: string };
+}
+
+export async function apiRegister(input: { name: string; email: string; password: string; mobile?: string }) {
+  const res = await fetch(`${BASE}/api/auth/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) throw new Error(await readError(res, "Could not create account."));
+  return (await res.json()) as { ok: boolean; user: User };
 }
 
 export async function apiLogout() {
@@ -139,31 +199,37 @@ export async function apiPasswordChange(currentPassword: string, newPassword: st
   return (await res.json()) as { ok: boolean };
 }
 
-export async function fetchDesk(): Promise<StoreData> {
-  if (!BASE) throw new Error("VITE_API_URL is not set.");
-  if (!getApiToken()) throw new Error("Sign in required");
-  const [users, projects, tasks, assignments, checkpoints] = await Promise.all([
-    readAll<User>("users"),
-    readAll<Project>("projects"),
-    readAll<Task>("tasks"),
-    readAll<Assignment>("assignments"),
-    readAll<Checkpoint>("checkpoints"),
-  ]);
-  return { users, projects, tasks, assignments, checkpoints };
-}
+type Row = { id: string };
 
-/** Temporary bridge: uses the five CRUD routes until store actions call them directly. */
-export async function saveDesk(data: StoreData) {
+/** Persist only real row changes via create / update / delete. */
+export async function syncDeskDiff(prev: StoreData, next: StoreData, loaded: FileName[]) {
   if (!BASE) throw new Error("VITE_API_URL is not set.");
   if (!getApiToken()) throw new Error("Sign in required");
-  await deleteMissing("assignments", data.assignments);
-  await deleteMissing("tasks", data.tasks);
-  await deleteMissing("checkpoints", data.checkpoints);
-  await deleteMissing("projects", data.projects);
-  await deleteMissing("users", data.users);
-  await upsertRows("users", data.users);
-  await upsertRows("projects", data.projects);
-  await upsertRows("checkpoints", data.checkpoints);
-  await upsertRows("tasks", data.tasks);
-  await upsertRows("assignments", data.assignments);
+  if (!loaded.length) return;
+
+  const orderDelete: FileName[] = ["assignments", "tasks", "checkpoints", "projects", "users"];
+  const orderUpsert: FileName[] = ["users", "projects", "checkpoints", "tasks", "assignments"];
+
+  for (const name of orderDelete) {
+    if (!loaded.includes(name)) continue;
+    const nextIds = new Set(next[name].map((row) => row.id));
+    for (const row of prev[name] as Row[]) {
+      if (nextIds.has(row.id)) continue;
+      await apiDelete(name, row.id);
+    }
+  }
+
+  for (const name of orderUpsert) {
+    if (!loaded.includes(name)) continue;
+    const prevById = new Map((prev[name] as Row[]).map((row) => [row.id, row]));
+    for (const row of next[name] as Row[]) {
+      const old = prevById.get(row.id);
+      if (!old) {
+        await apiCreate(name, row);
+        continue;
+      }
+      if (JSON.stringify(old) === JSON.stringify(row)) continue;
+      await apiUpdate(name, row.id, row);
+    }
+  }
 }

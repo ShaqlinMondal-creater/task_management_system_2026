@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import {
   apiEnabled,
@@ -7,10 +7,13 @@ import {
   apiPasswordChange,
   clearApiToken,
   emptyDesk,
-  fetchDesk,
+  fetchCollection,
+  fetchDashboardSummary,
+  fetchDetail,
+  fetchReportsSummary,
   getApiToken,
-  saveDesk,
   setApiToken,
+  syncDeskDiff,
 } from "./api";
 import { holdsTask } from "./access";
 import { label, nextId, nowStamp, personName, todayISO } from "./lib";
@@ -54,9 +57,13 @@ function bootSession(): { userId: string | null; note: string | null } {
 interface StoreApi {
   data: StoreData | null;
   loading: boolean;
+  pageLoading: boolean;
   error: string | null;
   usingLocal: boolean;
   sessionUser: User | null;
+  ensureLoaded: (...names: FileName[]) => Promise<void>;
+  ensureDashboard: () => Promise<void>;
+  ensureReports: (projectId?: string) => Promise<void>;
   login: (email: string, password: string, remember?: boolean) => Promise<string | null>;
   logout: () => void;
   sessionNote: string | null;
@@ -248,10 +255,139 @@ const BOOT_MS = 420;
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<StoreData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [pageLoading, setPageLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [usingLocal, setUsingLocal] = useState(false);
   const [userId, setUserId] = useState<string | null>(() => bootSession().userId);
   const [sessionNote, setSessionNote] = useState<string | null>(() => bootSession().note);
+  const loadedRef = useRef(new Set<FileName>());
+  const inflightRef = useRef(new Map<FileName, Promise<void>>());
+  const dashboardInflight = useRef<Promise<void> | null>(null);
+  const dashboardReady = useRef(false);
+
+  const failAuthLoad = useCallback((err: unknown) => {
+    if (String(err).includes("Sign in") || getApiToken() === "") {
+      clearApiToken();
+      sessionStorage.removeItem(SESSION_KEY);
+      localStorage.removeItem(TOKEN_KEY);
+      setUserId(null);
+      setData(emptyDesk());
+      loadedRef.current.clear();
+      setSessionNote(err instanceof Error ? err.message : "Could not load the API. Sign in again.");
+      return true;
+    }
+    setError(err instanceof Error ? err.message : "Could not load page data.");
+    return false;
+  }, []);
+
+  const ensureLoaded = useCallback(async (...names: FileName[]) => {
+    if (!apiEnabled() || !getApiToken()) return;
+    const unique = [...new Set(names)];
+    const missing = unique.filter((name) => !loadedRef.current.has(name));
+    if (!missing.length) return;
+
+    setPageLoading(true);
+    try {
+      await Promise.all(
+        missing.map((name) => {
+          const existing = inflightRef.current.get(name);
+          if (existing) return existing;
+          const job = fetchCollection(name)
+            .then((rows) => {
+              setData((prev) => {
+                const base = prev ?? emptyDesk();
+                if (name === "tasks") {
+                  return withoutQualityTask({ ...base, tasks: rows as Task[] });
+                }
+                return { ...base, [name]: rows } as StoreData;
+              });
+              loadedRef.current.add(name);
+            })
+            .finally(() => {
+              inflightRef.current.delete(name);
+            });
+          inflightRef.current.set(name, job);
+          return job;
+        }),
+      );
+      setError(null);
+    } catch (err: unknown) {
+      failAuthLoad(err);
+    } finally {
+      setPageLoading(false);
+    }
+  }, [failAuthLoad]);
+
+  const ensureDashboard = useCallback(async () => {
+    if (!apiEnabled() || !getApiToken()) return;
+    if (dashboardReady.current) return;
+    if (dashboardInflight.current) {
+      setPageLoading(true);
+      try {
+        await dashboardInflight.current;
+      } finally {
+        setPageLoading(false);
+      }
+      return;
+    }
+
+    setPageLoading(true);
+    const job = fetchDashboardSummary()
+      .then((summary) => {
+        const desk = withoutQualityTask(summary.desk);
+        setData((prev) => {
+          const base = prev ?? emptyDesk();
+          const users =
+            loadedRef.current.has("users") && base.users.length > desk.users.length ? base.users : desk.users;
+          return { ...desk, users };
+        });
+        for (const name of ["users", "projects", "tasks", "assignments", "checkpoints"] as FileName[]) {
+          loadedRef.current.add(name);
+        }
+        dashboardReady.current = true;
+        setError(null);
+      })
+      .catch((err: unknown) => {
+        failAuthLoad(err);
+      })
+      .finally(() => {
+        dashboardInflight.current = null;
+      });
+    dashboardInflight.current = job;
+    try {
+      await job;
+    } finally {
+      setPageLoading(false);
+    }
+  }, [failAuthLoad]);
+
+  const reportsReady = useRef(false);
+  const ensureReports = useCallback(async (_projectId = "all") => {
+    if (!apiEnabled() || !getApiToken()) return;
+    if (reportsReady.current && ["users", "projects", "tasks", "assignments", "checkpoints"].every((n) => loadedRef.current.has(n as FileName))) {
+      return;
+    }
+    setPageLoading(true);
+    try {
+      const summary = await fetchReportsSummary(_projectId);
+      const desk = withoutQualityTask(summary.desk);
+      setData((prev) => {
+        const base = prev ?? emptyDesk();
+        const users =
+          loadedRef.current.has("users") && base.users.length > desk.users.length ? base.users : desk.users;
+        return { ...desk, users };
+      });
+      for (const name of ["users", "projects", "tasks", "assignments", "checkpoints"] as FileName[]) {
+        loadedRef.current.add(name);
+      }
+      reportsReady.current = true;
+      setError(null);
+    } catch (err: unknown) {
+      failAuthLoad(err);
+    } finally {
+      setPageLoading(false);
+    }
+  }, [failAuthLoad]);
 
   useEffect(() => {
     let cancel = false;
@@ -268,18 +404,35 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     };
 
     if (apiEnabled()) {
+      // Session only on reload — one detail call, not /users/all.
       if (!getApiToken()) {
+        loadedRef.current.clear();
         finish(emptyDesk(), false, null);
         return () => {
           cancel = true;
         };
       }
-      fetchDesk()
-        .then((seed) => finish(withoutQualityTask(seed), false, null))
+      const session = readSession();
+      const sid = session && session !== "expired" ? session.userId : userId;
+      if (!sid) {
+        loadedRef.current.clear();
+        finish(emptyDesk(), false, null);
+        return () => {
+          cancel = true;
+        };
+      }
+      fetchDetail<User & { relations?: unknown }>("users", sid)
+        .then((detail) => {
+          if (cancel) return;
+          const { relations: _r, ...user } = detail;
+          loadedRef.current.clear();
+          finish({ ...emptyDesk(), users: [user] }, false, null);
+        })
         .catch((err: unknown) => {
           clearApiToken();
           sessionStorage.removeItem(SESSION_KEY);
           localStorage.removeItem(TOKEN_KEY);
+          loadedRef.current.clear();
           finish(emptyDesk(), false, null);
           if (!cancel) setSessionNote(err instanceof Error ? err.message : "Could not load the API. Sign in again.");
         });
@@ -290,6 +443,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
     const saved = readSaved();
     if (saved) {
+      loadedRef.current = new Set<FileName>(["users", "projects", "tasks", "assignments", "checkpoints"]);
       finish(saved, true, null);
       return () => {
         cancel = true;
@@ -297,7 +451,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     }
 
     fetchSeed()
-      .then((seed) => finish(seed, false, null))
+      .then((seed) => {
+        loadedRef.current = new Set<FileName>(["users", "projects", "tasks", "assignments", "checkpoints"]);
+        finish(seed, false, null);
+      })
       .catch((err: unknown) => {
         finish(null, false, err instanceof Error ? err.message : "Could not load the JSON files.");
       });
@@ -307,9 +464,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (data && userId && !data.users.some((user) => user.id === userId)) {
+    if (!data || !userId) return;
+    // Only enforce after a full users list was loaded — not on session-only boot.
+    if (!loadedRef.current.has("users")) return;
+    if (!data.users.some((user) => user.id === userId)) {
       sessionStorage.removeItem(SESSION_KEY);
       localStorage.removeItem(TOKEN_KEY);
+      clearApiToken();
       setUserId(null);
       setSessionNote("That session is no longer valid. Sign in again.");
     }
@@ -341,22 +502,26 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!data) return;
+    if (!loadedRef.current.has("tasks") || !loadedRef.current.has("checkpoints")) return;
     const next = alignTaskStatuses(data);
     if (next === data) return;
-    commit(next);
+    // Local-only — never sync status alignment to the API on load (that caused /all + t01..tn storm).
+    commit(next, { persist: false });
   }, [data]);
 
-  const commit = (next: StoreData) => {
+  const commit = (next: StoreData, opts?: { persist?: boolean }) => {
+    const prev = data;
     setData(next);
-    if (apiEnabled()) {
-      setUsingLocal(false);
-      void saveDesk(next).catch((err: unknown) => {
-        setError(err instanceof Error ? err.message : "Could not save to the API.");
-      });
+    if (!apiEnabled()) {
+      setUsingLocal(true);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
       return;
     }
-    setUsingLocal(true);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    setUsingLocal(false);
+    if (opts?.persist === false || !prev) return;
+    void syncDeskDiff(prev, next, [...loadedRef.current]).catch((err: unknown) => {
+      setError(err instanceof Error ? err.message : "Could not save to the API.");
+    });
   };
 
   const sessionUser = data?.users.find((user) => user.id === userId) ?? null;
@@ -364,9 +529,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const api: StoreApi = {
     data,
     loading,
+    pageLoading,
     error,
     usingLocal,
     sessionUser,
+    ensureLoaded,
+    ensureDashboard,
+    ensureReports,
     sessionNote,
     clearSessionNote: () => setSessionNote(null),
     login: async (email, password, remember = false) => {
@@ -382,8 +551,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         localStorage.removeItem(TOKEN_KEY);
         if (remember) localStorage.setItem(TOKEN_KEY, session);
         else sessionStorage.setItem(SESSION_KEY, session);
-        const desk = withoutQualityTask(await fetchDesk());
-        setData(desk);
+        // Keep session user immediately; page ensureLoaded will fetch full collections.
+        loadedRef.current.clear();
+        inflightRef.current.clear();
+        setData({ ...emptyDesk(), users: [result.user] });
         setUsingLocal(false);
         setError(null);
         setSessionNote(null);
@@ -399,6 +570,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       sessionStorage.removeItem(SESSION_KEY);
       localStorage.removeItem(TOKEN_KEY);
       setUserId(null);
+      loadedRef.current.clear();
+      inflightRef.current.clear();
+      dashboardReady.current = false;
+      dashboardInflight.current = null;
+      reportsReady.current = false;
       if (apiEnabled()) setData(emptyDesk());
     },
     changePassword: async (current, next) => {
@@ -415,14 +591,35 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     resetSeed: async () => {
       setLoading(true);
       try {
-        if (apiEnabled() && !getApiToken()) {
-          setData(emptyDesk());
+        if (apiEnabled()) {
+          if (!getApiToken()) {
+            loadedRef.current.clear();
+            setData(emptyDesk());
+            setUsingLocal(false);
+            setError(null);
+            return;
+          }
+          loadedRef.current.clear();
+          inflightRef.current.clear();
+          dashboardReady.current = false;
+          dashboardInflight.current = null;
+          reportsReady.current = false;
+          if (!userId) {
+            setData(emptyDesk());
+            setUsingLocal(false);
+            setError(null);
+            return;
+          }
+          const detail = await fetchDetail<User & { relations?: unknown }>("users", userId);
+          const { relations: _r, ...user } = detail;
+          setData({ ...emptyDesk(), users: [user] });
           setUsingLocal(false);
           setError(null);
           return;
         }
-        const seed = apiEnabled() ? withoutQualityTask(await fetchDesk()) : await fetchSeed(true);
+        const seed = await fetchSeed(true);
         localStorage.removeItem(STORAGE_KEY);
+        loadedRef.current = new Set<FileName>(["users", "projects", "tasks", "assignments", "checkpoints"]);
         setData(seed);
         setUsingLocal(false);
         setError(null);
