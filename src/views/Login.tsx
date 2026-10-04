@@ -36,8 +36,13 @@ export function Login() {
   useEffect(() => {
     if (!apiEnabled()) return;
     void fetchTablesStatus()
-      .then((status) => setNeedsImport(status.needsImport))
+      .then((status) => {
+        setNeedsImport(status.needsImport);
+        // After a Render wipe the old browser token is useless — clear it.
+        if (status.needsImport) store.clearStaleAuth();
+      })
       .catch(() => setNeedsImport(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run once on login screen mount
   }, []);
 
   if (!data) return null;
@@ -165,7 +170,11 @@ export function Login() {
         {needsImport && mode === "signin" && (
           <div className="panel-card stack">
             <h2>Import JSON</h2>
-            <p className="muted">This API has no users yet. Choose your `users.json` (and other desk files) to restore the desk, then sign in.</p>
+            <p className="muted">
+              Server data is empty (common after a Render deploy without a disk).
+              Import your backup JSON first (`users.json` required), then sign in.
+              Login will fail until that import succeeds.
+            </p>
             <label className="field">
               <span>JSON files</span>
               <input

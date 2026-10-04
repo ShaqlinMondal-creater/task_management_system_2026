@@ -8,6 +8,7 @@ import {
   clearApiToken,
   emptyDesk,
   fetchCollection,
+  fetchConstraints,
   fetchDashboardSummary,
   fetchDetail,
   fetchReportsSummary,
@@ -67,11 +68,13 @@ interface StoreApi {
   ensureReports: (projectId?: string) => Promise<void>;
   login: (email: string, password: string, remember?: boolean) => Promise<string | null>;
   logout: () => void;
+  clearStaleAuth: () => void;
   sessionNote: string | null;
   clearSessionNote: () => void;
   changePassword: (current: string, next: string) => Promise<string | null>;
   resetSeed: () => Promise<void>;
   exportFile: (name: FileName) => void;
+  exportAllFiles: () => Promise<void>;
   addUser: (input: Omit<User, "id">) => string | null;
   updateUser: (id: string, patch: Partial<User>) => string | null;
   deleteUser: (id: string) => void;
@@ -85,6 +88,7 @@ interface StoreApi {
   updateAssignment: (id: string, role: string) => void;
   removeAssignment: (id: string) => void;
   addCheckpoint: (input: Omit<Checkpoint, "id" | "doneAt">) => void;
+  addCheckpointsBulk: (inputs: Omit<Checkpoint, "id" | "doneAt">[]) => string | null;
   updateCheckpoint: (id: string, patch: Partial<Omit<Checkpoint, "id">>) => void;
 }
 
@@ -612,6 +616,20 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       reportsReady.current = false;
       if (apiEnabled()) setData(emptyDesk());
     },
+    clearStaleAuth: () => {
+      clearApiToken();
+      sessionStorage.removeItem(SESSION_KEY);
+      localStorage.removeItem(TOKEN_KEY);
+      setUserId(null);
+      setSessionNote(null);
+      setError(null);
+      loadedRef.current.clear();
+      inflightRef.current.clear();
+      dashboardReady.current = false;
+      dashboardInflight.current = null;
+      reportsReady.current = false;
+      if (apiEnabled()) setData(emptyDesk());
+    },
     changePassword: async (current, next) => {
       if (!sessionUser) return "Sign in before changing a password.";
       if (!apiEnabled()) return "Set VITE_API_URL to change a password.";
@@ -667,6 +685,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     exportFile: (name) => {
       if (!data) return;
       download(name, data[name]);
+    },
+    exportAllFiles: async () => {
+      const names: FileName[] = ["users", "projects", "tasks", "assignments", "checkpoints"];
+      if (apiEnabled() && getApiToken()) {
+        for (const name of names) {
+          const rows = await fetchCollection(name);
+          download(name, rows);
+        }
+        download("constraints", await fetchConstraints());
+        return;
+      }
+      if (!data) return;
+      for (const name of names) download(name, data[name]);
     },
     addUser: (input) => {
       if (!data) return "Ledger is not ready.";
@@ -949,6 +980,29 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           },
         ],
       });
+    },
+    addCheckpointsBulk: (inputs) => {
+      if (!data || sessionUser?.role !== "admin") return "Only an admin can add checkpoints.";
+      if (!inputs.length) return "Paste at least one checkpoint.";
+      let ids = data.checkpoints.map((item) => item.id);
+      const stamp = nowStamp();
+      const created = inputs.map((input) => {
+        const id = nextId("c", ids);
+        ids = [...ids, id];
+        return {
+          ...input,
+          id,
+          doneAt: input.state === "done" ? stamp : null,
+          details: (input.details ?? "").trim(),
+          link: (input.link ?? "").trim(),
+          photo: (input.photo ?? "").trim(),
+        };
+      });
+      commit({
+        ...data,
+        checkpoints: [...data.checkpoints, ...created],
+      });
+      return null;
     },
     updateCheckpoint: (id, patch) => {
       if (!data || !sessionUser) return;

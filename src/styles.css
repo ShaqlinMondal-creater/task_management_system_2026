@@ -310,6 +310,27 @@ body {
 .stack { display: flex; flex-direction: column; gap: 16px; }
 .view-head { display: flex; justify-content: space-between; gap: 16px; align-items: center; }
 .view-head p { max-width: 62ch; color: var(--ink-soft); }
+.view-head-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.bulk-json {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px;
+  min-height: 280px;
+  white-space: pre;
+}
+.bulk-format { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: white; }
+.bulk-format summary { cursor: pointer; font-weight: 600; }
+.bulk-example {
+  margin: 10px 0 0;
+  padding: 12px;
+  overflow: auto;
+  max-height: 280px;
+  border-radius: 8px;
+  background: #f6f4f1;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.45;
+  white-space: pre;
+}
 
 .btn {
   display: inline-flex;

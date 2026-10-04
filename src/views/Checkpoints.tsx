@@ -5,7 +5,7 @@ import { Field, Icon, SearchSelect } from "../components/Bits";
 import { Button, Card, Input, Pagination, Select, Tabs } from "../components/System";
 import { CheckpointView } from "../components/CheckpointView";
 import { Modal } from "../components/Modal";
-import { fitImage, formatWhen, label, matches, personName, taskLinks, todayISO } from "../lib";
+import { USER_ROLES, fitImage, formatWhen, label, matches, personName, taskLinks, todayISO } from "../lib";
 import { useStore } from "../store";
 import { useToast } from "../toast";
 import type { Checkpoint, Role } from "../types";
@@ -17,6 +17,112 @@ const STATE_LABEL: Record<CheckState, string> = {
 };
 
 const PHOTO_LIMIT = 900_000;
+const AREAS = ["Frontend", "Backend"] as const;
+const STATES = ["open", "partial", "done"] as const;
+
+function bulkExample(projectId: string) {
+  return `{
+  "projectId": "${projectId || "p01"}",
+  "packs": [
+    {
+      "area": "Frontend",
+      "phase": "1. Global layout",
+      "group": "Shell",
+      "state": "open",
+      "role": "member",
+      "items": [
+        { "label": "Responsive sidebar" },
+        { "label": "Mobile navigation / drawer" },
+        { "label": "Desktop navigation", "state": "done" },
+        { "label": "Login page", "group": "Auth" }
+      ]
+    },
+    {
+      "area": "Backend",
+      "phase": "2. API",
+      "group": "Auth",
+      "state": "open",
+      "role": "member",
+      "items": [
+        { "label": "Users API" },
+        { "label": "Login API" }
+      ]
+    }
+  ]
+}`;
+}
+
+function parseBulkCheckpoints(
+  raw: string,
+  projectIds: Set<string>,
+): { rows: Omit<Checkpoint, "id" | "doneAt">[]; error?: string } {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return { rows: [], error: "JSON is not valid. Copy the example format below." };
+  }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    return { rows: [], error: "Root must be an object with projectId and packs." };
+  }
+  const root = parsed as Record<string, unknown>;
+  const projectId = String(root.projectId || "").trim();
+  if (!projectId) return { rows: [], error: "projectId is required." };
+  if (!projectIds.has(projectId)) return { rows: [], error: `Unknown projectId "${projectId}".` };
+  if (!Array.isArray(root.packs) || root.packs.length === 0) {
+    return { rows: [], error: "packs must be a non-empty array." };
+  }
+
+  const rows: Omit<Checkpoint, "id" | "doneAt">[] = [];
+  for (let p = 0; p < root.packs.length; p += 1) {
+    const pack = root.packs[p];
+    if (!pack || typeof pack !== "object" || Array.isArray(pack)) {
+      return { rows: [], error: `packs[${p}] must be an object.` };
+    }
+    const packObj = pack as Record<string, unknown>;
+    if (!Array.isArray(packObj.items) || packObj.items.length === 0) {
+      return { rows: [], error: `packs[${p}].items must be a non-empty array.` };
+    }
+    for (let i = 0; i < packObj.items.length; i += 1) {
+      const item = packObj.items[i];
+      if (!item || typeof item !== "object" || Array.isArray(item)) {
+        return { rows: [], error: `packs[${p}].items[${i}] must be an object.` };
+      }
+      const row = item as Record<string, unknown>;
+      const area = String(row.area ?? packObj.area ?? "Frontend");
+      const phase = String(row.phase ?? packObj.phase ?? "").trim();
+      const group = String(row.group ?? packObj.group ?? "").trim();
+      const checkLabel = String(row.label ?? "").trim();
+      const state = String(row.state ?? packObj.state ?? "open");
+      const role = String(row.role ?? packObj.role ?? "member");
+      if (!AREAS.includes(area as (typeof AREAS)[number])) {
+        return { rows: [], error: `Invalid area "${area}" (use Frontend or Backend).` };
+      }
+      if (!phase || !group || !checkLabel) {
+        return { rows: [], error: `packs[${p}].items[${i}] needs phase, group, and label.` };
+      }
+      if (!STATES.includes(state as (typeof STATES)[number])) {
+        return { rows: [], error: `Invalid state "${state}" (use open, partial, or done).` };
+      }
+      if (!(USER_ROLES as readonly string[]).includes(role)) {
+        return { rows: [], error: `Invalid role "${role}".` };
+      }
+      rows.push({
+        projectId,
+        area: area as "Frontend" | "Backend",
+        phase,
+        group,
+        label: checkLabel,
+        state: state as CheckState,
+        role: role as Role,
+        details: String(row.details ?? "").trim(),
+        link: String(row.link ?? "").trim(),
+        photo: "",
+      });
+    }
+  }
+  return { rows };
+}
 
 type Draft = {
   projectId: string;
@@ -51,6 +157,8 @@ export function Checkpoints({ query }: { query: string }) {
   const [page, setPage] = useState(0);
   const [viewing, setViewing] = useState<Checkpoint | null>(null);
   const [dialog, setDialog] = useState<{ mode: "new" } | { mode: "edit"; item: Checkpoint } | null>(null);
+  const [bulkOpen, setBulkOpen] = useState(false);
+  const [bulkText, setBulkText] = useState("");
   const [draft, setDraft] = useState<Draft | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [folds, setFolds] = useState<Record<string, boolean>>({});
@@ -182,9 +290,34 @@ export function Checkpoints({ query }: { query: string }) {
   };
 
   const openNew = () => {
-    setDraft(blank(data.projects[0]?.id ?? ""));
+    setDraft(blank(data?.projects[0]?.id ?? ""));
     setError(null);
     setDialog({ mode: "new" });
+  };
+
+  const openBulk = () => {
+    const projectId = projectFilter !== "all" ? projectFilter : (data?.projects[0]?.id ?? "p01");
+    setBulkText(bulkExample(projectId));
+    setError(null);
+    setBulkOpen(true);
+  };
+
+  const saveBulk = (event: FormEvent) => {
+    event.preventDefault();
+    if (!data) return;
+    const projectIds = new Set(data.projects.map((project) => project.id));
+    const parsed = parseBulkCheckpoints(bulkText, projectIds);
+    if (parsed.error) {
+      setError(parsed.error);
+      return;
+    }
+    const message = store.addCheckpointsBulk(parsed.rows);
+    if (message) {
+      setError(message);
+      return;
+    }
+    toast(`Created ${parsed.rows.length} checkpoints`);
+    setBulkOpen(false);
   };
 
   const openEdit = (item: Checkpoint) => {
@@ -255,9 +388,14 @@ export function Checkpoints({ query }: { query: string }) {
       <div className="view-head">
         <p>Creating a project makes this full list, and only an admin can see it. A task then holds one checkpoint or several, and that task goes to a member or a reviewer.</p>
         {admin && (
-          <button type="button" className="btn primary" onClick={openNew}>
-            New checkpoint
-          </button>
+          <div className="view-head-actions">
+            <button type="button" className="btn ghost" onClick={openBulk}>
+              Bulk create
+            </button>
+            <button type="button" className="btn primary" onClick={openNew}>
+              New checkpoint
+            </button>
+          </div>
         )}
       </div>
       <section className="metrics check-metrics">
@@ -478,6 +616,34 @@ export function Checkpoints({ query }: { query: string }) {
               : undefined
           }
         />
+      )}
+      {bulkOpen && (
+        <Modal title="Bulk create checkpoints" onClose={() => setBulkOpen(false)}>
+          <form className="stack" onSubmit={saveBulk}>
+            <p className="muted">Paste JSON with one `projectId` and a `packs` list. Each pack can share area / phase / group, and each item needs a `label`.</p>
+            <Field label="JSON" wide>
+              <textarea
+                className="control bulk-json"
+                rows={16}
+                value={bulkText}
+                onChange={(event) => setBulkText(event.target.value)}
+                spellCheck={false}
+              />
+            </Field>
+            <details className="bulk-format" open>
+              <summary>Example format</summary>
+              <pre className="bulk-example">{bulkExample(projectFilter !== "all" ? projectFilter : (data?.projects[0]?.id ?? "p01"))}</pre>
+            </details>
+            {error && <p className="form-error">{error}</p>}
+            <div className="form-actions">
+              <button type="button" className="btn ghost" onClick={() => setBulkOpen(false)}>Cancel</button>
+              <button type="button" className="btn ghost" onClick={() => setBulkText(bulkExample(projectFilter !== "all" ? projectFilter : (data?.projects[0]?.id ?? "p01")))}>
+                Reset example
+              </button>
+              <button type="submit" className="btn primary">Create all</button>
+            </div>
+          </form>
+        </Modal>
       )}
       {assignIds && (
         <Modal title={assignIds.length === 1 ? "Assign checkpoint" : `Assign ${assignIds.length} checkpoints`} onClose={() => setAssignIds(null)}>

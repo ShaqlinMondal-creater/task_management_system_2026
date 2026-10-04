@@ -354,19 +354,28 @@ function Shell() {
               )}
             </div>
             {user.role === "admin" && (
-              <Dropdown label={<><Icon name="download" /> {store.usingLocal ? "Working copy" : "API desk"}</>}>
-                <p>{store.usingLocal ? "Edits stay in this browser. Download a file and replace the matching one in public/assets, then reload the seed." : "Edits save to the Northline API. Download a snapshot if you want a local JSON copy."}</p>
+              <Dropdown label={<><Icon name="download" /> {store.usingLocal ? "Working copy" : "Backup"}</>}>
+                <p>{store.usingLocal ? "Local browser copy. Download JSON backups anytime." : "Live Mongo desk. Download JSON backups (same format as Import)."}</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    void store.exportAllFiles()
+                      .then(() => push("All JSON backups downloaded"))
+                      .catch((err: unknown) => push(err instanceof Error ? err.message : "Backup failed"));
+                  }}
+                >
+                  <Icon name="download" /> Download all JSON
+                </button>
                 <button type="button" onClick={() => save("users")}><Icon name="download" /> users.json</button>
                 <button type="button" onClick={() => save("projects")}><Icon name="download" /> projects.json</button>
                 <button type="button" onClick={() => save("tasks")}><Icon name="download" /> tasks.json</button>
                 <button type="button" onClick={() => save("assignments")}><Icon name="download" /> assignments.json</button>
                 <button type="button" onClick={() => save("checkpoints")}><Icon name="download" /> checkpoints.json</button>
-                <button
-                  type="button"
-                  onClick={() => setSeedAsk(true)}
-                >
-                  <Icon name="refresh" /> Reload seed
-                </button>
+                {store.usingLocal && (
+                  <button type="button" onClick={() => setSeedAsk(true)}>
+                    <Icon name="refresh" /> Reload seed
+                  </button>
+                )}
               </Dropdown>
             )}
             <Dropdown
